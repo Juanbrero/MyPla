@@ -28,6 +28,8 @@ services:
     ports:
       - "3000:80"
     container_name: frontend
+    networks:
+      - app_network
     restart: unless-stopped
 
   backend:

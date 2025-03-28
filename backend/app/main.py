@@ -4,10 +4,20 @@ import importlib
 import sys
 import os
 from app.config.database import engine, Base, init_db
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
 init_db()
+
+# habilito CORS (ver de restringir origins)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Puedes restringirlo a ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
@@ -31,5 +41,5 @@ def addRoute(app, routes_path):
 addRoute(app, "/app/app/routes")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=9001, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8002, reload=True)
     
