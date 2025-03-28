@@ -1,15 +1,18 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+#Scheme table
 from app.models.Event import Event
-from app.config.database import get_db
+from app.models.User import User 
+
+from app.config.database import get_db,init_db
 #Imports to insert in BD
 from sqlalchemy import insert
-from app.models.User import User
 
 router = APIRouter()
 
 @router.get("/")
 def read_root():
+    init_db()
     return {"message": "¡Hola, FastAPI está funcionando!"}
 
 @router.get("/event")
