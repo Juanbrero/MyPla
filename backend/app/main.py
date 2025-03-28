@@ -13,7 +13,7 @@ init_db()
 # habilito CORS (ver de restringir origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Puedes restringirlo a ["http://localhost:3000"]
+    allow_origins=["http://localhost:3000"],  # Puedes restringirlo a ["http://localhost:3000"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
