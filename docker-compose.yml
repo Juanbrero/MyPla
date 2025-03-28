@@ -34,6 +34,8 @@ services:
 
   backend:
     build: ./backend
+    env_file:
+      - .env
     container_name: backend
     ports:
       - "8002:8002"
