@@ -5,9 +5,12 @@ import sys
 import os
 from app.config.database import engine, Base, init_db
 from fastapi.middleware.cors import CORSMiddleware
+#Scheme Table DB
+from app.models.Event import Event
+from app.models.User import User 
+
 
 app = FastAPI()
-Base.metadata.create_all(bind=engine)
 init_db()
 
 # habilito CORS (ver de restringir origins)

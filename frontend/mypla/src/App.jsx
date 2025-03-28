@@ -4,6 +4,8 @@ import viteLogo from '/vite.svg'
 import TestButton from './Button.jsx'
 import Google from './Google.jsx'
 import './App.css'
+import MPButton from './MPButton.jsx'
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,13 +25,10 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      
+      <MPButton></MPButton>
 
     </>
   )
