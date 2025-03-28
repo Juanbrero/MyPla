@@ -7,7 +7,6 @@ from app.models.User import User
 from app.config.database import get_db
 #Imports to insert in BD
 from sqlalchemy import insert
-from ModuloDePagos import integracionMP
 
 
 router = APIRouter()
@@ -15,11 +14,6 @@ router = APIRouter()
 @router.get("/")
 def read_root():
     return {"message": "¡Hola, FastAPI está funcionando!"}
-
-@router.post("/create_preference")
-def get_preferenceId():
-    return integracionMP.getPreference()
-
 
 @router.get("/event")
 def get_events(db: Session = Depends(get_db)):
