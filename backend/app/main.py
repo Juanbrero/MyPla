@@ -8,11 +8,13 @@ from fastapi.middleware.cors import CORSMiddleware
 #Scheme Table DB
 from app.models.Event import Event
 from app.models.User import User 
+from starlette.middleware.sessions import SessionMiddleware
 
 
 app = FastAPI()
 init_db()
 
+app.add_middleware(SessionMiddleware, secret_key="!secret")
 # habilito CORS (ver de restringir origins)
 app.add_middleware(
     CORSMiddleware,

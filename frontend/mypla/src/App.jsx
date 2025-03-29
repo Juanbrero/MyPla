@@ -2,9 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import TestButton from './Button.jsx'
+import Google from './Google.jsx'
 import './App.css'
 import MPButton from './MPButton.jsx'
-
+import ButtonLoginGoogle from './ButtonLoginGoogle.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -28,8 +29,7 @@ function App() {
       </div>
       
       <MPButton></MPButton>
-
-      <TestButton></TestButton>
+      <ButtonLoginGoogle />
 
     </>
   )
