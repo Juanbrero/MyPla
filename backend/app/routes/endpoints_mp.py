@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from ModuloDePagos import integracionMP
+from app.ModuloDePagos import integracionMP
 
 router = APIRouter()
 

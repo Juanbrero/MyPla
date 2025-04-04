@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia el código de la aplicación después de instalar las dependencias
 COPY app/ app/ 
-COPY ModuloDePagos/ app/ 
 
 # Expone el puerto donde correrá el servidor
 EXPOSE 8002
