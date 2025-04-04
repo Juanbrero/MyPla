@@ -1,38 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import TestButton from './Button.jsx'
-import Google from './Google.jsx'
-import './App.css'
-import MPButton from './MPButton.jsx'
-import ButtonLoginGoogle from './ButtonLoginGoogle.jsx'
+import { Route, Routes } from "react-router-dom"
+import { AuthenticationGuard } from "./components/AuthenticationGuard"
+import { ProfilePage } from "./pages/ProfilePage"
+import CallbackPage from "./pages/CallbackPage"
+import { ProtectedPage } from "./pages/ProtectedPage"
+import OAuthCallback from "./OAuthCallback"
+import { useAuth0 } from "@auth0/auth0-react"
+import Home from "./Home"
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      
-      </div>
-      
-      <MPButton></MPButton>
-      <ButtonLoginGoogle />
+const App = () => {
+    const { isLoading } = useAuth0();
 
-    </>
-  )
+    if (isLoading) {
+      return (
+        <div className="page-layout">
+          ... carregando
+        </div>
+      );
+    }
+
+    return (
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/profile"
+            element={<AuthenticationGuard component={ProfilePage} />}
+          />
+          <Route
+            path="/callback"
+            element={<AuthenticationGuard component={CallbackPage} />}
+          />
+          <Route
+            path="/protected"
+            element={<AuthenticationGuard component={ProtectedPage} />}
+          />
+          <Route path="/oauth-callback" element={<OAuthCallback />} />
+          <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
+        </Routes>
+    )
 }
 
 export default App

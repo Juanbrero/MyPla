@@ -12,3 +12,6 @@ starlette
 itsdangerous
 authlib
 httpx
+secure==0.3.0
+PyJWT==2.4.0
+pydantic==1.10.2
