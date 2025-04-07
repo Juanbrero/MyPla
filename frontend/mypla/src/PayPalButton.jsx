@@ -11,20 +11,27 @@ const PayPalButton = () => {
                     label: "checkout",    // "paypal" | "checkout" | "buynow" | "pay"
                     tagline: false        // Mostrar o no tagline
                   }}
-                createOrder={(data, actions) => {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: "75.76", // Monto del pago
-                            },
-                        }],
+                createOrder={async () => {
+                    const response = await fetch("http://localhost:8002/create-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ product_id: "curso_python" })
                     });
+                
+                    const data = await response.json();
+                    return data.id;
                 }}
-                onApprove={(data, actions) => {
-                    return actions.order.capture().then((details) => {
-                        alert(`Pago realizado por ${details.payer.name.given_name}`);
+                
+                onApprove={async (data) => {
+                    const response = await fetch(`http://localhost:8002/capture-order`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ orderID: data.orderID }),
                     });
+                    const details = await response.json();
+                    alert(`Pago realizado por ${details.payer.name.given_name}`);
                 }}
+                
                 onError={(err) => {
                     console.error("Error en el pago", err);
                 }}
