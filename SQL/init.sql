@@ -1,4 +1,4 @@
-- Crear tabla de eventos
+-- Crear tabla de eventos
 CREATE TABLE IF NOT EXISTS eventos (
     id SERIAL PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
