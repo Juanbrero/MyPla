@@ -25,6 +25,8 @@ services:
       
   frontend:
     build: ./frontend/mypla
+    env_file:
+      - ./frontend/mypla/.env
     ports:
       - "3000:80"
     container_name: frontend
