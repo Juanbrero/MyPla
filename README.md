@@ -1,5 +1,14 @@
 # MyPla
 
+## REACT ENVIROMENT VARIABLE
+Como utilizamos "*vite build*" como constructor del projecto React, las variables tienen que empezar con **VITE_** y para utilizarlas debe usarse **import.meta.env.VITE_..**.
+
+Las variables deben estar en el __.env__ dentro del directorio **frontend/mypla**, ya que Docker copia todo los archivos de esa ruta y es la manera en que vera el .env.
+
+Para que el compose no funcione si no esta el .env en el lugar se agrego env_file al frontend con la ruta al .env, para que falle si no esta el mismo. 
+
+Se modifico el .env.example con las variables y se agrego un .env.front, con las variables del front exclusivamente.
+
 ## Indice
 * [Integrantes del equipo](#integrantes-del-equipo)
 * [Postgress](#iniciar-postgres-con-tablas)
