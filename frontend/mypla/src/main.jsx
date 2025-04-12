@@ -11,7 +11,10 @@ import { Auth0ProviderWithNavigate } from './auth0-provider-with-navigate.jsx';
 import { ProfilePage } from './pages/ProfilePage.jsx';
 import CallbackPage from './pages/CallbackPage.jsx';
 
-createRoot(document.getElementById('root')).render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
   <StrictMode>
     <BrowserRouter>
       <Auth0ProviderWithNavigate>

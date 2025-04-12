@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import MPButton from './MPButton.jsx'
-import PayPalButton from './PayPalButton.jsx'
-import ButtonLoginGoogle from './ButtonLoginGoogle.jsx'
-import { LoginButton } from './components/buttons/LoginButton.jsx'
-import { SignupButton } from './components/buttons/SignUpButton.jsx'
+import reactLogo from '../assets/react.svg'
+import viteLogo from '../../public/vite.svg'
+import '../App.css'
+import MPButton from '../MPButton.jsx'
+import PayPalButton from '../PayPalButton.jsx'
+import ButtonLoginGoogle from '../ButtonLoginGoogle.jsx'
+import { LoginButton } from '../components/buttons/LoginButton.jsx'
+import { SignupButton } from '../components/buttons/SignUpButton.jsx'
 
 function Home() {
   const [count, setCount] = useState(0)
