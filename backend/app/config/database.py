@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import importlib
+from os import listdir
+
 
 # 📌 Configura la conexión a PostgreSQL
 DATABASE_URL = "postgresql://myuser:mypassword@postgres:5432/mydatabase"
@@ -23,5 +26,19 @@ def get_db():
         db.close()
 
 def init_db():
+    import_all_module()
     Base.metadata.create_all(bind=engine)
 
+
+#Function to read module directorie, and charge models of tables
+def import_all_module():
+    #import models to create BD
+    for filename in listdir("/app/app/models"):
+        if filename.endswith(".py") and filename != "__init__.py":
+            module_name = f'app.models.{filename[:-3]}'
+            
+            try:
+                module = importlib.import_module(module_name)
+            except ModuleNotFoundError as e:
+                print(f"Failed to import module {module_name}: {e}")
+                continue
