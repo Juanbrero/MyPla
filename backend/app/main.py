@@ -6,9 +6,7 @@ import secure
 import os
 from app.config.database import engine, Base, init_db
 from fastapi.middleware.cors import CORSMiddleware
-#Scheme Table DB
-from app.models.Event import Event
-from app.models.User import User 
+
 from starlette.middleware.sessions import SessionMiddleware
 
 
