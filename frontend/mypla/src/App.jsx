@@ -7,6 +7,7 @@ import OAuthCallback from "./OAuthCallback"
 import { useAuth0 } from "@auth0/auth0-react"
 import Home from "./Home"
 import CalendarPage from "./pages/CalendarPage"
+import ScheduleManager from './components/ScheduleManager';
 
 
 const App = () => {
@@ -37,6 +38,7 @@ const App = () => {
             element={<AuthenticationGuard component={ProtectedPage} />}
           />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
+          <Route path="/test" element={<ScheduleManager />} />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
     )
