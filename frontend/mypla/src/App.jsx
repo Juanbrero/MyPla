@@ -6,6 +6,7 @@ import { ProtectedPage } from "./pages/ProtectedPage"
 import OAuthCallback from "./OAuthCallback"
 import { useAuth0 } from "@auth0/auth0-react"
 import Home from "./Home"
+import CalendarPage from "./pages/CalendarPage"
 
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
     return (
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route
             path="/profile"
             element={<AuthenticationGuard component={ProfilePage} />}

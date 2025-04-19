@@ -6,10 +6,10 @@ export const Auth0ProviderWithNavigate = ({ children }) => {
   const navigate = useNavigate();
   console.log("ESTAS ACA")
 
-  const domain = process.env.REACT_APP_AUTH0_DOMAIN ?? 'dev-znigqrdhldkrdh61.us.auth0.com';
-  const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID ?? '69BHYcnc7PNDu17qMhf2jOxa2zflKy99';
-  const redirectUri = process.env.REACT_APP_AUTH0_CALLBACK_URL ?? 'http://localhost:3000/callback';
-  const audience = process.env.REACT_APP_AUTH0_AUDIENCE ?? 'https://hello-world.example.com';
+  const domain = /*process.env.REACT_APP_AUTH0_DOMAIN ??*/ 'dev-znigqrdhldkrdh61.us.auth0.com';
+  const clientId = /*process.env.REACT_APP_AUTH0_CLIENT_ID ??*/ '69BHYcnc7PNDu17qMhf2jOxa2zflKy99';
+  const redirectUri = /*process.env.REACT_APP_AUTH0_CALLBACK_URL ??*/ 'http://localhost:3000/callback';
+  const audience = /*process.env.REACT_APP_AUTH0_AUDIENCE ??*/ 'https://hello-world.example.com';
 
   const onRedirectCallback = (appState) => {
     navigate(appState?.returnTo || window.location.pathname);
