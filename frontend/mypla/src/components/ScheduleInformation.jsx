@@ -6,6 +6,7 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale'; // Español opcional
+import { useEffect } from 'react'
 
 const style = {
   position: 'absolute',
@@ -40,6 +41,22 @@ export default function ScheduleInformation({
   const [selectedDate, setSelectedDate] = React.useState(
     taskData?.date ? new Date(taskData.date) : new Date()
   );
+
+  useEffect(() => {
+    setSelectedTopicsState(taskData?.topics || []);
+    setDay(taskData?.day || 'Lunes');
+    setStartTime(taskData?.start || '09:00');
+    setEndTime(taskData?.end || '10:00');
+    setIsRecurring(taskData?.recurrent || false);
+    if (taskData.date) {
+      const [year, month, day] = taskData.date.split("-");
+      const generateDate = new Date(year, month - 1, day);
+      setSelectedDate(generateDate);
+    } else {
+      setSelectedDate(new Date());
+    }
+  }, [taskData]);
+  
 
   const handleTopicChange = (event) => {
     const { target: { value } } = event;

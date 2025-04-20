@@ -1,6 +1,6 @@
 import { callExternalApi } from "./external-api.service";
 
-const apiServerUrl = process.env.VITE_API_SERVER_URL ?? 'http://localhost:8002';
+const apiServerUrl = /*process.env.VITE_API_SERVER_URL ??*/ 'http://localhost:8002';
 
 export const getProtectedResource = async (accessToken) => {
   const config = {
