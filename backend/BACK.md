@@ -8,6 +8,9 @@ DATABASE_URL = f"postgresql://{getenv('POSTGRES_USER')}:{getenv('POSTGRES_PASSWO
 ~~~
 asi no genera problemas, se puede hacer pero habria que comentar y descomentar la url en el env.py
 
+# RECORDAR
+Descomentar en main el **@app.middleware("http")**
+
 crear el alembic
 ~~~
 cd backend
