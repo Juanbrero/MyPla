@@ -13,7 +13,6 @@ from starlette.middleware.sessions import SessionMiddleware
 
 
 app = FastAPI()
-init_db()
 
 csp = secure.ContentSecurityPolicy().default_src("'self'").frame_ancestors("'none'")
 hsts = secure.StrictTransportSecurity().max_age(31536000).include_subdomains()
