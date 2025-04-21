@@ -81,6 +81,11 @@ Para generar el archivo para la migracion se debe ejecutar dentro del directorio
 alembic revision --autogenerate [-m "MENSAJE/COMENTARIO"]
 ~~~
 
+para ejecutarlo
+~~~
+alembic upgrade head
+~~~
+
 
 
 Luego ejecutar el docker compose
