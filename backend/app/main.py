@@ -29,7 +29,7 @@ secure_headers = secure.Secure(
 )
 
 
-@app.middleware("http")
+#@app.middleware("http")
 async def set_secure_headers(request, call_next):
     response = await call_next(request)
     secure_headers.framework.fastapi(response)
