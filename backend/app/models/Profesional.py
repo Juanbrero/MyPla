@@ -13,6 +13,6 @@ class Profesional(Base):
                                      index=True)
     score: Mapped[int] = mapped_column(default= 0)
 
-    #dias: Mapped[List["Dia"]] = relationship(back_populates="profesional", cascade="all, delete-orphan")
     specific: Mapped[List["SpecificSchedule"]] = relationship(back_populates="profesional", cascade="all, delete-orphan")
     recurrent: Mapped[List["RecurrentSchedule"]] = relationship(back_populates="profesional", cascade="all, delete-orphan")
+    topics: Mapped[List["ProfesionalTopic"]] = relationship(back_populates="profesional",cascade="all, delete-orphan")
