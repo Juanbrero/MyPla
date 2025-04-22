@@ -8,9 +8,8 @@ class ProfesionalTopicBase(BaseModel):
 class ProfesionalTopicCreate(ProfesionalTopicBase):
     pass
 
-class ProfesionalTopic(ProfesionalTopicBase):
+class ProfesionalTopic(BaseModel):
     topic_name: str
-    user_id: int
     
     class Config:
         orm_mode= True
