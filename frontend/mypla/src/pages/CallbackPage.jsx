@@ -7,6 +7,11 @@ const CallbackHandler = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
+  // console.log("user.tipo usuario: " + user.user_metadata.tipo_usuario);
+  // console.log("tipo usuario: " + tipoUsuario);
+  // console.log("isAuth: " + isAuthenticated);
+  
+
   useEffect(() => {
     if (isAuthenticated && tipoUsuario) {
       const sendUserType = async () => {
