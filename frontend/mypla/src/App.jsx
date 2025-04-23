@@ -5,9 +5,9 @@ import CallbackPage from "./pages/CallbackPage"
 import { ProtectedPage } from "./pages/ProtectedPage"
 import OAuthCallback from "./OAuthCallback"
 import { useAuth0 } from "@auth0/auth0-react"
-import Home from "./Home"
 import CalendarPage from "./pages/CalendarPage"
 import ScheduleManager from './components/ScheduleManager';
+import Home from "./pages/Home"
 
 
 const App = () => {

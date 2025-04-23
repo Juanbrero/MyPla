@@ -1,20 +1,36 @@
-from fastapi import FastAPI
+import secure
 import uvicorn
+from app.auth0.config import settings
+from app.auth0.dependencies import PermissionsValidator, validate_token
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 import importlib
 import sys
-import secure
 import os
 from app.config.database import engine, Base, init_db
-from fastapi.middleware.cors import CORSMiddleware
 #Scheme Table DB
 from app.models.Event import Event
 from app.models.User import User 
-from starlette.middleware.sessions import SessionMiddleware
 
 
-app = FastAPI()
+app = FastAPI(openapi_url=None)
 init_db()
 
+
+app.add_middleware(SessionMiddleware, secret_key="!secret")
+# habilito CORS (ver de restringir origins)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Puedes restringirlo a ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# seguridad
 csp = secure.ContentSecurityPolicy().default_src("'self'").frame_ancestors("'none'")
 hsts = secure.StrictTransportSecurity().max_age(31536000).include_subdomains()
 referrer = secure.ReferrerPolicy().no_referrer()
@@ -36,15 +52,13 @@ async def set_secure_headers(request, call_next):
     secure_headers.framework.fastapi(response)
     return response
 
-app.add_middleware(SessionMiddleware, secret_key="!secret")
-# habilito CORS (ver de restringir origins)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Puedes restringirlo a ["http://localhost:3000"]
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    message = str(exc.detail)
+
+    return JSONResponse({"message": message}, status_code=exc.status_code)
+
 
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
