@@ -12,19 +12,19 @@ router = APIRouter(prefix="/profesional",tags=["Profesional"])
 
 @router.post("/create/{prof_id}", 
              response_model=Union[Profesional,Errors])
-def create_prof(prof : ProfesionalCreate, 
+async def create_prof(prof : ProfesionalCreate, 
                 db : Session = Depends(get_db)):
     return crud_prof.create_prof(db, prof)
 
 
 @router.get("/all", 
             response_model=List[Profesional])
-def read_all_prof(db : Session = Depends(get_db)):
+async def read_all_prof(db : Session = Depends(get_db)):
     return crud_prof.get_prof(db)
 
 
 
 @router.get("/{id_prof}", response_model=Union[Profesional,Errors])
-def find_prof(id_prof: int, db: Session = Depends(get_db)):
+async def find_prof(id_prof: int, db: Session = Depends(get_db)):
     response = crud_prof.get_id_prof(db,id_prof)        
     return response

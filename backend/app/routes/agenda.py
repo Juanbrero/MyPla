@@ -19,14 +19,14 @@ router = APIRouter(prefix="/prof/{prof_id}/agenda", tags=["Agenda"])
 @router.get("/list/specificday",
             response_model=List[Specific],
             tags=["Specific"])
-def get_all_dias(db: Session = Depends(get_db)):
+async def get_all_dias(db: Session = Depends(get_db)):
     return crud_specific.get_all_specific(db)
 
 #Crea un dia especifico para un profesional
 @router.post("/create/specificday", 
              response_model=Union[Specific, Errors], 
              tags=["Specific"])
-def create_dia(dia: SpecificCreate,
+async def create_dia(dia: SpecificCreate,
                 prof_id: int, 
                 db: Session= Depends(get_db)):
     return crud_specific.create_specific(db, dia, prof_id)
@@ -35,19 +35,19 @@ def create_dia(dia: SpecificCreate,
 @router.get("/specif/{day}/state",
             response_model=List[SpecificIsCancel],
             tags=["Specific"])
-def isCaceled( prof_id:int, day:date, hour:time, db: Session = Depends(get_db)):
+async def isCaceled( prof_id:int, day:date, hour:time, db: Session = Depends(get_db)):
     return crud_specific.iscaceled_specific(db, day, prof_id, hour)
 
 #Actualiza el estado a cancelado
 @router.put("/specif/{day}/cancel",tags=["Specific"])
-def cancel(prof_id:int, day:date, hour:time, db: Session = Depends(get_db)):
+async def cancel(prof_id:int, day:date, hour:time, db: Session = Depends(get_db)):
     return crud_specific.cancel_day(db, prof_id, day, hour)
 
 #Recupera todos los horarios de un profesional especificado
 @router.get("/all/specific",
             response_model=List[Specific],
             tags=["Specific"])
-def get_day(prof_id:int, db: Session = Depends(get_db)):
+async def get_day(prof_id:int, db: Session = Depends(get_db)):
     return crud_specific.get_day(db, prof_id)
 
 
@@ -55,17 +55,17 @@ def get_day(prof_id:int, db: Session = Depends(get_db)):
 @router.get("/list/recurrent", 
             response_model=List[Recurrent],
               tags=["Recurrent"])
-def get_dias(prof_id:int, db: Session = Depends(get_db)):
+async def get_dias(prof_id:int, db: Session = Depends(get_db)):
     return crud_recurrent.get_all_recurrent(db, prof_id)
 
 @router.post("/create/recurent", 
              response_model=Union[Recurrent, Errors], 
              tags=["Recurrent"])
-def create_recurrent(dia: RecurrentCreate, prof_id: int, db: Session = Depends(get_db)):
+async def create_recurrent(dia: RecurrentCreate, prof_id: int, db: Session = Depends(get_db)):
     return crud_recurrent.create_recurrent(db, dia, prof_id)
 
 @router.get("/day/{name_day}",
             response_model=Union[List[Recurrent],Errors],
             tags=["Recurrent"])
-def get_day(prof_id:int, name_day:str, db: Session = Depends(get_db)):
+async def get_day(prof_id:int, name_day:str, db: Session = Depends(get_db)):
     return crud_recurrent.get_day(db, prof_id, name_day)
