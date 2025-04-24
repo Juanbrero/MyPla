@@ -1,55 +1,79 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
-import ScheduleInformation from './ScheduleInformation'; // Asegurate de que la ruta esté bien
+import ScheduleInformation from './ScheduleInformation';
+import ScheduleCreate from './ScheduleCreate';
 
 export default function ScheduleManager() {
-  const [modalOpen, setModalOpen] = useState(false);
-
-  // Simulación de una tarea seleccionada
-  const [selectedTask, setSelectedTask] = useState({
+  const initialTask = {
     topics: ['Estrategia', 'Marketing'],
     day: 'Martes',
     start: '14:00',
     end: '15:00',
     recurrent: true,
     date: "2025-04-18",
-  });
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
+  const [selectedTask, setSelectedTask] = useState(initialTask);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+
+  const handleOpenCreateModal = () => {
+    setCreateModalOpen(true);
   };
 
-  // const handleCancelSlot = ({ day, startTime, endTime }) => {
-  //   console.log('Cancelando franja:', day, startTime, endTime);
-  //   // acá podrías actualizar tu backend, o el estado de tareas, etc.
-  // };
+  const handleCloseCreateModal = () => {
+    setCreateModalOpen(false);
+  };
+
+  const handleOpenInfoModal = () => {
+    setInfoModalOpen(true);
+  };
+
+  const handleCloseInfoModal = () => {
+    setInfoModalOpen(false);
+  };
 
   const handleCancelTask = (taskName) => {
     console.log('Cancelando toda la tarea:', taskName);
-    // lógica para eliminar o desactivar la tarea completa
+    // lógica para cancelar toda la tarea
   };
 
-  const handleSaveTask = (taskName) => {
-    console.log('Guardando la tarea:', taskName);
-    // lógica para guardar la tarea
+  const handleSaveTask = (updatedTask) => {
+    console.log('Guardando la tarea:', updatedTask);
+    setSelectedTask({
+      ...updatedTask,
+      start: updatedTask.startTime,
+      end: updatedTask.endTime,
+      recurrent: updatedTask.isRecurring,
+    });
+    setCreateModalOpen(false);
+    setInfoModalOpen(false);
   };
 
   return (
     <div>
-      <h2>Gestión de Tareas</h2>
-      <Button variant="contained" onClick={handleOpenModal}>
-        Editar tarea
+      <h2>Agregar Horario</h2>
+      <Button variant="contained" onClick={handleOpenCreateModal}>
+        Abrir para crear
+      </Button>
+
+      <ScheduleCreate
+        open={createModalOpen}
+        onClose={handleCloseCreateModal}
+        taskData={selectedTask}
+        onCancelTask={handleCancelTask}
+        onSaveTask={handleSaveTask}
+      />
+
+      <h2>Ver, editar, borrar</h2>
+      <Button variant="contained" onClick={handleOpenInfoModal}>
+        Abrir para ver información
       </Button>
 
       <ScheduleInformation
-        open={modalOpen}
-        onClose={handleCloseModal}
+        open={infoModalOpen}
+        onClose={handleCloseInfoModal}
         taskData={selectedTask}
-        // onCancelSlot={handleCancelSlot}
         onCancelTask={handleCancelTask}
         onSaveTask={handleSaveTask}
       />
