@@ -5,7 +5,7 @@ from app.bd.schemas import schema_specific
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date, time
 
-from app.bd.bd_utils import strip_time_hour_minute, valid_time, incluide_time, MinuteError
+from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time, MinuteError
 
 
 def get_all_specific(db: Session):
@@ -18,7 +18,7 @@ def create_specific(db: Session, spec: schema_specific.SpecificCreate, id_prof:i
     try:
         if valid_time(spec.start, spec.end):
             existent = __get_schedule(db, id_prof, spec.day)
-            if not incluide_time(db, spec.start, spec.end):
+            if not include_time(db, spec.start, spec.end):
                 try:
                     db_spec = SpecificSchedule(**spec.dict(), user_id=id_prof)
                     db.add(db_spec)

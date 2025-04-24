@@ -5,7 +5,7 @@ from app.models.RecurrentSchedule import RecurrentSchedule
 from app.bd.schemas import schema_recurrent
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date
-from app.bd.bd_utils import strip_time_hour_minute, valid_time, incluide_time, MinuteError
+from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time, MinuteError, test_time
 
 from app.bd.schemas import  schema_topic, schema_prof_topic
 from app.bd.cruds import crud_prof_topic
@@ -25,7 +25,7 @@ def create_recurrent(db: Session, recurrent: schema_recurrent.RecurrentCreate, i
         if valid_time(recurrent.start, recurrent.end):
             #topic_list = __get_topics(db, id_prof)
             existent = __get_schedule(db, id_prof, recurrent.name_day)
-            if not incluide_time(existent, recurrent.start, recurrent.end):
+            if not include_time(existent, recurrent.start, recurrent.end):
                 try:
                     db_spec = RecurrentSchedule(**recurrent.dict(), user_id=id_prof)
                     db.add(db_spec)
