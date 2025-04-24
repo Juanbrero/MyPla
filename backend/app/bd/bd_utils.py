@@ -66,6 +66,11 @@ def incluide_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool
             break
     return incluido
 
+def error_hand(e:Exception):
+    error = str(e.__cause__)
+    ind = error.index("DETAIL")
+    error = error[ind:]
+    return error
     
 
 
