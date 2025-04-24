@@ -5,7 +5,7 @@ from app.models.RecurrentSchedule import RecurrentSchedule
 from app.bd.schemas import schema_recurrent
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date
-from app.bd.bd_utils import strip_time_hour_minute, valid_time, incluide_time
+from app.bd.bd_utils import strip_time_hour_minute, valid_time, incluide_time, MinuteError
 
 from app.bd.schemas import  schema_topic, schema_prof_topic
 from app.bd.cruds import crud_prof_topic
@@ -19,23 +19,26 @@ def get_all_recurrent(db: Session, user_id:int):
 
 
 def create_recurrent(db: Session, recurrent: schema_recurrent.RecurrentCreate, id_prof:int):#, topics:list[schema_topic.Topic]):
-    recurrent.start = strip_time_hour_minute(recurrent.start)
-    recurrent.end = strip_time_hour_minute(recurrent.end)
-    if valid_time(recurrent.start, recurrent.end):
-        #topic_list = __get_topics(db, id_prof)
-        existent = __get_schedule(db, id_prof, recurrent.name_day)
-        if not incluide_time(existent, recurrent.start, recurrent.end):
-            try:
-                db_spec = RecurrentSchedule(**recurrent.dict(), user_id=id_prof)
-                db.add(db_spec)
-                #crud_topic_recurrent.create(db, db_spec, topics, topic_list)
-                db.commit()
-                db.refresh(db_spec)
-            except:
-                db_spec = {'error':'on create_recurent'}
-            return db_spec
-        else:
-            return {'error':'time include in DB'}
+    try:
+        recurrent.start = strip_time_hour_minute(recurrent.start)
+        recurrent.end = strip_time_hour_minute(recurrent.end)
+        if valid_time(recurrent.start, recurrent.end):
+            #topic_list = __get_topics(db, id_prof)
+            existent = __get_schedule(db, id_prof, recurrent.name_day)
+            if not incluide_time(existent, recurrent.start, recurrent.end):
+                try:
+                    db_spec = RecurrentSchedule(**recurrent.dict(), user_id=id_prof)
+                    db.add(db_spec)
+                    #crud_topic_recurrent.create(db, db_spec, topics, topic_list)
+                    db.commit()
+                    db.refresh(db_spec)
+                except:
+                    db_spec = {'error':'on create_recurent'}
+                return db_spec
+            else:
+                return {'error':'time include in DB'}
+    except MinuteError:
+        return {'error':'minute accept 00 or 30'}
     return {'error': 'invalid time'}
 
 def get_day(db: Session, id_prof:int, name_day:str):

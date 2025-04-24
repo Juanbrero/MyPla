@@ -5,7 +5,7 @@ from app.bd.schemas import schema_specific
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date, time
 
-from app.bd.bd_utils import strip_time_hour_minute, valid_time, incluide_time
+from app.bd.bd_utils import strip_time_hour_minute, valid_time, incluide_time, MinuteError
 
 
 def get_all_specific(db: Session):
@@ -15,21 +15,24 @@ def get_all_specific(db: Session):
 def create_specific(db: Session, spec: schema_specific.SpecificCreate, id_prof:int):
     spec.start = strip_time_hour_minute(spec.start) #10:20:06.25..z -> 10:20
     spec.end= strip_time_hour_minute(spec.end)
-    if valid_time(spec.start, spec.end):
-        existent = __get_schedule(db, id_prof, spec.day)
-        if not incluide_time(db, spec.start, spec.end):
-            try:
-                db_spec = SpecificSchedule(**spec.dict(), user_id=id_prof)
-                db.add(db_spec)
-                db.commit()
-                db.refresh(db_spec)
-            except:
-                db_spec = {'error':'on create_spec'}
-            return db_spec
+    try:
+        if valid_time(spec.start, spec.end):
+            existent = __get_schedule(db, id_prof, spec.day)
+            if not incluide_time(db, spec.start, spec.end):
+                try:
+                    db_spec = SpecificSchedule(**spec.dict(), user_id=id_prof)
+                    db.add(db_spec)
+                    db.commit()
+                    db.refresh(db_spec)
+                except:
+                    db_spec = {'error':'on create_spec'}
+                return db_spec
+            else:
+                return {'error':'time include'}
         else:
-            return {'error':'time include'}
-    else:
-        return {'error':'invalid time'}
+            return {'error':'invalid time'}
+    except MinuteError:
+        return {'error': 'Minute Accept 00 or 30'}
 
 def iscaceled_specific(db:Session, day_in:date, id_prof:int, hour:time) -> schema_specific.SpecificIsCancel:
     hour = strip_time_hour_minute(hour)
