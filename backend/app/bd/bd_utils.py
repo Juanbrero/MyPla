@@ -2,6 +2,9 @@ from datetime import time, timedelta
 from pydantic import BaseModel
 
 
+class MinuteError(Exception):
+    msg = 'Minute Accept 00 or 30'
+
 class Schedule(BaseModel):
     start:time
     end:time
@@ -10,15 +13,17 @@ class Errors(BaseModel):
     error: str
 
 
-#Funcion que toma un tiempo, y solo almacena hora y minutos (elimina segundos y TZ)
-def strip_time_hour_minute(tiempo: time):
+#Funcion que toma un tiempo, y solo acorta a hora y minutos (elimina segundos y TZ) retornando la modificacion
+def strip_time_hour_minute(tiempo: time) -> time:
     hora = tiempo.hour
     minuto = tiempo.minute
+    if minuto not in [00, 30]:
+        raise MinuteError
     tiempo = time(hour=hora, minute=minuto)
     return tiempo
 
 #Funcion que verifica si inicio >= fin
-def valid_time(inicio:time, fin:time):
+def valid_time(inicio:time, fin:time) -> bool:
     #si la hora de fin es la 0, reemplaza en fin la hora por 23:59
     if fin.hour == 0:
         fin = fin.replace(hour=23, minute=59)
@@ -29,7 +34,7 @@ def valid_time(inicio:time, fin:time):
         return True
     
 #Funcion que recibe una lista con horarios, el inicio y fin ingresados
-def incluide_time(db_recurrent:list[Schedule], inicio: time, fin: time ): 
+def incluide_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool: 
     incluido = False
     #si inicio no es la 0 o las 23, reemplaza la hora de inicio por la hora siguiente
     if inicio.hour not in  [0, 23] :
