@@ -4,7 +4,9 @@ services:
   postgres:
     image: postgres:17
     container_name: postgres_db
-    restart: always
+    #esto a diferencia de always, no inicia el contenedor si lo detenemos
+    #en produccion si debe ir el "always" para que se inicie cuando se inicia el sistema
+    restart: unless-stopped
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
