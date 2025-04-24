@@ -8,3 +8,4 @@ class Topic(Base):
     topic_name: Mapped[str] = mapped_column(primary_key=True)
 
     profesional_topic: Mapped["ProfesionalTopic"] = relationship(back_populates="topic")
+    #topics: Mapped["TopicRecurrent"] = relationship(back_populates="topic")
