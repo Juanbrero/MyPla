@@ -13,14 +13,14 @@ def create_prof(db: Session, prof_c: schema_prof.ProfesionalCreate):
         db.commit()
         db.refresh(db_prof)
     except:
-        db_prof = {'Error':'on create_pof'}
+        db_prof = {'error':'on create_pof'}
     return db_prof
 
 def get_id_prof(db:Session, id_prof: int):
     try:
         response = db.query(Profesional).get(id_prof)
         if response is None:
-            response = {"id":-1, "score":-1}
+            response = {"error":"id no existente"}
     except:
-        response = {'Error':'On get_id_prof'}
+        response = {'error':'On get_id_prof'}
     return response
