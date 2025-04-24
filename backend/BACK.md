@@ -184,11 +184,12 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
    - Recuperar los topicos de un profesional por su ID
 - Schedule (Agenda)
    - Controles que se realizan (CON)
-      1. Valida que el tiempo de inicio y fin no sea el mismo y que inicio no sea menor a fin, en formato 24Hs
-      2. Verifica que el horario no este incluido en los horarios almacenados 
-      3. Solo almacena la hora y minutos
+      1. Valida que el tiempo de inicio y fin no sea el mismo y que inicio no sea menor a fin, en formato 24Hs ( inicio >= fin )
+      2. Verifica que el horario no este incluido en los horarios almacenados ( hora in [inicio, inicio + 1H, inicio + 2H, .., fin] )
+      3. Solo almacena la hora y minutos (10:30:40) -> 10:30
+      4. Control de que solo admita 00 o 30
    - Recurrent (CON 1, 2, 3)
-      1. Control de nombre de dia en español, **FALTA que sea todo en mayuscula o minuscula para evitar problemas**
+      1. Control de nombre de dia en español, **FALTA que sea todo en mayuscula o minuscula para evitar problemas**, por BD, ver si es conveniente hacerlo en el back
       - Crear un evento recurrente, recibe un dia de la semana (Texto), un horario de inicio y fin, y un ID
       - Recuperar todos los evento recurrentes de un Profesional
       - Recuperar todos los eventos de un dia de un profesional
@@ -200,10 +201,11 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
       - Cancelar un dia especifico de un profesional
 
 # Falta
+- Cambiar las funciones a ASYNC
 - Delete de datos
-- Que los datos str esten en mayuscula o miniscula
+- Que los datos **str** esten en mayuscula o miniscula
 - Tablas faltantes (DER)
 - Agregar a las tablas cuando se creador, **Modificar para que lo haga**
 - Superposiciones, entre specific y recurret
 - Ver relacion con topicos
-- 
+- TZ y ver si usamos AM y PM
