@@ -12,7 +12,7 @@ class ProfesionalCreate(ProfesionalBase):
 
 class Profesional(ProfesionalBase):
     user_id: int
-    score: int
+    score: float
 
     class Config:
         orm_mode= True
