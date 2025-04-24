@@ -24,3 +24,21 @@ def get_id_prof(db:Session, id_prof: int):
     except:
         response = {'error':'On get_id_prof'}
     return response
+
+def update_score(db:Session, id_prof:int, score:float):
+    if score in range (0,5):
+        db.query(Profesional).filter(Profesional.user_id == id_prof).update({"score": score})
+        db.commit()
+        return db.query(Profesional).get(id_prof)
+    else:
+        return {'error':'Value out of range (0-5)'}
+    
+def del_prof(db:Session, id_prof:int):
+    try:
+        smt = db.get(Profesional, id_prof)
+        db.delete(smt) 
+        #db.query(Profesional).filter(Profesional.user_id == id_prof).delete() no es afectado por el try
+        db.commit()
+        return {'INFO':f'Delete of Profesioanl {id_prof}'}
+    except:
+        return {"error":'error'}
