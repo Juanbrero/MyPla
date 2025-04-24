@@ -29,10 +29,11 @@ secure_headers = secure.Secure(
 )
 
 
-#@app.middleware("http")
+@app.middleware("http")
 async def set_secure_headers(request, call_next):
     response = await call_next(request)
-    secure_headers.framework.fastapi(response)
+    if not any(request.url.path.startswith(path) for path in ["/docs", "/redocs", "/openapi.json"]):
+        secure_headers.framework.fastapi(response)
     return response
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")
