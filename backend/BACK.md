@@ -172,13 +172,15 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
 
 # Implementado
 - Profesional
-   - Crea un Profesional con ID autogenerado y score en default 0 (llamado desde el back, no quedo en la BD) Revisar si la define cuando se recrea
+   - Crear un Profesional con ID autogenerado, por BD, y score en default 0 (llamado desde el back, no quedo en la BD) Revisar si la define cuando se recrea
    - Recuperar un Profesional por su ID
    - Recuperar todos lo Profesionales
+   - Actualizar el score SOLO TEST
+   - Eliminar un Profesional
 - Topic
    - Crear un topico
    - Recuperar todos los topicos
-   - recuperar un topico (lo considero innecesario por si mismo)
+   - Recuperar un topico (lo considero innecesario por si mismo)
 - ProfesionalTopic
    - Agregar un topico a un profesional
    - Recuperar los topicos de un profesional por su ID
@@ -186,14 +188,15 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
    - Controles que se realizan (CON)
       1. Valida que el tiempo de inicio y fin no sea el mismo y que inicio no sea menor a fin, en formato 24Hs ( inicio >= fin )
       2. Verifica que el horario no este incluido en los horarios almacenados ( hora in [inicio, inicio + 1H, inicio + 2H, .., fin] )
+         - **Modificar para que considere la 30, ya que si se tiene 8:00-10:00 y se intenta ingresara 8:30-11:30 esta verificación admitiria ese horario**
       3. Solo almacena la hora y minutos (10:30:40) -> 10:30
       4. Control de que solo admita 00 o 30
-   - Recurrent (CON 1, 2, 3)
-      1. Control de nombre de dia en español, **FALTA que sea todo en mayuscula o minuscula para evitar problemas**, por BD, ver si es conveniente hacerlo en el back
+   - Recurrent (CON 1, 2, 3, 4)
+      1. Control de nombre de dia en español, **FALTA que sea todo en mayuscula o minuscula para evitar problemas**, por BD, Falta hacerlo en el back
       - Crear un evento recurrente, recibe un dia de la semana (Texto), un horario de inicio y fin, y un ID
       - Recuperar todos los evento recurrentes de un Profesional
       - Recuperar todos los eventos de un dia de un profesional
-   - Specific (CON 1, 2, 3)
+   - Specific (CON 1, 2, 3, 4)
       - Crear un dia especifico (date) para un profesional
       - recuperar los TODOS los dias especificos de todos los profesionales
       - Recuperar los dias de un profesional especifico
@@ -201,11 +204,32 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
       - Cancelar un dia especifico de un profesional
 
 # Falta
-- Cambiar las funciones a ASYNC
 - Delete de datos
 - Que los datos **str** esten en mayuscula o miniscula
 - Tablas faltantes (DER)
+- Hacer que ID Profesional sea clave Foranea a User
 - Agregar a las tablas cuando se creador, **Modificar para que lo haga**
 - Superposiciones, entre specific y recurret
 - Ver relacion con topicos
 - TZ y ver si usamos AM y PM
+- Testear si con la nueva definicion de Profesional, se tomo el default 0 en score (NO lo hace)
+- Error que admite la duplicacion de horas al estar fuera de el rango, 8-10 e ingreas 6-11, permite ingresarlo
+
+## Planteo de ideas
+Para cambiar horarios se debera hacer updates de start, end y fecha de creacion/modificacion
+- Para ampliar un horario existente recuperar horarios, si horario ingresado es mayor al horario guardo
+   - En BD 8-10
+   - Ingresa 6-10
+   
+   Se debera actualiza la PK(start) con el valor ingresado
+- Para reducir
+ - 6-10
+ - 7-9
+
+En BD
+ - 7-9
+ - 10 - 13
+ - 15 - 20
+Ingresa
+   - 6-13
+      - Eliminar la fila 10-13 y actualizar el end a las 13
