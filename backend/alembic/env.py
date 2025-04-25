@@ -21,10 +21,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-if 'None' in DATABASE_URL:
-    config.set_main_option("sqlalchemy.url", 'postgresql://myuser:mypassword@localhost:5432/mydatabase')
-else:
-    config.set_main_option("sqlalchemy.url", DATABASE_URL)
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
