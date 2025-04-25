@@ -15,9 +15,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-       # This line copy sql code in docker container
-      # and execute sql in Docker container (Only first time)
-      - ./SQL/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app_network
     healthcheck:
@@ -37,7 +34,7 @@ services:
   backend:
     build: ./backend
     env_file:
-      - backend/.env
+      - .env
     container_name: backend
     ports:
       - "8002:8002"
