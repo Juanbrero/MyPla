@@ -9,8 +9,9 @@ from app.config.database import Base
 class Profesional(Base):
     __tablename__  = "profesional"
 
-    user_id: Mapped[int]  = mapped_column(primary_key=True,
-                                     index=True)
+    user_id: Mapped[int]  = mapped_column(#ForeignKey("user.user_id", ondelete="CASCADE"),
+                                    primary_key=True,
+                                    index=True)
     score: Mapped[float] = mapped_column(Float, default=0, server_default=text('0'))
 
     specific: Mapped[List["SpecificSchedule"]] = relationship(back_populates="profesional", cascade="all, delete-orphan")
