@@ -4,7 +4,7 @@ import importlib
 import sys
 import secure
 import os
-from app.config.database import engine, Base, init_db
+from app.config.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 #Scheme Table DB
 from app.models.Event import Event
