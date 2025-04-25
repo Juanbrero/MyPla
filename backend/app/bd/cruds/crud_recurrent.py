@@ -5,7 +5,7 @@ from app.models.RecurrentSchedule import RecurrentSchedule
 from app.bd.schemas import schema_recurrent
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date
-from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time, MinuteError, test_time
+from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time, MinuteError
 
 from app.bd.schemas import  schema_topic, schema_prof_topic
 from app.bd.cruds import crud_prof_topic
