@@ -11,7 +11,7 @@ def create_prof(db: Session, prof_c: schema_prof.ProfesionalCreate):
         db_prof = Profesional(**prof_c.dict())
         db.add(db_prof)
         db.commit()
-        db.refresh(db_prof)
+        db.refresh(db_prof) #<- Fallaria aca, no antes
     except:
         db_prof = {'error':'on create_pof'}
     return db_prof
@@ -19,7 +19,7 @@ def create_prof(db: Session, prof_c: schema_prof.ProfesionalCreate):
 def get_id_prof(db:Session, id_prof: int):
     try:
         response = db.query(Profesional).get(id_prof)
-        if response is None:
+        if response is None: #<- Se define la falla
             response = {"error":"id no existente"}
     except:
         response = {'error':'On get_id_prof'}
