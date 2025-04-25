@@ -12,6 +12,9 @@ class Schedule(BaseModel):
 class Errors(BaseModel):
     error: str
 
+class Info(BaseModel):
+    INFO: str
+
 
 #Funcion que toma un tiempo, y solo acorta a hora y minutos (elimina segundos y TZ) retornando la modificacion
 def strip_time_hour_minute(tiempo: time) -> time:
@@ -34,7 +37,7 @@ def valid_time(inicio:time, fin:time) -> bool:
         return True
     
 #Funcion que recibe una lista con horarios, el inicio y fin ingresados
-def incluide_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool: 
+def include_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool: 
     incluido = False
     #si inicio no es la 0 o las 23, reemplaza la hora de inicio por la hora siguiente
     if inicio.hour not in  [0, 23] :
@@ -66,13 +69,83 @@ def incluide_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool
             break
     return incluido
 
+   
+def test_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool: 
+    incluido = False
+
+    inicioaux = timedelta(hours=inicio.hour, minutes=inicio.minute)
+    finaux = timedelta(hours=fin.hour, minutes=fin.minute)
+
+    if inicio.hour not in  [0, 23] :
+        inicioaux = inicioaux + timedelta(minutes= 30)
+        inicio = __conver_hour_minute(inicioaux)
+        del inicioaux
+    if fin.hour != 0:
+        finaux = finaux - timedelta(minutes=30)
+        fin = __conver_hour_minute(finaux)
+        del finaux
+    else:
+        fin = fin.replace(hours=23, minutes=59)
+
+    comp = __desglozar(inicio, fin)
+
+    for dbr in db_recurrent:
+        horas = __desglozar(dbr.start, dbr.end)
+        
+        for c in comp:
+            if c in horas:
+                incluido = True
+                break
+        if incluido:
+            break
+    return incluido
+
+def test2_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool:
+    incluido = False
+
+    inicioaux = timedelta(hours=inicio.hour, minutes=inicio.minute)
+    finaux = timedelta(hours=fin.hour, minutes=fin.minute)
+
+    if inicio.hour not in  [0, 23] :
+        inicioaux = inicioaux + timedelta(minutes= 30)
+        inicio = __conver_hour_minute(inicioaux)
+        del inicioaux
+    if fin.hour != 0:
+        finaux = finaux - timedelta(minutes=30)
+        fin = __conver_hour_minute(finaux)
+        del finaux
+    else:
+        fin = fin.replace(hours=23, minutes=59)
+    
+    for dbr in db_recurrent:
+        if inicio < dbr.start or dbr.end > fin:
+            incluido = True
+            break
+    return incluido
+
+
 def error_hand(e:Exception):
     error = str(e.__cause__)
     ind = error.index("DETAIL")
     error = error[ind:]
     return error
-    
 
+def __conver_hour_minute(delta:timedelta) -> time:
+    hor = delta.seconds // 3600
+    minu = delta.seconds - (hor * 3600)
+    minu = minu // 60
+    hora = time(hor, minu)
+    return hora
+
+def __desglozar(inicio:time, fin:time) -> list[time]:
+    min30 = timedelta(minutes=30)
+    desglo = [inicio]
+    hora = timedelta(hours=inicio.hour, minutes=inicio.minute)
+    end = timedelta(hours=fin.hour, minutes=fin.minute)
+    while hora < end:
+        hora = hora + min30
+        desglo.append(__conver_hour_minute(hora))
+    return desglo
 
 """
 from datetime import datetime, time, timedelta
