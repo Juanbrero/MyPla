@@ -1,44 +1,56 @@
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_prof
-from app.models.Profesional import Profesional
+from app.models.Professional import Professional
+from sqlalchemy import select, insert, delete
 
 
 def get_prof(db: Session):
-    return db.query(Profesional).all()
+    return db.query(Professional).all()
 
-def create_prof(db: Session, prof_c: schema_prof.ProfesionalCreate):
-    try:
-        db_prof = Profesional(**prof_c.dict())
-        db.add(db_prof)
-        db.commit()
-        db.refresh(db_prof) #<- Fallaria aca, no antes
-    except:
-        db_prof = {'error':'on create_pof'}
-    return db_prof
 
-def get_id_prof(db:Session, id_prof: int):
+def get_prof_id(db:Session, professional: schema_prof.ProfessionalID):
     try:
-        response = db.query(Profesional).get(id_prof)
+        smt = select(Professional).where(Professional.prof_id == professional)
+        response = db.scalars(smt).first()
         if response is None: #<- Se define la falla
-            response = {"error":"id no existente"}
+            response = {"error": "id no existente"}
     except:
         response = {'error':'On get_id_prof'}
     return response
 
-def update_score(db:Session, id_prof:int, score:float):
-    if score in range (0,5):
-        db.query(Profesional).filter(Profesional.user_id == id_prof).update({"score": score})
+
+def del_prof(db:Session, id_prof:schema_prof.ProfessionalID):
+    try:
+        smt = delete(Professional).where(Professional.prof_id == id_prof)
+        response = db.execute(smt)
+        #db.query(Professional).filter(Professional.prof_id == id_prof).delete() no es afectado por el try
+        if response.rowcount > 0:
+            db.commit()
+            return {'info':f'Delete of Profesional {id_prof}'}
+        else:
+            raise
+    except:
+        return {"error":f'On delete Professional {id_prof}'}
+    
+
+#TEST, se hace por back
+def create_prof(db: Session, prof_c: schema_prof.ProfessionalID):
+    try:
+        smt = insert(Professional).values(prof_id = prof_c)
+        response = db.execute(smt)
         db.commit()
-        return db.query(Profesional).get(id_prof)
+        #db.refresh(prof_c) #<- Fallaria aca, no antes
+        return {'info':f'Insert existos {prof_c}'}
+    except:
+        return {'error':f'ID {prof_c} existente'}
+
+
+
+def update_score(db:Session, prof:schema_prof.Professional):
+    if prof.score in range (0,6):
+        db.query(Professional).filter(Professional.prof_id == prof.prof_id).update({"score": prof.score})
+        db.commit()
+        return db.query(Professional).get(prof.prof_id)
     else:
         return {'error':'Value out of range (0-5)'}
     
-def del_prof(db:Session, id_prof:int):
-    try:
-        smt = db.get(Profesional, id_prof)
-        db.delete(smt) 
-        #db.query(Profesional).filter(Profesional.user_id == id_prof).delete() no es afectado por el try
-        db.commit()
-        return {'INFO':f'Delete of Profesioanl {id_prof}'}
-    except:
-        return {"error":'error'}

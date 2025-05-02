@@ -3,17 +3,22 @@ from typing import List
 
 
 
-class ProfesionalBase(BaseModel):
+class ProfessionalBase(BaseModel):
     pass
 
-class ProfesionalCreate(ProfesionalBase):
+class ProfessionalCreate(ProfessionalBase):
     pass
 
 
-class Profesional(ProfesionalBase):
-    user_id: int
+class Professional(ProfessionalBase):
+    prof_id: str
     score: float
 
     class Config:
         orm_mode= True
 
+class ProfessionalID(ProfessionalBase):
+    prof_id:str
+
+class ProfessionalScore(ProfessionalBase):
+    score:float
