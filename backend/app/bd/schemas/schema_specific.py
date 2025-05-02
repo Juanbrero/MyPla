@@ -7,7 +7,7 @@ class SpecificBase(BaseModel):
 
 class SpecificCreate(SpecificBase):
     day: date
-    pass
+    isCanceling:bool
 
 class Specific(SpecificBase):
     day: date
@@ -17,8 +17,22 @@ class Specific(SpecificBase):
     class Config:
         orm_mode=True
 
-class SpecificIsCancel(BaseModel):
+class SpecificID(BaseModel):
+    prof_id:str
+
+
+class SpecificDel(BaseModel):
+    day: date
+    start: time
+
+class SpecificSchema(Specific):
+    prof_id: str
+
+class SpecificIsCancel(SpecificSchema):
     isCanceling: bool
 
     class Config:
         orm_mode=True
+
+class SpecificSchemaID(BaseModel):
+    prof_id:str

@@ -1,61 +1,71 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete, insert
 from app.models.SpecificSchedule import SpecificSchedule
 from app.bd.schemas import schema_specific
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date, time
 
-from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time, MinuteError
+from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time
+from app.bd.bd_exceptions import MinuteError, CompleteHour
 
-
-def get_all_specific(db: Session):
-    return db.query(SpecificSchedule).all()
-
-
-def create_specific(db: Session, spec: schema_specific.SpecificCreate, id_prof:int):
-    spec.start = strip_time_hour_minute(spec.start) #10:20:06.25..z -> 10:20
-    spec.end= strip_time_hour_minute(spec.end)
+def get_exception(db: Session, excepcion: schema_specific.SpecificID):
     try:
-        if valid_time(spec.start, spec.end):
-            existent = __get_schedule(db, id_prof, spec.day)
-            if not include_time(db, spec.start, spec.end):
+        smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == excepcion.prof_id, SpecificSchedule.isCanceling == True)
+        response = db.scalars(smt).all()
+        respuesta = [schema_specific.Specific(day=r.day, start=r.start, end=r.end) for r in response]
+        return respuesta
+    except:
+        return {'error': 'No fue posible recuperar'}
+
+
+def create_exception(db: Session, spec: schema_specific.SpecificIsCancel):
+    try:
+        spec.start = strip_time_hour_minute(spec.start) #10:20:06.25..z -> 10:20
+        spec.end= strip_time_hour_minute(spec.end)
+    except MinuteError as e:
+        return {'error':f'{e}'}
+    try:
+        if valid_time(spec):
+            existent = __get_schedule(db, spec)
+            if not include_time(db, spec):
                 try:
-                    db_spec = SpecificSchedule(**spec.dict(), user_id=id_prof)
-                    db.add(db_spec)
+                    smt = insert(SpecificSchedule).values(spec.dict())
+                    response = db.execute(smt)
                     db.commit()
-                    db.refresh(db_spec)
                 except:
-                    db_spec = {'error':'on create_spec'}
-                return db_spec
+                    return {'error':'on create_spec'}
+                return spec
             else:
                 return {'error':'time include'}
         else:
-            return {'error':'invalid time'}
-    except MinuteError:
-        return {'error': 'Minute Accept 00 or 30'}
+            return {'error': f'Same hour {spec.start} == {spec.end}'}
+    except CompleteHour as e:
+        return {'error': f'{e}'}
+    except:
+        return {'error':'invalid time'}
 
-def iscaceled_specific(db:Session, day_in:date, id_prof:int, hour:time) -> schema_specific.SpecificIsCancel:
-    hour = strip_time_hour_minute(hour)
-    smt = select(SpecificSchedule).where( SpecificSchedule.day == day_in, 
-                                             SpecificSchedule.user_id == id_prof,
-                                             SpecificSchedule.start == hour)
+def __get_schedule(db: Session, spec:schema_specific.SpecificSchema):
+    smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == spec.prof_id).where(SpecificSchedule.day == spec.day)
     response = db.scalars(smt).all()
     return response
 
-def cancel_day(db:Session, prof_id:int, day:date, hour:time):
-    hour = strip_time_hour_minute(hour)
-    db.query(SpecificSchedule).filter(SpecificSchedule.day == day, 
-                                      SpecificSchedule.start == hour, 
-                                      SpecificSchedule.user_id == prof_id).update({"isCanceling":True})
-    db.commit()
-    return db.query(SpecificSchedule).all()
 
-def get_day(db:Session, prof_id:int):
-    return  db.query(SpecificSchedule).filter(SpecificSchedule.user_id == prof_id).all()
+#Codigo antigua para especifico
+def get_day(db:Session, spec:schema_specific.SpecificSchema):
+    return  db.query(SpecificSchedule).filter(SpecificSchedule.prof_id == spec.prof_id).all()
 
 
-def __get_schedule(db: Session, id_prof:int, day:time):
-    smt = select(SpecificSchedule).where(SpecificSchedule.user_id == id_prof).where(SpecificSchedule.day == day)
-    response = db.scalars(smt).all()
-    return response
+def del_day(db:Session, spec: schema_specific.SpecificSchema): 
+    spec.start = strip_time_hour_minute(spec.start)
+    try:
+        smt = delete(SpecificSchedule).where(SpecificSchedule.start == spec.start,
+                                              SpecificSchedule.day == spec.day,
+                                              SpecificSchedule.prof_id == spec.prof_id)
+        db.execute(smt)
+        db.commit()
+    except:
+        return {'error':'Not posible delete'}
+    return spec
+
+
 
