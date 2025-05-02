@@ -1,10 +1,8 @@
 from datetime import time, timedelta
 from pydantic import BaseModel
+import app.bd.bd_exceptions as excep
 
-
-class MinuteError(Exception):
-    msg = 'Minute Accept 00 or 30'
-
+    
 class Schedule(BaseModel):
     start:time
     end:time
@@ -13,7 +11,7 @@ class Errors(BaseModel):
     error: str
 
 class Info(BaseModel):
-    INFO: str
+    info: str
 
 
 #Funcion que toma un tiempo, y solo acorta a hora y minutos (elimina segundos y TZ) retornando la modificacion
@@ -21,41 +19,47 @@ def strip_time_hour_minute(tiempo: time) -> time:
     hora = tiempo.hour
     minuto = tiempo.minute
     if minuto not in [00, 30]:
-        raise MinuteError
+        raise excep.MinuteError (minuto)
     tiempo = time(hour=hora, minute=minuto)
     return tiempo
 
 #Funcion que verifica si inicio >= fin
-def valid_time(inicio:time, fin:time) -> bool:
+def valid_time(schedule:Schedule) -> bool:
     #si la hora de fin es la 0, reemplaza en fin la hora por 23:59
+    inicio = schedule.start
+    fin = schedule.end
+    if inicio.minute != fin.minute:
+        raise excep.CompleteHour (inicio.minute, fin.minute)
     if fin.hour == 0:
         fin = fin.replace(hour=23, minute=59)
-
     if inicio >= fin:
         return False
     else:
         return True
     
 #Funcion que recibe una lista con horarios, el inicio y fin ingresados
-def include_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool: 
+def include_time(db_exist:list[Schedule], schedule:Schedule) -> bool:
+    
     incluido = False
     #si inicio no es la 0 o las 23, reemplaza la hora de inicio por la hora siguiente
-    if inicio.hour not in  [0, 23] :
-        inicio = inicio.replace(hour=(inicio.hour + 1))
+    if schedule.start.hour not in  [0, 23] :
+        inicio = schedule.start.replace(hour=(schedule.start.hour + 1))
+    else:
+        inicio = schedule.start
     #Si fin es distinto de las 0, resta una hora a el final
-    if fin.hour != 0:
-        fin = fin.replace(hour=(fin.hour -1))
+    if schedule.end.hour != 0:
+        fin = schedule.end.replace(hour=(schedule.end.hour -1))
     #Sino reemplaza la hora por 23:59
     else:
-        fin = fin.replace(hour=23, minute=59)
+        fin = schedule.end.replace(hour=23, minute=59)
     #recorre la lista de horas
-    for dbr in db_recurrent:
+    for dbe in db_exist:
         #almacena la hora de inicio que esta en la lista de objeto
-        hora = dbr.start
+        hora = dbe.start
         #lo agrega a una lista horas
         horas = [hora]
         #recorre hasta llegar al end del objeto
-        while hora < dbr.end:
+        while hora < dbe.end:
             hourP1 = hora.hour
             #suma una hora
             hourP1 += 1
@@ -69,7 +73,9 @@ def include_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool:
             break
     return incluido
 
-   
+ #Funcion de prueba par reemplazar include_time
+ # utilizando timedelta
+ # y dos listas con las horas entre inicio y fin y lo de la BD  
 def test_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool: 
     incluido = False
 
@@ -89,8 +95,8 @@ def test_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool:
 
     comp = __desglozar(inicio, fin)
 
-    for dbr in db_recurrent:
-        horas = __desglozar(dbr.start, dbr.end)
+    for dbe in db_recurrent:
+        horas = __desglozar(dbe.start, dbe.end)
         
         for c in comp:
             if c in horas:
@@ -100,6 +106,8 @@ def test_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool:
             break
     return incluido
 
+#Otra prueba para include
+# pero usando mayor y menor para conciderar incluido, solo se compara inicio y fin
 def test2_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool:
     incluido = False
 
@@ -117,8 +125,8 @@ def test2_time(db_recurrent:list[Schedule], inicio: time, fin: time ) -> bool:
     else:
         fin = fin.replace(hours=23, minutes=59)
     
-    for dbr in db_recurrent:
-        if inicio < dbr.start or dbr.end > fin:
+    for dbe in db_recurrent:
+        if inicio < dbe.start and dbe.end > fin:
             incluido = True
             break
     return incluido
