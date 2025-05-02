@@ -6,11 +6,20 @@ import secure
 import os
 from app.config.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
-#Scheme Table DB
-from app.models.Event import Event
-from app.models.User import User 
+#Alembic
+from alembic.config import Config
+from alembic import command
+
 from starlette.middleware.sessions import SessionMiddleware
 
+#Esta linea importa e install ic, para poder hacer debug
+from icecream import install
+
+#ic.disable()
+
+
+install()
+ic.configureOutput(contextAbsPath=False, includeContext=True)
 
 app = FastAPI()
 
@@ -32,6 +41,8 @@ secure_headers = secure.Secure(
 @app.middleware("http")
 async def set_secure_headers(request, call_next):
     response = await call_next(request)
+    # If que permite evitar las cabeceras seguras para los paths descriptos,
+    # Debe eliminarse el if cuando se pase a produccion
     if not any(request.url.path.startswith(path) for path in ["/docs", "/redocs", "/openapi.json"]):
         secure_headers.framework.fastapi(response)
     return response
@@ -45,6 +56,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def run_migrations():
+    """
+    Function read files of alembic and upgrade or create models
+    """
+    base_dir = os.path.dirname(__file__)
+    alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
+    command.upgrade(alembic_cfg, "head")
+
+
 
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
@@ -65,8 +87,9 @@ def addRoute(app, routes_path):
             else:
                 print(f"No router found in module {module_name}")
 
-addRoute(app, "/app/app/routes")
+addRoute(app, "app/routes")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8002, reload=True)
+    run_migrations()
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8002, reload=True)
     
