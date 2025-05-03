@@ -75,7 +75,10 @@ export default function ScheduleInformation({
     onDeleteTask?.(taskData);
   };
 
-  const formatTime = (date) => date.toTimeString().slice(0, 5); // 'HH:MM'
+  const formatTime = (date) => {
+    if (!(date instanceof Date)) return date
+    date.toTimeString().slice(0, 5)
+  } // 'HH:MM'
 
   const handleSaveTask = () => {
     if (!selectedTopicsState.length || !startTime || !endTime) {
