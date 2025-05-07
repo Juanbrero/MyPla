@@ -8,6 +8,10 @@ Crea un codigo que lea una lista llamada recurrentes con un diccionario {    'id
 
 import requests
 
+"""
+Codigo que lee diferentes listas con diccionarios, y realiza las peticiones POST para cargar las tablas
+"""
+
 BASE_URL = "http://localhost:8002"
 
 def test_user(usuarios):
@@ -76,7 +80,7 @@ def test_exception(excepcion):
             'start': exc['start'],
             'end': exc['end'],
         }
-        response = requests.post(f"{BASE_URL}/prof/{prof_id}/agenda/create/exception", json=body)
+        response = requests.post(f"{BASE_URL}/prof/{prof_id}/agenda/exceptions", json=body)
         print(f"Excepción {prof_id} - {exc['day']}: {response.status_code} - {response.text}")
 
 if __name__=='__main__':
