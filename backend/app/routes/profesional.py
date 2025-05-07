@@ -15,11 +15,29 @@ router = APIRouter(prefix="/professional",tags=["Professional"])
 @router.get("/all", 
             response_model=List[schema_prof.Professional])
 async def read_all_prof(db : Session = Depends(get_db)):
+    """
+    Retorna todos los profesionales
+    Args:
+        db: Session
+    Return
+        [Professionales]
+
+    """
     return crud_prof.get_prof(db)
 
 
 @router.get("/{prof_id}", response_model=Union[schema_prof.Professional, Errors])
 async def find_prof(prof_id: str, db: Session = Depends(get_db)):
+    """
+    Retorna un profesional
+    Args:
+        prof_id: str
+        db: Session
+    Return
+        Professional
+        Errors
+
+    """
     response = crud_prof.get_prof_id(db, prof_id)  
     ic(f'GET PROF')      
     return response
@@ -27,18 +45,53 @@ async def find_prof(prof_id: str, db: Session = Depends(get_db)):
 
 @router.delete("/{prof_id}/delete",response_model=Union[Info, Errors])
 def del_user(prof_id:str, db:Session = Depends(get_db)):
+    """
+    Eliminar un profesional
+
+    Args:
+        prof_id: str
+        db: Session
+    Returns:
+        Info
+        Errors
+    """
     return crud_prof.del_prof(db, prof_id)
 
 
 #Para Desarrollo
-@router.post("/{prof_id}/create/", 
+@router.post("/{prof_id}/create", 
              response_model=Union[Info, Errors])
 async def create_prof(prof_id : str, 
                 db : Session = Depends(get_db)):
+    """
+    Funcion de desarrollo para crear un profesional
+
+    Args:
+        prof_id: str
+        db: Session
+
+    Return:
+        Info
+        Errors
+    """
     return crud_prof.create_prof(db, prof_id)
 
 @router.put("/{prof_id}/score",response_model=Union[schema_prof.Professional, Errors])
 def update_score(prof_id:str, score:schema_prof.ProfessionalScore, db:Session = Depends(get_db)):
+    """
+    Funcion de desarrollo para definir score
+
+    Args:
+        prof_id: str
+        score: schema_prof.ProfessionalScore
+            - score: float
+        db: Session
+    Return:
+        schema_prof.Professional
+            - prof_id: str
+            - scores: float
+        Errors
+    """
     prof = schema_prof.Professional(prof_id=prof_id, score= score.score)
     return crud_prof.update_score(db, prof)
 
