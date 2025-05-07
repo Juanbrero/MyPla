@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config
 from alembic import command
 
+
 from starlette.middleware.sessions import SessionMiddleware
 
 #Esta linea importa e install ic, para poder hacer debug
@@ -43,7 +44,7 @@ async def set_secure_headers(request, call_next):
     response = await call_next(request)
     # If que permite evitar las cabeceras seguras para los paths descriptos,
     # Debe eliminarse el if cuando se pase a produccion
-    if not any(request.url.path.startswith(path) for path in ["/docs", "/redocs", "/openapi.json"]):
+    if not any(request.url.path.startswith(path) for path in ["/docs", "/redoc", "/openapi.json"]):
         secure_headers.framework.fastapi(response)
     return response
 
@@ -86,6 +87,13 @@ def addRoute(app, routes_path):
                 app.include_router(module.router)
             else:
                 print(f"No router found in module {module_name}")
+
+#Como en local las variables de entorno no se instancias, salvo en VSCode,
+# y para no agregar la libreria dotenv, prueba tomar el variable $PORT
+# si no tiene el valor llama a dotenv
+if os.getenv('PORT') is None:
+    import dotenv
+    dotenv.load_dotenv('.env') 
 
 addRoute(app, "app/routes")
 
