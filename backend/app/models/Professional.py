@@ -19,6 +19,7 @@ class Professional(Base):
     specific: Mapped[List["SpecificSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
     recurrent: Mapped[List["RecurrentSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
     topics: Mapped[List["ProfessionalTopic"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
+    #invite: Mapped[List['Invite']] = relationship(back_populates='invite', cascade='all, delete-orphan')
 
 
     __table_args__ = (
