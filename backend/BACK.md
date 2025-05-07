@@ -33,6 +33,60 @@
 |  |[Exception](#response-exception)|
 ||[Response Front](#response-to-front)|
 
+
+# Organización
+ Cual es la mejor manera de organizar el código?
+- Directorios separadas con archivos particulares para cada modelo
+~~~
+|app/
+   |- models/
+      |- __ini__.py 
+      |- Users.py
+      |- Professonal.py
+      |- ....
+   |- bd/
+      |- schemas/
+         |- schema_Professional.py
+         |- schema_Users.py
+         |- ...
+      |- cruds/
+         |- crud_Professional.py
+         |- crud_Users.py
+         |- ....
+      |- bd_utils.pu
+      |- bd_exceptions.py
+   |- routes/
+----------------   
+- Modelos en directorios particulares con sus esquemas y cruds juntos   
+|app/
+   |- models/
+      |- __ini__.py
+      |- Users/ 
+         |- Users.py
+         |- schema_Users.py
+         |- crud_Users.py
+      |- Professional/
+         |- Professonal.py
+         |- schema_Professional.py
+         |- crud_Professional.py
+      |- ....
+   |- routes/
+----------------
+- Modelos, con archivos de esquema y cruds unificado, es decir, todo el codigo en un mismo archivo
+|app/
+   |- models/
+      |- __ini__.py 
+      |- Users.py
+      |- Professonal.py
+      |- ....
+   |- bd/
+      |- schema.py
+      |- cruds.py
+      |- bd_utils.pu
+      |- bd_exceptions.py
+   |- routes/
+~~~
+
 ---
 # Icecream
 Modulo para evitar usar print( ) y olvidar donde estan.
@@ -73,6 +127,14 @@ ic.disable()
 
 
 # Ejecutar main.py Desde afuera
+## Cambios en main
+- if para habilitar /docs, /redoc y /openapi.json, ya que se exige https, y no lo poseen
+- Agregado de funcion run_migration, ejecuta el Alembic para crear las  tablas
+- if para dotenv, para poder ejecutarlo desde consola, no Visual Studio, agregue un if que verifica si esta cargada una variable, sino llama al dotenv
+- cambio de ruta de la funcion addRoute de "/app/app/routes" a "app/routes"
+- cambio de llamada de uvicorn de app a "app.main:app"
+
+## Ejecución
 Levantamos la BD
 ~~~
 $ docker compose up -d --build --remove-orphans postgres
@@ -92,7 +154,11 @@ $ source ./vevn/bin/activate
 venv$ pip install -r requirements.txt
 venv$ python -m app.main
 ~~~
-
+Aclaración: Cuando intente ejecutarlo desde la terminal, genero un problema por las variables de entorno. Si lo ejecuto desde VS Code si las instancia, pero para hacerlo desde la terminal directamente, se debe importar con **dotenv**, yo cree un link simbolico desde el .env de MyPla a backend/.env
+~~~
+en backend/
+ln ../.env .env
+~~~
 
 # RECORDAR
 PARA PRODUCCION, quitar el if, que admite el /docs
@@ -274,19 +340,19 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
 
 
 # Implementado
-- Usuario
+- Usuario (prueba.py)
    - Crear un usuario (id, name) donde name=id
    - eliminar un usuario
-- Profesional
+- Profesional (profesional.py)
    - Crear un Profesional con score en default 0
    - Recuperar un Profesional por su ID
    - Recuperar todos lo Profesionales
    - Actualizar el score SOLO TEST
    - Eliminar un Profesional
-- Topic
+- Topic (topic.py)
    - Crear un topico
    - Recuperar todos los topicos
-- ProfesionalTopic
+- ProfesionalTopic (topic.pu)
    - Agregar un topico a un profesional
    - Recuperar los topicos de un profesional por su ID
    - Eliminar un topico de un profesional
@@ -297,15 +363,15 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
          - **Modificar para que considere la 30, ya que si se tiene 8:00-10:00 y se intenta ingresara 8:30-11:30 esta verificación admitiria ese horario**
       3. Solo almacena la hora y minutos (10:30:40) -> 10:30
       4. Control de que solo admita 00 o 30
-   - Recurrent (CON 1, 2, 3, 4)
+   - Recurrent (CON 1, 2, 3, 4) (agenda.py, TopicRecurrent)
       - **El calendario lo crea TopicRecurrent, el recibe la peticion y realiza las inserciones**
       1. Control por DB y Back que el valor este entre 1-7
       - Crear un evento recurrente, recibe un dia de la semana (int), un horario de inicio y fin, un  prof_ID y una lista de topicos. Ver esquema [Query](#query-recurrent)
       - Recuperar todos los evento recurrentes de un Profesional
-   - Specific (CON 1, 2, 3, 4)
+   - Specific (CON 1, 2, 3, 4) (agenda.py, por TopicSpecific)
       - Crear un dia especifico (date) para un profesional en base a [Query](#query-specific)
       - recuperar los TODOS los dias especificos de todos los profesionales
-   - Excepciones (CON 1, 2, 3, 4) (isCanceling= True)
+   - Excepciones (CON 1, 2, 3, 4) (isCanceling= True, agenda.py, por crud_specific)
       - Crea un dia especifico no disponible [Query](#query-exception)
       - Recupera TODOS los dias excepcionales
 
@@ -328,12 +394,14 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
          - 2025-04-21
          - S 10
          - E 18
-         - iscanceling: False
+         - isCanceling: False
       - Exception:
          - 2025-04-21
          - S 8
          - E 16
-         - Iscanceling: True
+         - isCanceling: True
+      Convertir dia a semana, recuperar horarios de esa semana
+      -  8-10 -> E(10-16) S (8-10)  
 
 
 
@@ -341,30 +409,7 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
 - Tablas faltantes (DER)
 - Agregar a las tablas cuando se creador, **Modificar para que lo haga** Cuales
 - TZ y ver si usamos AM y PM ??
-- Error que admite la duplicacion de horas al estar fuera de el rango, 8-10 e ingreas 6-11, permite ingresarlo
 - Ver como le agregamos atributo a topic como propuesto o algo asi, para que se almacene el topico y se deba aprobar
-- Considerar las 30, para definir incluido
-   - En BD 8-12 e ingresa 8:30-12:30 se admite esa inserción
-
-
-## Planteo de como se debera hacer acualizacion (EN PROCESO de plantear)
-Para cambiar horarios se debera hacer updates de start, end y fecha de creacion/modificacion
-- Para ampliar un horario existente recuperar horarios, si horario ingresado es mayor al horario guardo
-   - En BD 8-10
-   - Ingresa 6-10
-   
-   Se debera actualiza la PK(start) con el valor ingresado
-- Para reducir
- - 6-10
- - 7-9
-
-En BD
- - 7-9
- - 10 - 13
- - 15 - 20
-Ingresa
-   - 6-13
-      - Eliminar la fila 10-13 y actualizar el end a las 13
 
 
 # JSON
@@ -696,7 +741,7 @@ DELETE /topics/prof/{prof_id}
                   "day": "2025-05-01"
                }
          ]
-    }
+      }
       ~~~
 
 
@@ -873,6 +918,21 @@ Luego de la ejecución las tablas quedaran asi:
       - topic_name: FISICA
       - start: 20:30
       - day: 2025-04-30   
-   
-   
-      
+
+# Decision
+- Inserción de horarios:
+   - Tabla vacia  OK inserta
+   - Tabla con datos, se verifica si el horario ingresado no esta incluido o se superpone (10-18)
+      - se intenta insertar 11-15 => horario incluido no se inserta ni modifica
+      - se intenta insertar 12-19 => horario que esta incluido en su inicio pero no en su final, no se inserta
+      - se intenta insertar 8-10 => horario con inicio no incluido final si, no se inserta
+      - se intenta insertar 19-23 => horario no incluido o superpuesto se admite la insersion
+      - se intenta insertar 18-20 => horario no incluido o superpuesto se admite la insersion
+
+              
+
+## Datos necesarios del front
+Crear un usuario -> ID + info front(rol)
+
+
+
