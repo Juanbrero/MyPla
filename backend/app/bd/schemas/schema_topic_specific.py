@@ -40,3 +40,14 @@ class TopicSpecificIn(TopicSpecificCr1):
 
 class TopicSpecificID(BaseModel):
     prof_id:str
+
+class TopicSpecificMonth(TopicSpecificID):
+    month: int
+
+class TopicSpecificON(BaseModel):
+    old: TopicSpecificCr1
+    new: TopicSpecificCr1
+
+    
+class TopicSpecificUpdate(TopicSpecificID, TopicSpecificON):
+    pass

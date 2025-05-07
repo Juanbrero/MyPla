@@ -10,12 +10,12 @@ class ResponseSpecific(BaseModel):
      specific: list[schema_topic_specific.TopicSpecificCr1]
 
 class ResponseException(BaseModel):
-    exception: list[schema_specific.Specific]
+    exception: list[schema_specific.ExceptionGet]
 
 class Response(BaseModel):
     recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
     specific: list[schema_topic_specific.TopicSpecificCr1]
-    exception: list[schema_specific.Specific]
+    exception: list[schema_specific.ExceptionGet]
     event: list[schema_specific.SpecificCreate] #Cambiar a esquema de event
 
 class ResponseProfessional(Response):

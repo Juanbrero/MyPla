@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date, time
+from typing import Optional
 
 class SpecificBase(BaseModel):
     start: time
@@ -36,3 +37,40 @@ class SpecificIsCancel(SpecificSchema):
 
 class SpecificSchemaID(BaseModel):
     prof_id:str
+
+
+
+
+class ExceptionBase(BaseModel):
+    day:date
+    start: Optional[time]
+    end: Optional[time]
+
+class ExceptionCreate(ExceptionBase):
+    prof_id: str
+
+class ExceptionInsert(ExceptionCreate):
+    isCanceling: bool = True
+
+class ExceptionGetDat(BaseModel):
+    prof_id:str
+    day:date
+
+class ExceptionGet(ExceptionBase):
+
+    class Config:
+        orm_mode=True
+
+class ExceptionDelDat(BaseModel):
+    day: date
+    start: time
+
+class ExceptionDel(ExceptionDelDat):
+    prof_id:str
+
+
+class ExceptionUpdate(BaseModel):
+    day: Optional[date] #PK
+    start:Optional[time] #PK
+    end: Optional[time]
+

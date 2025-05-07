@@ -22,12 +22,6 @@ class TopicRecurrent(BaseModel):
         #Permite convertir desde SQLAlchemy (no dicts)
         orm_mode= True
 
-class TopicRecurrentSchema(BaseModel):
-    prof_id:str
-    week_day: int
-    start: time
-
-
 class TopicRecurrentCr1(BaseModel):
     week_day: int
     start: time
@@ -39,3 +33,11 @@ class TopicRecurrentIn(TopicRecurrentCr1):
 
 class TopicRecurrentID(BaseModel):
     prof_id:str
+
+class TopicRecurrentWeekS(BaseModel):
+    week_day: int
+    start: time
+
+class TopicRecurrentSchema(TopicRecurrentID):
+    week_day: int
+    start: time
