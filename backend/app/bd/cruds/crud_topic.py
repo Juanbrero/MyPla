@@ -6,6 +6,17 @@ from sqlalchemy import select, exc
 from ..bd_utils import error_hand
 
 def create_topic(db:Session, topic:schema_topic.TopicCreate):
+    """
+    Crea un topico
+    
+    Args:
+        db (Session): Database conection
+        topic (schema_topic.TopicCreate)
+            - topic_name: str -> upper()
+    Returns:
+        { topic_name:} Topic
+        {'error':}
+    """
     topic.topic_name = topic.topic_name.upper()
     try:
         db_topic = Topic(**topic.dict())
@@ -18,4 +29,33 @@ def create_topic(db:Session, topic:schema_topic.TopicCreate):
     return db_topic
 
 def get_all_topic(db:Session):
+    """
+    Retorna todos los topicos
+
+    Args:
+        db (Session): Database conection
+    Returns:
+        [{ topic_name:}] Topic
+        []
+    """
     return db.query(Topic).all()
+
+def delete_topic(db:Session, topic:schema_topic.TopicCreate):
+    """
+    Elimina un topicos
+
+    Args:
+        db (Session): Database conection
+        topic (schema_topic.TopicCreate)
+            - topic_name: str -> upper()
+    Returns:
+        {'info':} 
+        {'error':}
+    """
+    topic.topic_name = topic.topic_name.upper()
+    response = db.query(Topic).filter(Topic.topic_name == topic.topic_name).first()
+    if response is None:
+        {'error': 'Topico no existente'}
+    db.delete(response)
+    db.commit()
+    return {'info':' EXIT DELETE'}

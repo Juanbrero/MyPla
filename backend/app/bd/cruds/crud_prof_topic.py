@@ -5,9 +5,22 @@ from sqlalchemy import exc, delete
 from app.bd.bd_utils import error_hand
 
 
-def add_topic(db:Session, prof_topic: schema_prof_topic.ProfessionalTopicCreate):
+def add_topic(db:Session, prof_topic: schema_prof_topic.ProfessionalTopic):
+    """
+    Funcion que agrega un topico a un profesionnal
+    
+    Args:
+        db (Session): Database conection
+        prof_topic (schema_prof_topic.ProfessionalTopicCreate)
+            - topic_name: str
+            - price_class: float
+            - prof_id: str
+    Returns:
+        {prof_id:, topic_name:, price_class:} ProfessionalTopic
+        {'error':}
+    """
     if prof_topic.price_class <= 0:
-        return {'error':'Price incorrect'}
+        return {'error':'Price invalid > 0'}
     try:
         db_prof_topic = ProfessionalTopic(**prof_topic.dict())
         db.add(db_prof_topic)
@@ -19,12 +32,36 @@ def add_topic(db:Session, prof_topic: schema_prof_topic.ProfessionalTopicCreate)
         return {'error':f'Error al insertar \n{error}'}
 
 def get_topics(db:Session, prof_topic:schema_prof_topic.ProfessionalTopicID):
+    """
+    Funcion que recupera todos los topicos y precios de un profesional
+
+    Args:
+        db (Session): Database conection
+        prof_topic (schema_prof_topic.ProfessionalTopicID)
+            - prof_id: str
+    Returns:
+        [{prof_id:, topic_name:, price_class:}] [ProfessionalTopic]
+        []
+    """
     return db.query(ProfessionalTopic).filter(ProfessionalTopic.prof_id ==  prof_topic.prof_id).all()
 
 
 def del_topic_professional(db:Session, topic:schema_prof_topic.ProfessionalTopicDel):
+    """
+    Funcion que elimina un topico de un profesional 
+    
+    Args:
+        db (Session): Database conection
+        prof_topic (schema_prof_topic.ProfessionalTopicDel)
+            - topic_name: str
+            - prof_id: str
+    Returns:
+        {prof_id:, topic_name:} ProfessionalTopic
+        {'error':}
+    """
     try:
-        smt = delete(ProfessionalTopic).where(ProfessionalTopic.topic_name == topic.topic_name.upper(), ProfessionalTopic.prof_id == topic.prof_id)
+        smt = delete(ProfessionalTopic).where(ProfessionalTopic.topic_name == topic.topic_name.upper(), 
+                                              ProfessionalTopic.prof_id == topic.prof_id)
         db.execute(smt)
         db.commit()
     except:

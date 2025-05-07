@@ -5,10 +5,27 @@ from sqlalchemy import select, insert, delete
 
 
 def get_prof(db: Session):
+    """
+    Retorna todos los profesionales
+    Args:
+        db (Session)
+    Return:
+        [{prof_id:, score:}]
+    """
     return db.query(Professional).all()
 
 
 def get_prof_id(db:Session, professional: schema_prof.ProfessionalID):
+    """
+    Retorna un profesional
+    Args:
+        db (Session)
+        professional (schema_prof.ProfessionalID)
+            - prof_id: str
+    Return:
+        {prof_id:, score:}
+        {'error':}
+    """
     try:
         smt = select(Professional).where(Professional.prof_id == professional)
         response = db.scalars(smt).first()
@@ -20,6 +37,16 @@ def get_prof_id(db:Session, professional: schema_prof.ProfessionalID):
 
 
 def del_prof(db:Session, id_prof:schema_prof.ProfessionalID):
+    """
+    elimina un profesional
+    Args:
+        db (Session)
+        id_prof: schema_prof.ProfessionalID
+            - prof_id:str
+    Return:
+        {'info':}
+        {'error':}
+    """
     try:
         smt = delete(Professional).where(Professional.prof_id == id_prof)
         response = db.execute(smt)
@@ -35,6 +62,18 @@ def del_prof(db:Session, id_prof:schema_prof.ProfessionalID):
 
 #TEST, se hace por back
 def create_prof(db: Session, prof_c: schema_prof.ProfessionalID):
+    """
+    Funcion de pruebas para definir un profesional
+
+    Args:
+        db: Session
+        prof_c: schema_prof.ProfessionalID
+            - prof_id: str
+    Return:
+        {'info':}
+        {'error':}
+    """
+    ic('CREATE')
     try:
         smt = insert(Professional).values(prof_id = prof_c)
         response = db.execute(smt)
@@ -47,7 +86,19 @@ def create_prof(db: Session, prof_c: schema_prof.ProfessionalID):
 
 
 def update_score(db:Session, prof:schema_prof.Professional):
-    if prof.score in range (0,6):
+    """
+    Funcion que define el score como el valor entregados
+
+    Args:
+        db: Session
+        prof: schema_prof.Professional
+            - prof_id:str
+            - score: int [0-5]
+    Return:
+        {prof_id:, score:}
+        {'error':}
+    """
+    if prof.score in range (0, 6):
         db.query(Professional).filter(Professional.prof_id == prof.prof_id).update({"score": prof.score})
         db.commit()
         return db.query(Professional).get(prof.prof_id)

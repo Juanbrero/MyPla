@@ -8,7 +8,7 @@ from datetime import date
 from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time
 from app.bd.bd_exceptions import MinuteError, CompleteHour, WeekError
 
-
+#Estas funciones no son utilizadas ya que se ingresa por TopicRecurrent
 
 def get_all_recurrent(db: Session, recurrent:schema_recurrent.RecurrentSchemaID):
     smt = select(RecurrentSchedule).where(RecurrentSchedule.prof_id == recurrent.prof_id)
@@ -36,7 +36,6 @@ def create_recurrent(db: Session, recurrent: schema_recurrent.RecurrentSchema):
                 try:
                     stm = insert(RecurrentSchedule).values(recurrent.dict())
                     response = db.execute(stm)
-                    #crud_topic_recurrent.create(db, db_spec, topics, topic_list)
                     db.commit()
                 except:
                     return {'error':'on create_recurent'}
@@ -67,6 +66,7 @@ def del_day(db:Session, recurrent: schema_recurrent.RecurrentSchema):
 
 
 def __get_schedule(db: Session, recurrent:schema_recurrent.RecurrentSchema):
-    smt = select(RecurrentSchedule).where(RecurrentSchedule.prof_id == recurrent.prof_id).where(RecurrentSchedule.week_day == recurrent.week_day)
+    smt = select(RecurrentSchedule).where(RecurrentSchedule.prof_id == recurrent.prof_id,
+                                           RecurrentSchedule.week_day == recurrent.week_day)
     response = db.scalars(smt).all()
     return response
