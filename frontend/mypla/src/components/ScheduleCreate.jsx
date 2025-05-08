@@ -6,6 +6,11 @@ import {
 import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale';
+import Topics from './schedule/scheduleInfo/Topics';
+import ScheduleDate from './schedule/scheduleInfo/ScheduleDate';
+import ScheduleTime from './schedule/scheduleInfo/ScheduleTime';
+import Recurrent from './schedule/scheduleInfo/Recurrent';
+
 
 const style = {
   position: 'absolute',
@@ -31,17 +36,7 @@ export default function ScheduleInformation({
   onCancelTask,
   onSaveTask,
 }) {
-  const [selectedTopicsState, setSelectedTopicsState] = React.useState(taskData?.topics || []);
-  const [day, setDay] = React.useState(taskData?.day || 'Lunes');
-  const [startTime, setStartTime] = React.useState(taskData?.start ? new Date(`1970-01-01T${taskData.start}:00`) : null);
-  const [endTime, setEndTime] = React.useState(taskData?.end ? new Date(`1970-01-01T${taskData.end}:00`) : null);
-  const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
-  const [selectedDate, setSelectedDate] = React.useState(taskData?.date ? new Date(taskData.date) : new Date());
 
-  const handleTopicChange = (event) => {
-    const { target: { value } } = event;
-    setSelectedTopicsState(typeof value === 'string' ? value.split(',') : value);
-  };
 
   const handleCancelTask = () => {
     onCancelTask?.(selectedTopicsState);
@@ -50,25 +45,25 @@ export default function ScheduleInformation({
   const formatTime = (date) => date.toTimeString().slice(0, 5); // 'HH:MM'
 
   const handleSaveTask = () => {
-    if (!selectedTopicsState.length || !startTime || !endTime) {
-      alert('Por favor complete todos los campos');
-      return;
-    }
+    // if (!selectedTopicsState.length || !startTime || !endTime) {
+    //   alert('Por favor complete todos los campos');
+    //   return;
+    // }
 
-    if (startTime >= endTime) {
-      alert('La hora de inicio no puede ser mayor o igual que la de fin');
-      return;
-    }
+    // if (startTime >= endTime) {
+    //   alert('La hora de inicio no puede ser mayor o igual que la de fin');
+    //   return;
+    // }
 
-    onSaveTask?.({
-      ...taskData,
-      topics: selectedTopicsState,
-      day: isRecurring ? day : null,
-      date: isRecurring ? null : selectedDate?.toISOString(),
-      startTime: formatTime(startTime),
-      endTime: formatTime(endTime),
-      isRecurring,
-    });
+    // onSaveTask?.({
+    //   ...taskData,
+    //   topics: selectedTopicsState,
+    //   day: isRecurring ? day : null,
+    //   date: isRecurring ? null : selectedDate?.toISOString(),
+    //   startTime: formatTime(startTime),
+    //   endTime: formatTime(endTime),
+    //   isRecurring,
+    // });
   };
 
   return (
@@ -77,78 +72,23 @@ export default function ScheduleInformation({
         <Box sx={style}>
           <Typography variant="h6" mb={2}>Editar Horario</Typography>
 
-          {/* Tópicos */}
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Tópicos posibles</InputLabel>
-            <Select
-              multiple
-              value={selectedTopicsState}
-              onChange={handleTopicChange}
-              renderValue={(selected) => selected.join(', ')}
-              label="Tópicos posibles"
-            >
-              {topics.map((topic) => (
-                <MenuItem key={topic} value={topic}>
-                  <Checkbox checked={selectedTopicsState.indexOf(topic) > -1} />
-                  <ListItemText primary={topic} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Día o Fecha */}
-          {isRecurring ? (
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Día</InputLabel>
-              <Select
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
-                label="Día"
-              >
-                {days.map((d) => (
-                  <MenuItem key={d} value={d}>{d}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          ) : (
-            <DatePicker
-              label="Fecha"
-              value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
-              slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
-            />
-          )}
-
-          {/* Horario con TimePicker */}
-          <Box display="flex" gap={2} mt={2} flexDirection={{ xs: 'column', sm: 'row' }}>
-            <TimePicker
-              label="Inicio"
-              value={startTime}
-              onChange={(newValue) => setStartTime(newValue)}
-              minutesStep={30}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-            <TimePicker
-              label="Fin"
-              value={endTime}
-              onChange={(newValue) => setEndTime(newValue)}
-              minutesStep={30}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-          </Box>
-
-          {/* Recurrente */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={isRecurring}
-                onChange={(e) => setIsRecurring(e.target.checked)}
-              />
-            }
-            label="Repetir semanalmente"
-            sx={{ mt: 2 }}
+          <Topics 
+            taskData={taskData}
+            isEditable={true}
           />
-
+          <ScheduleDate 
+            taskData={taskData}
+            isEditable={true}
+          />
+          <ScheduleTime
+            taskData={taskData}
+            isEditable={true}
+          />          
+          <Recurrent
+            taskData={taskData}
+            isEditable={true}
+          />
+         
           {/* Botones */}
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             <Button color="error" variant="contained" onClick={handleCancelTask} fullWidth sx={{ p: 2 }}>

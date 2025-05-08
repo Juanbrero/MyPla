@@ -7,6 +7,10 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 
 function Calendar() {
+
+  console.log("Renderizando CalendarPage");
+
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState({
      topics: ['Estrategia', 'Marketing'],
@@ -40,6 +44,7 @@ function Calendar() {
       date: start.toFormat("yyyy-MM-dd"),
     })
     setModalOpen(true);
+    // mostrar create
   };
 
   const handleCloseModal = () => {
@@ -52,6 +57,7 @@ function Calendar() {
 
   const handleEventClick = (arg) => {
     alert(`Evento: ${arg.event.title}`);
+    // mostrar information
   };
 
   const handleSaveTask = (taskName) => {
@@ -77,10 +83,12 @@ function Calendar() {
     handleCloseModal()
   };
 
-  
+  console.log("selected task: " + selectedTask.topics);
 
   return (
     <div>
+      <p>Calendario debería aparecer aquí</p>
+
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -95,6 +103,7 @@ function Calendar() {
         events={events}
         height={"90vh"}
       />
+      {/* agregar condicion para ver si abro create o info. */}
       <ScheduleInformation
         open={modalOpen}
         onClose={handleCloseModal}
