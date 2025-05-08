@@ -95,7 +95,7 @@ def include_time(db_recurrent:list[Schedule], schedule:Schedule) -> bool:
         fin = __conver_hour_minute(finaux)
         del finaux
     else:
-        fin = schedule.end.replace(hours=23, minutes=59)
+        fin = schedule.end.replace(hour=23, minute=59)
         del finaux
     
     for dbe in db_recurrent:
