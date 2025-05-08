@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import time
 from .schema_topic import Topic
+from typing import Optional
 #Aqui van los esqueletos de respuestas que podran obtener
 
 
@@ -22,6 +23,7 @@ class TopicRecurrent(BaseModel):
         #Permite convertir desde SQLAlchemy (no dicts)
         orm_mode= True
 
+
 class TopicRecurrentCr1(BaseModel):
     week_day: int
     start: time
@@ -41,3 +43,11 @@ class TopicRecurrentWeekS(BaseModel):
 class TopicRecurrentSchema(TopicRecurrentID):
     week_day: int
     start: time
+
+
+class TopicRecurrentUp(TopicRecurrentWeekS):
+    Nstart: Optional[time]
+    Nend: Optional[time]
+
+class TopicRecurrentUpdate(TopicRecurrentUp, TopicRecurrentID):
+    pass

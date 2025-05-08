@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import time, date
 from .schema_topic import Topic
+from typing import Optional
 #Aqui van los esqueletos de respuestas que podran obtener
 
 
@@ -44,10 +45,11 @@ class TopicSpecificID(BaseModel):
 class TopicSpecificMonth(TopicSpecificID):
     month: int
 
-class TopicSpecificON(BaseModel):
-    old: TopicSpecificCr1
-    new: TopicSpecificCr1
+class TopicSpecificDay(BaseModel):
+    day: date
+    start:time
+    Nstart: Optional[time]
+    Nend: Optional[time]
 
-    
-class TopicSpecificUpdate(TopicSpecificID, TopicSpecificON):
-    pass
+class TopicSpecificUpdate(TopicSpecificDay):
+    prof_id: str

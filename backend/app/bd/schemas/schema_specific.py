@@ -68,9 +68,10 @@ class ExceptionDelDat(BaseModel):
 class ExceptionDel(ExceptionDelDat):
     prof_id:str
 
+class ExceptionUp(ExceptionDelDat):
+    Nstart: Optional[time]
+    Nend: Optional[time]
 
-class ExceptionUpdate(BaseModel):
-    day: Optional[date] #PK
-    start:Optional[time] #PK
-    end: Optional[time]
+class ExceptionUpdate(ExceptionUp):
+    prof_id:str
 
