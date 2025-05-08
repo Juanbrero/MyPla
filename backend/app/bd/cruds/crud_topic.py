@@ -55,7 +55,7 @@ def delete_topic(db:Session, topic:schema_topic.TopicCreate):
     topic.topic_name = topic.topic_name.upper()
     response = db.query(Topic).filter(Topic.topic_name == topic.topic_name).first()
     if response is None:
-        {'error': 'Topico no existente'}
+       return {'error': 'Topico no existente'}
     db.delete(response)
     db.commit()
-    return {'info':' EXIT DELETE'}
+    return {'info':' SUCESS DELETE'}
