@@ -5,7 +5,7 @@ from typing import List, Union
 from pydantic import BaseModel
 from datetime import date, time
 
-from app.bd.schemas import schema_topic_recurrent,  schema_response, schema_topic_specific, schema_specific
+from app.bd.schemas import schema_topic_recurrent,  schema_response, schema_topic_specific, schema_specific, schema_recurrent
 from app.bd.cruds import crud_topic_recurrent, crud_topic_specific, crud_specific
 from app.bd.bd_utils import Errors, Info
 
@@ -49,10 +49,26 @@ def test(prof_id:str, month:int, db:Session = Depends(get_db)):
     return crud_topic_specific.get_id_month(topic, db)
 
 #En proceso de implemantar
-#@router.put('/update/specific', tags=['Specific'])
-def update_specific(prof_id:str, update:schema_topic_specific.TopicSpecificON, db:Session = Depends(get_db)):
+@router.put('/update/specific', tags=['Specific'])
+def update_specific(prof_id:str, update:schema_topic_specific.TopicSpecificDay, db:Session = Depends(get_db)):
     spec = schema_topic_specific.TopicSpecificUpdate(**update.dict(), prof_id=prof_id)
     return crud_topic_specific.update_specific(db, spec)
+
+@router.post('/specific/topic/add', tags=['Specific'])
+def add_specific_topic(prof_id:str, specific:schema_topic_specific.TopicSpecificBase, db:Session = Depends(get_db)):
+    """
+    Agrega un topico a un dia especifico particular
+    """
+    specific_topic = schema_topic_specific.TopicSpecificCreate(**specific.dict(), prof_id=prof_id)
+    return crud_topic_specific.add_crud_topic_specific(db, specific_topic)
+
+@router.delete('/recurrent/topic/del/', tags=['Specific'])
+def del_specific_topic(prof_id:str, specific:schema_topic_specific.TopicSpecificBase, db:Session = Depends(get_db)):
+    """
+    Elimina un topico de un dia especifico
+    """
+    specific_topic = schema_topic_specific.TopicSpecificCreate(**specific.dict(), prof_id= prof_id)
+    return crud_topic_specific.del_topic_specific(db,specific_topic)
 
 
 
@@ -85,6 +101,21 @@ def del_exception(prof_id:str, excep:schema_specific.ExceptionDelDat, db:Session
     excepD = schema_specific.ExceptionDel(**excep.dict(), prof_id=prof_id)
     return crud_specific.delete_exception(db, excepD)
 
+@router.put('/update/exception', tags=['Exception'])
+def update_exception(prof_id:str, excep:schema_specific.ExceptionUp, db:Session = Depends(get_db)):
+    """
+    Permite actualizar la hora de inicio y/o hora de final dado una hora de inicio
+
+    Args:
+       - prof_id: str
+       - day: int
+       - start: time <- Hora a actualizar 
+       - Nstart: time | None
+       - Nend: time | None
+    """
+    excepU = schema_specific.ExceptionUpdate(**excep.dict(), prof_id= prof_id)
+    return crud_specific.update_exception(db, excepU)
+
 
 
 #RECURRENT
@@ -116,7 +147,62 @@ def del_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentWe
     return crud_topic_recurrent.delete_recurrent(db, recu)
 
 #En proceso de implementar
-#@router.put('/update/recurrent', tags=['Recurrent'])
-def update_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentCr1, db:Session = Depends(get_db)):
-    topicr = schema_topic_recurrent.TopicRecurrentIn(**recurrent.dict(),prof_id=prof_id)
-    return crud_topic_recurrent.update_recurrent(db, topicr)
+@router.put('/update/recurrent', tags=['Recurrent'], response_model=Union[Info, Errors])
+def update_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentUp, db:Session = Depends(get_db)):
+    """
+    Permite actualizar la hora de inicio y/o hora de final dado una hora de inicio
+
+    Args:
+       - prof_id: str
+       - week_day: int
+       - start: time <- Hora a actualizar 
+       - Nstart: time | None
+       - Nend: time | None
+    """
+    topicr = schema_topic_recurrent.TopicRecurrentUpdate(**recurrent.dict(), prof_id=prof_id)
+    return crud_topic_recurrent.update_recurrent_time(db, topicr)
+
+
+@router.get('/avaible', tags=['Avaible'], response_model=schema_response.ResponseProfessional)
+def get_avaible(prof_id:str, db:Session = Depends(get_db)):
+    """
+    Petición de todos los horarios de un Profesional, para si mismo.
+
+    - Args:
+        - prof_id: str
+    - Return:
+        - {recurrent:[{}], 
+        specific: [{}], 
+          exception: [{}], 
+          event: [{}], 
+          clase: [{}]}
+    """
+    id= schema_topic_specific.TopicSpecificID(prof_id= prof_id )
+    recurrent= crud_topic_recurrent.get_recurrent(id, db).get('recurrent')
+    
+    specific= crud_topic_specific.get_specific(id, db).get('specific')
+    exception= crud_specific.get_exception(db, id).get('exception')
+    clase = []
+    event = []
+    avaible = schema_response.ResponseProfessional(recurrent=recurrent,  
+                                                   specific=specific,
+                                                     exception=exception,
+                                                     clase=clase,
+                                                     event=event )
+    return avaible
+
+@router.post('/recurrent/topic/add', tags=['Recurrent'])
+def add_recurrent_topic(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentBase, db:Session = Depends(get_db)):
+    """
+    Agrega un topico a un dia recurrente particular
+    """
+    recurrent_topic = schema_topic_recurrent.TopicRecurrentCreate(**recurrent.dict(), prof_id=prof_id)
+    return crud_topic_recurrent.add_topic_recurrent(db, recurrent_topic)
+
+@router.delete('/recurrent/topic/del/', tags=['Recurrent'])
+def del_recurrent_topic(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentBase, db:Session = Depends(get_db)):
+    """
+    Elimina un topico de un dia recurrente
+    """
+    recurrent_topic = schema_topic_recurrent.TopicRecurrentCreate(**recurrent.dict(), prof_id= prof_id)
+    return crud_topic_recurrent.del_topic_recurrent(db, recurrent_topic)

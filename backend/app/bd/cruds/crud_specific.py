@@ -124,3 +124,58 @@ def __get_schedule(db: Session, spec:schema_specific.SpecificSchema):
 
 
 
+def update_exception(db:Session, exception:schema_specific.ExceptionUpdate):
+    """
+    Args:
+        - db: Session
+        - exception: schema_specific.ExceptionUpdate
+            - prof_id: str
+            - day: date
+            - start: time
+            - Nstart: time | None
+            - Nend: time | None
+    Return:
+        - {'info': 'OK'}
+        - {'error':}
+    """
+    try:
+        exception.start = strip_time_hour_minute(exception.start)
+    except MinuteError as  e:
+        return {'error': f'{e}'}
+    response = db.query(SpecificSchedule).where(SpecificSchedule.isCanceling == True,
+                                                SpecificSchedule.day == exception.day,
+                                                SpecificSchedule.prof_id == exception.prof_id,
+                                                SpecificSchedule.start == exception.start).first()
+    if response is None:
+        return {'error': 'Exception not exist'}
+    try:
+        if not exception.Nend is None:
+            response.end = strip_time_hour_minute(exception.Nend)
+        if not exception.Nstart is None:
+            response.start = strip_time_hour_minute(exception.Nstart)
+    except MinuteError as e:
+        return {'error':f'{e}'}
+    if valid_time(response):
+        exist = db.query(SpecificSchedule).where(SpecificSchedule.isCanceling == True,
+                                                SpecificSchedule.day == exception.day,
+                                                SpecificSchedule.prof_id == exception.prof_id,
+                                                SpecificSchedule.start != exception.start).all()
+        ic(exist)
+        ic(response)
+        if not include_time(exist, response):
+            try:
+                updates = {'start': response.start, 'end':response.end}
+                ic(updates)
+                smt = update(SpecificSchedule).where(SpecificSchedule.isCanceling == True,
+                                                    SpecificSchedule.day == exception.day,
+                                                    SpecificSchedule.prof_id == exception.prof_id,
+                                                    SpecificSchedule.start == exception.start).values(updates)
+                db.commit()
+                return {'info': 'OK'}
+            except:
+                return {'error':'On update Exception'}
+        else:
+            return {'error': 'time include in DB'}
+    else:
+        return {'error': f'Error hour {response.start} == {response.end}'} 
+    

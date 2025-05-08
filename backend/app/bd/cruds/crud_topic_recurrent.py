@@ -161,14 +161,87 @@ def __get_schedule(db: Session, recurrent:schema_recurrent.RecurrentSchema):
     response = db.scalars(smt).all()
     return response
 
+def add_topic_recurrent(db:Session, recurrent:schema_topic_recurrent.TopicRecurrentCreate):
+    """
+    Agrega un topico a un dia recurrente existente
 
-#EN PROCESO
-def update_recurrent(db:Session, recurrent:schema_topic_recurrent.TopicRecurrentIn):
-    week = recurrent.week_day
-    prof_id = recurrent.prof_id
+    Args:
+        recurrent:
+            - prof_id: str
+            - week_day: int
+            - start: time
+            - topic_name: str
+    
+    """
     try:
         recurrent.start = strip_time_hour_minute(recurrent.start)
-        recurrent.end = strip_time_hour_minute(recurrent.end)
+    except MinuteError as e:
+        return {'error':f'{e}'}
+    recurrent.topic_name = recurrent.topic_name.upper()
+    try:
+        response = db.query(RecurrentSchedule).filter(RecurrentSchedule.start == recurrent.start, 
+                                                        RecurrentSchedule.prof_id == recurrent.prof_id,
+                                                        RecurrentSchedule.week_day == recurrent.week_day).first()
+        if response is None:
+            return {'error': 'recurrent day not exist'}
+    except:
+        return {'error': 'On select recurrent'}
+    try:
+        db_topic = TopicRecurrent(**recurrent.dict())
+        db.add(db_topic)
+        db.commit()
+        db.refresh(db_topic)
+        return db_topic
+    except:
+        return {'error': 'On insert Topic in Recurrent'}
+
+def del_topic_recurrent(db:Session, recurrent:schema_topic_recurrent.TopicRecurrentCreate):
+    try:
+        recurrent.start = strip_time_hour_minute(recurrent.start)
+    except MinuteError as e:
+        return {'error':f'{e}'}
+    recurrent.topic_name = recurrent.topic_name.upper()
+    try:
+        response = db.query(TopicRecurrent).filter(TopicRecurrent.start == recurrent.start, 
+                                                        TopicRecurrent.prof_id == recurrent.prof_id,
+                                                        TopicRecurrent.week_day == recurrent.week_day,
+                                                        TopicRecurrent.topic_name == recurrent.topic_name).first()
+        if response is None:
+            return {'error': 'Topic not exist'}
+    except:
+        return {'error': 'On select topic'}
+    try:
+       db.delete(response)
+       db.commit()
+       return {'info':'Ok delete'}
+    except:
+        return {'error': 'On delete Topic in Recurrent'}
+
+
+
+
+#EN PROCESO
+def update_recurrent_time(db:Session, recurrent:schema_topic_recurrent.TopicRecurrentUpdate):
+    """
+    Permite actualizar hora de inicio y final de un dia particular
+    Se puede actualizar start, end o ambos
+
+    Args:
+        db: Session
+        recurrent: schema_topic_recurrent.TopicRecurrentUpdate
+            - prof_id: str
+            - week_day: int
+            - start: time -> Elemento a actualizar
+            - Nstart: time | None
+            - Nend: time | None
+    Return:
+        {'info':'OK'}
+        {'error':}
+    """
+    if recurrent.Nstart is None and recurrent.Nend is None:
+        return {'error': 'No hay update'}
+    try:
+        recurrent.start = strip_time_hour_minute(recurrent.start)
     except MinuteError as e:
         return {'error':f'{e}'}
     try:
@@ -176,35 +249,35 @@ def update_recurrent(db:Session, recurrent:schema_topic_recurrent.TopicRecurrent
             raise WeekError(recurrent.week_day)
     except WeekError as e:
         return {'error':f'{e}'}
-    if valid_time(recurrent):
-        response = db.query(RecurrentSchedule).filter(RecurrentSchedule.prof_id == prof_id,
-                                                RecurrentSchedule.week_day == week).all()
-        if len(response) == 0:
-            return {'error': ' Not schedule to this week day'}
-    else:
-        return {'error': f'Time Start: {recurrent.start} End: {recurrent.end}'}
-    Ntopics = recurrent.topics
-    for res in response:
-        #8-10
-        # 9-13
-        #Incluido en el rango almacenado
-        if res.start <= recurrent.start < res.end and res.start < recurrent.end <= res.end:
-            try:
-                stmd = delete(TopicRecurrent).where(RecurrentSchedule.prof_id == prof_id, 
-                                                RecurrentSchedule.week_day == week, 
-                                                RecurrentSchedule.start == res.start)
-                response = db.execute(stmd)
-                ic(f'{response}')
-            except:
-                return {'error': 'on delete topicRecurrent'}
-            try:
-                stmd =  delete(RecurrentSchedule).where(RecurrentSchedule.prof_id == prof_id,
-                                                        RecurrentSchedule.week_day == week,
-                                                        RecurrentSchedule.start == res.start)
-                response = db.execute(stmd)
-            except:
-                return {'error':'on delete Recurrent Schedule'}
-        elif res.start <= recurrent.start < res.end and res.start < recurrent.end > res.end:
-            pass
-    return create_recurrent(recurrent, db)
 
+    recu = db.query(RecurrentSchedule).filter(RecurrentSchedule.week_day == recurrent.week_day, 
+                                              RecurrentSchedule.prof_id == recurrent.prof_id, 
+                                              RecurrentSchedule.start == recurrent.start).first()
+    if recu is None:
+        return {'error':'Dia recurrente no existente'}
+    try:
+        if  not recurrent.Nstart is None:
+            recu.start = strip_time_hour_minute(recurrent.Nstart)
+        if not recurrent.Nend is None:
+            recu.end = strip_time_hour_minute(recurrent.Nend)
+    except MinuteError as e:
+        return {'error':f'{e}'}
+    if valid_time(recu):
+        exist = db.query(RecurrentSchedule).filter(RecurrentSchedule.prof_id== recu.prof_id,
+                                                    RecurrentSchedule.week_day == recu.week_day,
+                                                    RecurrentSchedule.start != recurrent.start
+                                                   ).all()
+        if not include_time(exist, recu):
+            try:    
+                updates = {'start': recu.start, 'end': recu.end}        
+                smt = update(RecurrentSchedule).where(RecurrentSchedule.prof_id== recurrent.prof_id,
+                                                        RecurrentSchedule.start == recurrent.start,
+                                                        RecurrentSchedule.week_day == recurrent.week_day).values(updates)
+                db.commit()
+                return {'info': 'OK'}
+            except:
+                return {'error':'On update Recurrent'}
+        else:
+            return {'error': 'time include in DB'}
+    else:
+        return {'error': f'Error hour {recu.start} == {recu.end}'}    
