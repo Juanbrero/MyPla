@@ -12,14 +12,25 @@ class ResponseSpecific(BaseModel):
 class ResponseException(BaseModel):
     exception: list[schema_specific.ExceptionGet]
 
-class Response(BaseModel):
+class ResponseEvent(BaseModel):
+    event: list[schema_specific.SpecificCreate] #Cambiar a esquema de event
+
+class ResponseClass(BaseModel):
+    clase: list[schema_specific.Specific]  #Cambiar a esquema de clase
+
+class Response(ResponseEvent, ResponseException, ResponseSpecific, ResponseRecurrent):
+    pass
+    """
     recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
     specific: list[schema_topic_specific.TopicSpecificCr1]
     exception: list[schema_specific.ExceptionGet]
-    event: list[schema_specific.SpecificCreate] #Cambiar a esquema de event
+    event: list[schema_specific.SpecificCreate] """
 
-class ResponseProfessional(Response):
-    clase: list[schema_specific.Specific] #Cambiar a esquema de clase
+
+
+class ResponseProfessional(ResponseClass, Response):
+    pass
+    #clase: list[schema_specific.Specific]
 
 class ResponseAlumno(Response):
     pass
