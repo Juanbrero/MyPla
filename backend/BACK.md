@@ -4,7 +4,7 @@
    | --- | ---| 
    | [Ejecutar main](#ejecutar-mainpy-desde-afuera) | Cambios para que se pueda utilizar Alembic sin ingresar a Docker |
    | [RECORDAR](#recordar) | Importante Cambios que se deben hacer para salir a producción |
-   | [Preparación OMITIR](#preparacion-recordatorios-de-lo-que-se-hizo) | Metodo utilizado para crear los archivos iniciales, usar si se empieza desde 0|
+   | [Preparación OMITIR](#preparación-recordatorios-de-lo-que-se-hizo) | Metodo utilizado para crear los archivos iniciales, usar si se empieza desde 0|
    | [Archivos](#armado-de-archivos-y-ejecución) | Archivos que deben crearse y modificarse |
    | [Alembic](#ejecutar-alembic) | Ejecución de Alembic, comandos a ejecutar si se utiliza con Docker o con venv | 
    | [Implementado](#implementado) | Tablas y funciones implementadas |
@@ -213,7 +213,7 @@ sqlalchemy.url = postgresql://myuser:mypassword@localhost:5432/mydatabase
 
 - models/MODELO.py
     -  crear modelo de la tabla
-- models/__init__.py
+- models/_\_init__.py
    - agregar import del modelo
    ~~~
     from .Profesional import Profesional
@@ -222,7 +222,7 @@ sqlalchemy.url = postgresql://myuser:mypassword@localhost:5432/mydatabase
    ~~~
 
 ### Para interacción
-- app/bd/schemas/scheme_MODEL.py
+- app/bd/schemas/schema_MODEL.py
    - esquema de respuestas
 - app/bd/cruds/crud_MODEL.py
   -  Consultas validas
@@ -255,7 +255,7 @@ Para ejecutarlo, esta linea toma los archivos de alembic/version, compara el has
 ~~~
 $ alembic upgrade head
 ~~~
-> [! Note]
+> [!Note]
 > El ciclo de trabajo es generar el archivo de migración y ejecutar el upgrade, es decir, se debe ejecutar 
 > ~~~
 > alembic revision ..
@@ -417,128 +417,221 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
 ## Query
 ### Query Users 
  - Create 
- POST /create/{user_id}
+ POST /users
+ ~~~
+   {'user_id': str}
+ ~~~
  - Get  
- GET /get/all
+ GET /users
  - Delete 
- DELETE /delete/{user_id}
+ DELETE /users
+ ~~~
+   {'user_id': str}
+ ~~~
 ---
 ### Query Professional
  - Create solo para pruebas, se realiza por back directamente 
-  POST /professional/{prof_id}/create
+  POST /professionals
+  ~~~
+  {'prof_id': ID}
+  ~~~
  - Get one
- GET /professional/{prof_id}
+ GET /professionals/{prof_id}
  - Get all
- GET /professional/{prof_id}
+ GET /professionals
  - Update (score) Se realizaria por back
- PUT /professional/{prof_id}/score
+ PUT /professional/{prof_id}
  ~~~
  {
-  "score": 0
+  "score": float
    }
  ~~~
  - Delete 
- DELETE /professional/{prof_id}
+ DELETE /professionals/{prof_id}
 ---
 ### Query Topics
  - Create (Se convierte en mayuscula el string al almacenarlo)
- POST /topics/create
+ POST /topics
  ~~~
  {
   "topic_name": "string"
    }
  ~~~
  - Get all
- GET /topics/get
+ GET /topics
+ - Delete
+ DELETE /topics
+ ~~~
+ {
+  "topic_name": "string"
+   }
+ ~~~
 ---
 ### Query Professional Topic
 - Create
-POST /topics/prof/{prof_id}/add
+POST /topics/professionals/{prof_id}
 ~~~
 {
   "topic_name": "string",
-  "price_class": 0
+  "price_class": float
 }
 ~~~
 - Get
-GET /topics/prof/{prof_id}
+GET /topics/professionals/{prof_id}
 - Delete
-DELETE /topics/prof/{prof_id}
+DELETE /topics/professionals/{prof_id}
 ~~~
 {
   "topic_name": "string"
 }
+~~~
+- Update price
+PUT /topics/professionals/{prof_id}
+~~~
+{topic_name: "string",
+price_class: float}
 ~~~
 ---
 ### Query Recurrent
    - Create: formato de hora 24Hs 
-   POST /prof/{prof_id}/agenda/create/recurrent
+   POST /professionals/{prof_id}/agenda/recurrent
    ~~~
-   { "week_day": 2,
-        "start": "00:30",
-        "end": "02:30",
+   { "week_day": int,
+        "start": time,
+        "end": time,
         "topics": [
             {
-            "topic_name": "ingles"
+            "topic_name": "str"
             },
             {
-            "topic_name": "frances"
+            "topic_name": "str"
             }
             ]
         }
    ~~~
    - Get
-   GET /prof/{prof_id}/agenda/get/recurrent
+   GET /professionals/{prof_id}/agenda/recurrent
+   - Delete
+   DELETE /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {"week_day": int,
+      "start": time}
+   ~~~
+   - Update hour
+   PUT /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {"week_day": int,
+        "start": time,
+        Nstart: time | None,
+        Nend: time | None
+        }
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {"week_day": int,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {"week_day": int,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
 ---
 ### Query Specific
    - Create dia particular (isCanceling= False)
-   POST /prof/{prof_id}/agenda/create/spec
+   POST /professionals/{prof_id}/agenda/spec
    ~~~
    {
-            "day": "2025-04-30",
-            "start": "20:30:25.443Z",
-            "end": "22:30:25.443Z",
+            "day": date,
+            "start": time,
+            "end": time,
             "topics": [
                 {
-                "topic_name": "fisica"
+                "topic_name": str
                 }
             ]
         }
    ~~~
-   - Get dias especificos
-   GET /prof/{prof_id}/agenda/get/recurrent
+   - Get dias especificos **funcion que trae todos los especifcos**
+   GET /professionals/{prof_id}/agenda/specific
+   - Get mes, funcion mas cercana a la implementacion real, **Falta año**
+   GET /professionals/{prof_id}/agenda/specific/{month}
+   - Update hour
+   PUT /professionals/{prof_id}/agenda/specific
+   ~~~
+   {"day": date,
+        "start": time,
+        Nstart: time | None,
+        Nend: time | None
+        }
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {"day": date,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {"day": date,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
 
 ### Query Exception
    - Create
-      POST /prof/{prof_id}/agenda/create/exception
+      POST /professionals/{prof_id}/agenda/exception
       ~~~
       {
-      "start": "21:38:04.836Z",
-      "end": "21:38:04.836Z",
-      "day": "2025-05-01"
+      "start": time,
+      "end": time,
+      "day": date
       }
       ~~~
    - Get
-      GET /prof/{prof_id}/agenda/get/exception
-
+      GET /professionals/{prof_id}/agenda/exception
+   - Delete
+   DELETE /professionals/{prof_id}/agenda/exception
+   ~~~
+     {
+      "start": time,
+      "day": date
+      }
+   ~~~
+   - Update
+   PUT /professionals/{prof_id}/agenda/exception
+   ~~~
+   {"day": date,
+        "start": time,
+        Nstart: time | None,
+        Nend: time | None
+        }
+   ~~~
+### Query Available
+   - Get
+   GET /professional/{prof_id}/available
 ## Response
-mes -> 
-   select * from recurrent where mes == mes 
-      join topicosRecurrent.week, start => lista(TOPICOS)
-   select * from specific where day.moth == mes
-      -> if iscanceling => exception
-      -> select topic from topic => lista(TOPICOS)
 
 ### Response Users
  - Create 
- POST /create/{user_id}
+ POST /users
  ~~~
  {'user_id': ,
   'name': }
   {'error': }
  ~~~
  - Get  
- GET /get/all
+ GET /users
  ~~~
  [
    {'user_id': ,
@@ -546,62 +639,60 @@ mes ->
   ]
  ~~~
  - Delete 
- DELETE /delete/{user_id}
+ DELETE /users
  ~~~
- {'OK': 'OK'}
+ {'info': 'OK'}
  {'error': }
  ~~~
 ---
 ### Response Professional
  - Create solo para pruebas, se realiza por back directamente 
-  POST /professional/{prof_id}/create
+  POST /professionals
   ~~~
-  {'info': }
-  {'error': }
+  {'info': str}
+  {'error': str}
   ~~~
-
  - Get one
- GET /professional/{prof_id}
+ GET /professionals/{prof_id}
  ~~~
- {'prof_id': , 
- 'score': }
- {'error': }
+ {'prof_id': str, 
+ 'score': float}
+ {'error': str}
  ~~~
  - Get all
- GET /professional/{prof_id}
+ GET /professionals
  ~~~
  [
-   {'prof_id': , 
- 'score': },
- {'prof_id': , 
- 'score': }
+   {'prof_id': str, 
+ 'score': float},
+ {'prof_id': str, 
+ 'score': float}
  ]
  ~~~
  - Update (score) Se realizaria por back
- PUT /professional/{prof_id}/score
+ PUT /professionals/{prof_id}
  ~~~
  {
-  "prof_id": "string",
-  "score": 0
+  "score": float
 }
  ~~~
  - Delete 
- DELETE /professional/{prof_id}
+ DELETE /professionals/{prof_id}
  ~~~
- {'info': }
- {'error': }
+ {'info': str}
+ {'error': str}
  ~~~
 ---
 ### Response Topics
  - Create
- POST /topics/create
+ POST /topics
  ~~~
  {
   "topic_name": "string"
    }
  ~~~
  - Get all
- GET /topics/get
+ GET /topics
  ~~~
  [
     {
@@ -612,105 +703,142 @@ mes ->
    }
    ]
  ~~~
+ - Delete
+ DELTE /topics
+ ~~~
+ {'info': str}
+ {'error': str}
+ ~~~
 ---
 ### Response Professional Topic
 - Create
-POST /topics/prof/{prof_id}/add
+POST /topics/professionals/{prof_id}
 ~~~
 {
-  "prof_id": ,
+  "prof_id": str,
   "topic_name": "string",
-  "price_class": 0
+  "price_class": float
 }
 ~~~
 - Get
-GET /topics/prof/{prof_id}
+GET /topics/professonals/{prof_id}
 ~~~
 [
    {
-  "prof_id": ,
+  "prof_id": str,
   "topic_name": "string",
-  "price_class": 0
+  "price_class": float
 },
 {
-  "prof_id": ,
+  "prof_id": str,
   "topic_name": "string",
-  "price_class": 0
+  "price_class": float
 }
 ]
 ~~~
 - Delete
-DELETE /topics/prof/{prof_id}
+DELETE /topics/professionals/{prof_id}
 ~~~
-{
-  "prof_id": ,
-  "topic_name": "string"
-}
+{'info': str}
+ {'error': str}
+~~~
+- Update price
+PUT /topics/professionals/{prof_id}
+~~~
+{'info': str}
+ {'error': str}
 ~~~
 ---
 ### Response Recurrent
    - Create: formato de hora 24Hs 
-   POST /prof/{prof_id}/agenda/create/recurrent
+   POST /professionals/{prof_id}/agenda/recurrent
    ~~~
-   { "week_day": 2,
-        "start": "00:30",
-        "end": "02:30",
+   { "week_day": int,
+        "start": time,
+        "end": time,
         "topics": [
             {
-            "topic_name": "ingles"
+            "topic_name": str
             },
             {
-            "topic_name": "frances"
+            "topic_name": str
             }
             ],
-         "prof_id": 
+         "prof_id": str
         }
    ~~~
    - Get
-   GET /prof/{prof_id}/agenda/get/recurrent
+   GET /professionals/{prof_id}/agenda/recurrent
    ~~~
    {
-  "recurrent": [
-    {
-      "week_day": 0,
-      "start": "17:19:12.001Z",
-      "end": "17:19:12.001Z",
-      "topics": [
-        {
-          "topic_name": "string"
+   "recurrent": [
+      {
+         "week_day": int,
+         "start": time,
+         "end": time,
+         "topics": [
+         {
+            "topic_name": "string"
+         }
+         ]
+      }
+   ]
+      }
+   ~~~
+   - Delete
+   DELETE /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+   - Update hour
+   PUT /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {'info': str}
+   {'error':}
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {"week_day": int,
+        "start": time,
+        topic_name: str,
+        prof_id: str
         }
-      ]
-    }
-  ]
-   }
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {'info': str}
+   {'error': str}
    ~~~
 ---   
 ### Response Specific
    - Create dia particular (isCanceling= False)
-   POST /prof/{prof_id}/agenda/create/spec
+   POST /professionals/{prof_id}/agenda/spec
    ~~~
    {
-  "day": "2025-05-01",
-  "start": "17:21:24.170Z",
-  "end": "17:21:24.170Z",
+  "day": date,
+  "start": time,
+  "end": time,
   "topics": [
     {
       "topic_name": "string"
     }
   ],
   "prof_id": "string",
-  "isCanceling": false
+  "isCanceling": bool
    }
    ~~~
    - Get dias especificos
-   GET /prof/{prof_id}/agenda/get/recurrent
+   GET /professionals/{prof_id}/agenda/specific
    ~~~
    {
   "specific": [
     {
-      "day": "2025-05-01",
-      "start": "17:22:00.459Z",
-      "end": "17:22:00.459Z",
+      "day": date,
+      "start": time,
+      "end": time,
       "topics": [
         {
           "topic_name": "string"
@@ -719,35 +847,87 @@ DELETE /topics/prof/{prof_id}
     }
    ]}
    ~~~
+   - Get mes, funcion mas cercana a la implementacion real, **Falta año**
+   GET /professionals/{prof_id}/agenda/specific/{month}
+   ~~~
+   {
+  "specific": [
+    {
+      "day": date,
+      "start": time,
+      "end": time,
+      "topics": [
+        {
+          "topic_name": "string"
+        }
+      ]
+    }
+   ]}
+   ~~~
+   -Update hour
+   PUT /professionals/{prof_id}/agenda/specific
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {"day": date,
+        "start": time,
+        topic_name: str,
+        prof_id: str
+        }
+   {'error': str}
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
 
 ### Response Exception
    - Create
-      POST /prof/{prof_id}/agenda/create/exception
+      POST /professionals/{prof_id}/agenda/exception
       ~~~
       {
-         "start": "21:40:07.116Z",
-         "end": "21:40:07.116Z",
-         "day": "2025-05-01"
+         "start": time,
+         "end": time,
+         "day": date
       }
       ~~~
    - Get
-      GET /prof/{prof_id}/agenda/get/exception
+      GET /professionals/{prof_id}/agenda/exception
       ~~~
       {
          "exception": [
             {
-                  "start": "21:40:57.854Z",
-                  "end": "21:40:57.854Z",
-                  "day": "2025-05-01"
+                  "start": time,
+                  "end": time,
+                  "day": date
                }
          ]
       }
       ~~~
+   - Delete 
+   DELETE /professional/{prof_id}/agenda/exception
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+   -Update hour
+   PUT /professionals/{prof_id}/agenda/exception
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
 
 
 ### Response to Front
 - Mostrar horario:
    - Profesional
+    GET /professional/{prof_id}/available
    ~~~
       {recurret: [{
          start:time,
@@ -809,7 +989,7 @@ DELETE /topics/prof/{prof_id}
  
 
 # Test
-En backend/test/, se encuentra el archivo test_EP_bd.py, donde se realizan inserciones para que la BD tenga datos.
+En backend/test/, se encuentra el archivo test_EP_bd.py, donde se insertan datos en la BD.
 
 Luego de la ejecución las tablas quedaran asi:
 
@@ -823,12 +1003,12 @@ Luego de la ejecución las tablas quedaran asi:
       - name: z
 
 - professional
- - prof_id: a
-   - score: 0
- - prof_id: b
-   - score: 0
- - prof_id: z
-   - score: 0
+   - prof_id: a
+      - score: 0
+   - prof_id: b
+      - score: 0
+   - prof_id: z
+      - score: 0
 
 - topic
    - topic_name: INGLES
@@ -928,6 +1108,9 @@ Luego de la ejecución las tablas quedaran asi:
       - se intenta insertar 8-10 => horario con inicio no incluido final si, no se inserta
       - se intenta insertar 19-23 => horario no incluido o superpuesto se admite la insersion
       - se intenta insertar 18-20 => horario no incluido o superpuesto se admite la insersion
+- Actualización de horarios
+   - Se admite la actualización de horario de inicio y/o fin
+   - Se admite el agregado o eliminación de topicos, (INDIVIDUAL)
 
               
 
