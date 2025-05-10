@@ -8,13 +8,12 @@ import app.models as models
 from app.bd.cruds import crud_prof
 from app.bd.bd_utils import Errors, Info
 
-router = APIRouter(prefix="/professional",tags=["Professional"])
+router = APIRouter(prefix="/professionals",tags=["Professionals"])
 
 
-
-@router.get("/all", 
+@router.get("", 
             response_model=List[schema_prof.Professional])
-async def read_all_prof(db : Session = Depends(get_db)):
+async def get_all_prof(db : Session = Depends(get_db)):
     """
     Retorna todos los profesionales
     Args:
@@ -38,12 +37,11 @@ async def find_prof(prof_id: str, db: Session = Depends(get_db)):
         Errors
 
     """
-    response = crud_prof.get_prof_id(db, prof_id)  
-    ic(f'GET PROF')      
+    response = crud_prof.get_prof_id(db, prof_id)       
     return response
 
 
-@router.delete("/{prof_id}/delete",response_model=Union[Info, Errors])
+@router.delete("/{prof_id}",response_model=Union[Info, Errors])
 def del_user(prof_id:str, db:Session = Depends(get_db)):
     """
     Eliminar un profesional
@@ -59,9 +57,9 @@ def del_user(prof_id:str, db:Session = Depends(get_db)):
 
 
 #Para Desarrollo
-@router.post("/{prof_id}/create", 
+@router.post("", 
              response_model=Union[Info, Errors])
-async def create_prof(prof_id : str, 
+async def create_prof(prof : schema_prof.ProfessionalID, 
                 db : Session = Depends(get_db)):
     """
     Funcion de desarrollo para crear un profesional
@@ -74,9 +72,9 @@ async def create_prof(prof_id : str,
         Info
         Errors
     """
-    return crud_prof.create_prof(db, prof_id)
+    return crud_prof.create_prof(db, prof.prof_id)
 
-@router.put("/{prof_id}/score",response_model=Union[schema_prof.Professional, Errors])
+@router.put("/{prof_id}",response_model=Union[schema_prof.Professional, Errors])
 def update_score(prof_id:str, score:schema_prof.ProfessionalScore, db:Session = Depends(get_db)):
     """
     Funcion de desarrollo para definir score
