@@ -8,34 +8,6 @@ from datetime import date, time
 from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time
 from app.bd.bd_exceptions import MinuteError, CompleteHour
 
-def get_exception(db: Session, excepcion: schema_specific.ExceptionCreate):
-    """
-    Recuperar todas las excepciones
-
-    Args:
-        db: Session
-        exception: schema_specific.ExceptionCreate
-            - prof_id: str
-            - day: date <- no considerado por ahora
-            - start: time <- no considerado
-            - end: time <- no considerado
-    Return:
-        {'exception':[schema_specific.ExceptionGet]}
-            -   [{day:, start:, end:}]
-        {'error':}
-    """
-    try:
-        smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == excepcion.prof_id,
-                                              SpecificSchedule.isCanceling == True)
-        response = db.scalars(smt).all()
-        respuesta = [schema_specific.ExceptionGet(day=r.day,
-                                                   start=r.start, 
-                                                   end=r.end) for r in response]
-        return {'exception':respuesta}
-    except:
-        return {'error': 'No fue posible recuperar'}
-
-
 def create_exception(db: Session, spec: schema_specific.ExceptionCreate):
     """
     Crear  una excepcion, specific isCanceling= True
@@ -77,6 +49,37 @@ def create_exception(db: Session, spec: schema_specific.ExceptionCreate):
     except:
         return {'error':'invalid time'}
     
+
+
+def get_exception(db: Session, excepcion: schema_specific.ExceptionCreate):
+    """
+    Recuperar todas las excepciones
+
+    Args:
+        db: Session
+        exception: schema_specific.ExceptionCreate
+            - prof_id: str
+            - day: date <- no considerado por ahora
+            - start: time <- no considerado
+            - end: time <- no considerado
+    Return:
+        {'exception':[schema_specific.ExceptionGet]}
+            -   [{day:, start:, end:}]
+        {'error':}
+    """
+    try:
+        smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == excepcion.prof_id,
+                                              SpecificSchedule.isCanceling == True)
+        response = db.scalars(smt).all()
+        respuesta = [schema_specific.ExceptionGet(day=r.day,
+                                                   start=r.start, 
+                                                   end=r.end) for r in response]
+        return {'exception':respuesta}
+    except:
+        return {'error': 'No fue posible recuperar'}
+
+
+
 def delete_exception(db:Session, excep:schema_specific.ExceptionDel):
     """
     Elimina una excepcion dado un dia, profesional y hora de inicio
@@ -100,28 +103,6 @@ def delete_exception(db:Session, excep:schema_specific.ExceptionDel):
     db.delete(response)
     db.commit()
     return {'info':f'Delete -> Day: {excep.day}, start: {excep.start} from Professional: {excep.prof_id}'}
-
-def __get_schedule(db: Session, spec:schema_specific.SpecificSchema):
-    """
-    Funcion privada que recupera todas las excepciones
-
-    Args:
-        db: Session
-        spec: schema_specific.SpecificSchema
-            - prof_id: str
-            - day: date
-    Return
-        [SpecificSchedule]
-        []
-
-    """
-    smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == spec.prof_id, 
-                                         SpecificSchedule.day == spec.day, 
-                                         SpecificSchedule.isCanceling == True)
-    response = db.scalars(smt).all()
-    return response
-
-
 
 
 def update_exception(db:Session, exception:schema_specific.ExceptionUpdate):
@@ -160,16 +141,15 @@ def update_exception(db:Session, exception:schema_specific.ExceptionUpdate):
                                                 SpecificSchedule.day == exception.day,
                                                 SpecificSchedule.prof_id == exception.prof_id,
                                                 SpecificSchedule.start != exception.start).all()
-        ic(exist)
-        ic(response)
         if not include_time(exist, response):
             try:
                 updates = {'start': response.start, 'end':response.end}
                 ic(updates)
-                smt = update(SpecificSchedule).where(SpecificSchedule.isCanceling == True,
+                stm = update(SpecificSchedule).where(SpecificSchedule.isCanceling == True,
                                                     SpecificSchedule.day == exception.day,
                                                     SpecificSchedule.prof_id == exception.prof_id,
                                                     SpecificSchedule.start == exception.start).values(updates)
+                db.execute(stm)
                 db.commit()
                 return {'info': 'OK'}
             except:
@@ -178,4 +158,25 @@ def update_exception(db:Session, exception:schema_specific.ExceptionUpdate):
             return {'error': 'time include in DB'}
     else:
         return {'error': f'Error hour {response.start} == {response.end}'} 
+    
+
+def __get_schedule(db: Session, spec:schema_specific.ExceptionGetDat):
+    """
+    Funcion privada que recupera todas las excepciones
+
+    Args:
+        db: Session
+        spec: schema_specific.ExceptionGetDat
+            - prof_id: str
+            - day: date
+    Return
+        [SpecificSchedule]
+        []
+
+    """
+    smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == spec.prof_id, 
+                                         SpecificSchedule.day == spec.day, 
+                                         SpecificSchedule.isCanceling == True)
+    response = db.scalars(smt).all()
+    return response
     

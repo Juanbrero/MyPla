@@ -120,16 +120,6 @@ def __get_schedule(db: Session, specific:schema_specific.SpecificSchema):
     return response
 
 
-#Funcion que recupera los datos que esten entre el rango
-def __include(db:Session, specific:schema_specific.SpecificSchema):
-    """
-    Funcion para buscar inclusion en update IN PROCESS
-    """
-    smt = select(SpecificSchedule.start).where(SpecificSchedule.prof_id == specific.prof_id, SpecificSchedule.day == specific.day,
-                                         SpecificSchedule.start <= specific.start and SpecificSchedule.end <= specific.end  )
-    response = db.scalars(smt).all()
-    return response
-
 ##
 def get_id_month(topicS:schema_topic_specific.TopicSpecificMonth, db:Session):
     """
@@ -164,7 +154,6 @@ def get_id_month(topicS:schema_topic_specific.TopicSpecificMonth, db:Session):
     except:
         return {'error':' - error'}
 
-# EN PROCESO
 def update_specific(db:Session, specific:schema_topic_specific.TopicSpecificUpdate):
     if specific.Nstart is None and specific.Nend is None:
         return {'error': 'No hay update'}
@@ -201,10 +190,11 @@ def update_specific(db:Session, specific:schema_topic_specific.TopicSpecificUpda
         if not include_time(exist, response):
             try:    
                 updates = {'start': response.start, 'end': response.end}        
-                smt = update(SpecificSchedule).where(SpecificSchedule.prof_id== specific.prof_id,
+                stm = update(SpecificSchedule).where(SpecificSchedule.prof_id== specific.prof_id,
                                                         SpecificSchedule.start == specific.start,
                                                         SpecificSchedule.day == specific.day,
                                                         SpecificSchedule.isCanceling == False).values(updates)
+                db.execute(stm)
                 db.commit()
                 return {'info': 'OK'}
             except:

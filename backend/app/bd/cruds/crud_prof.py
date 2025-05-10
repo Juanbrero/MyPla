@@ -73,7 +73,6 @@ def create_prof(db: Session, prof_c: schema_prof.ProfessionalID):
         {'info':}
         {'error':}
     """
-    ic('CREATE')
     try:
         smt = insert(Professional).values(prof_id = prof_c)
         response = db.execute(smt)

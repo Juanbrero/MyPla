@@ -219,8 +219,6 @@ def del_topic_recurrent(db:Session, recurrent:schema_topic_recurrent.TopicRecurr
 
 
 
-
-#EN PROCESO
 def update_recurrent_time(db:Session, recurrent:schema_topic_recurrent.TopicRecurrentUpdate):
     """
     Permite actualizar hora de inicio y final de un dia particular
@@ -270,9 +268,10 @@ def update_recurrent_time(db:Session, recurrent:schema_topic_recurrent.TopicRecu
         if not include_time(exist, recu):
             try:    
                 updates = {'start': recu.start, 'end': recu.end}        
-                smt = update(RecurrentSchedule).where(RecurrentSchedule.prof_id== recurrent.prof_id,
+                stm = update(RecurrentSchedule).where(RecurrentSchedule.prof_id== recurrent.prof_id,
                                                         RecurrentSchedule.start == recurrent.start,
                                                         RecurrentSchedule.week_day == recurrent.week_day).values(updates)
+                db.execute(stm)
                 db.commit()
                 return {'info': 'OK'}
             except:

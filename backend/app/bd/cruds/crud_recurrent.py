@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, delete, insert
 from app.models.RecurrentSchedule import RecurrentSchedule
 
-from app.bd.schemas import schema_recurrent
+from app.bd.schemas import schema_recurrent, schema_prof
 #Aqui se crearan las funciones que utilizaran los esquemas y modelos
 from datetime import date
 from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time
@@ -10,7 +10,7 @@ from app.bd.bd_exceptions import MinuteError, CompleteHour, WeekError
 
 #Estas funciones no son utilizadas ya que se ingresa por TopicRecurrent
 
-def get_all_recurrent(db: Session, recurrent:schema_recurrent.RecurrentSchemaID):
+def get_all_recurrent(db: Session, recurrent:schema_prof.ProfessionalID):
     smt = select(RecurrentSchedule).where(RecurrentSchedule.prof_id == recurrent.prof_id)
     response = db.scalars(smt).all()
     return response
