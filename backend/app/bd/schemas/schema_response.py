@@ -4,35 +4,69 @@ from . import schema_specific, schema_topic_recurrent, schema_topic_specific
 
 
 class ResponseRecurrent(BaseModel):
+    """
+    Esquema de lista de dias recurrentes
+      - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
+    """
     recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
 
 class ResponseSpecific(BaseModel):
+     """
+     Esquema de lista de dias Especificos
+      - specific: list[schema_topic_specific.TopicSpecificCr1]
+     """
      specific: list[schema_topic_specific.TopicSpecificCr1]
 
 class ResponseException(BaseModel):
+    """
+    Esquema de dias excepcionales
+      - exception: list[schema_specific.ExceptionGet]
+    """
     exception: list[schema_specific.ExceptionGet]
 
 class ResponseEvent(BaseModel):
+    """
+    Esquema de eventos
+      - event: list[schema_specific.SpecificCreate]
+    """
     event: list[schema_specific.SpecificCreate] #Cambiar a esquema de event
 
 class ResponseClass(BaseModel):
+    """
+    Esquema de clases
+      -clase: list[schema_specific.Specific]
+    """
     clase: list[schema_specific.Specific]  #Cambiar a esquema de clase
 
 class Response(ResponseEvent, ResponseException, ResponseSpecific, ResponseRecurrent):
-    pass
     """
-    recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
-    specific: list[schema_topic_specific.TopicSpecificCr1]
-    exception: list[schema_specific.ExceptionGet]
-    event: list[schema_specific.SpecificCreate] """
+    Esquema de respuesta Event, Exception, Specific y Recurrent
+      - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
+      - specific: list[schema_topic_specific.TopicSpecificCr1]
+      - exception: list[schema_specific.ExceptionGet]
+      - event: list[schema_specific.SpecificCreate]
+    """
+    pass
+    
 
 
 
 class ResponseProfessional(ResponseClass, Response):
+    """
+    Esquema de respuesta a profesional
+      -clase: list[schema_specific.Specific]
+    """
     pass
-    #clase: list[schema_specific.Specific]
+    
 
 class ResponseAlumno(Response):
+    """
+    Esquema de respuesta a alumno
+      - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
+      - specific: list[schema_topic_specific.TopicSpecificCr1]
+      - exception: list[schema_specific.ExceptionGet]
+      - event: list[schema_specific.SpecificCreate]
+    """
     pass
     
 

@@ -6,6 +6,8 @@ import app.bd.bd_exceptions as excep
 class Schedule(BaseModel):
     """
     Esquema base para manipular Schedules
+        - start: time
+        - end: time
     """
     start:time
     end:time
@@ -13,12 +15,14 @@ class Schedule(BaseModel):
 class Errors(BaseModel):
     """
     Esquema de error
+        - error: str
     """
     error: str
 
 class Info(BaseModel):
     """
     Esquema de información
+        - info: str
     """
     info: str
 
@@ -52,6 +56,8 @@ def valid_time(schedule:Schedule) -> bool:
             - end: time
     Return:
         bool
+            - True Valido
+            - False invalido
     """
     #si la hora de fin es la 0, reemplaza en fin la hora por 23:59
     inicio = schedule.start
@@ -76,7 +82,9 @@ def include_time(db_recurrent:list[Schedule], schedule:Schedule) -> bool:
         db_recurrent: [Schedule] => lista de tiempos existentes
         schedule: Schedule => tiempo que se desea insertar
     Return:
-        bool
+        bool 
+            - True esta incluido
+            - False No esta incluido
     """
     incluido = False
 
@@ -97,7 +105,7 @@ def include_time(db_recurrent:list[Schedule], schedule:Schedule) -> bool:
     else:
         fin = schedule.end.replace(hour=23, minute=59)
         del finaux
-    
+    ic(f'{inicio, fin}')
     for dbe in db_recurrent:
         if inicio <= dbe.start < fin and  inicio < dbe.end <= fin:
             ic('INCLUIDO')
@@ -105,7 +113,7 @@ def include_time(db_recurrent:list[Schedule], schedule:Schedule) -> bool:
             break
         elif inicio <= dbe.start < fin and not (inicio < dbe.end <= fin):
             incluido = True
-            ic('Start in range, ampliar rango')
+            ic(f'Start in range, ampliar rango')
             break
         elif inicio < dbe.end <= fin and not (inicio <= dbe.start < fin):
             incluido = True
