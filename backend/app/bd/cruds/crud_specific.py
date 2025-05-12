@@ -8,7 +8,7 @@ from datetime import date, time
 from app.bd.bd_utils import strip_time_hour_minute, valid_time, include_time
 from app.bd.bd_exceptions import MinuteError, CompleteHour
 
-def create_exception(db: Session, spec: schema_specific.ExceptionCreate):
+def create_exception(db: Session, exception: schema_specific.ExceptionCreate):
     """
     Crear  una excepcion, specific isCanceling= True
 
@@ -23,16 +23,16 @@ def create_exception(db: Session, spec: schema_specific.ExceptionCreate):
         {day:, start:, end:}
         {'error':}
     """
-    excep = schema_specific.ExceptionInsert(**spec.dict())
+    excep = schema_specific.ExceptionInsert(**exception.dict())
     try:
         excep.start = strip_time_hour_minute(excep.start) #10:20:06.25..z -> 10:20
         excep.end= strip_time_hour_minute(excep.end)
     except MinuteError as e:
         return {'error':f'{e}'}
     try:
-        if valid_time(spec):      
-            existent = __get_schedule(db, spec)
-            if not include_time(existent, spec):
+        if valid_time(excep):     
+            existent = __get_schedule(db, excep)
+            if not include_time(existent, excep):
                 try:
                     smt = insert(SpecificSchedule).values(excep.dict())
                     response = db.execute(smt)
@@ -160,13 +160,13 @@ def update_exception(db:Session, exception:schema_specific.ExceptionUpdate):
         return {'error': f'Error hour {response.start} == {response.end}'} 
     
 
-def __get_schedule(db: Session, spec:schema_specific.ExceptionGetDat):
+def __get_schedule(db: Session, exception:schema_specific.ExceptionGetDat):
     """
     Funcion privada que recupera todas las excepciones
 
     Args:
         db: Session
-        spec: schema_specific.ExceptionGetDat
+        exception: schema_specific.ExceptionGetDat
             - prof_id: str
             - day: date
     Return
@@ -174,8 +174,8 @@ def __get_schedule(db: Session, spec:schema_specific.ExceptionGetDat):
         []
 
     """
-    smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == spec.prof_id, 
-                                         SpecificSchedule.day == spec.day, 
+    smt = select(SpecificSchedule).where(SpecificSchedule.prof_id == exception.prof_id, 
+                                         SpecificSchedule.day == exception.day, 
                                          SpecificSchedule.isCanceling == True)
     response = db.scalars(smt).all()
     return response
