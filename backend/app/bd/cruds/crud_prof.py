@@ -27,8 +27,7 @@ def get_prof_id(db:Session, professional: schema_prof.ProfessionalID):
         {'error':}
     """
     try:
-        smt = select(Professional).where(Professional.prof_id == professional)
-        response = db.scalars(smt).first()
+        response = db.query(Professional).filter(Professional.prof_id == professional).first()
         if response is None: #<- Se define la falla
             response = {"error": "id no existente"}
     except:
@@ -48,8 +47,7 @@ def del_prof(db:Session, id_prof:schema_prof.ProfessionalID):
         {'error':}
     """
     try:
-        smt = delete(Professional).where(Professional.prof_id == id_prof)
-        response = db.execute(smt)
+        response = db.query(Professional).filter(Professional.prof_id == id_prof).first()
         #db.query(Professional).filter(Professional.prof_id == id_prof).delete() no es afectado por el try
         if response.rowcount > 0:
             db.commit()
@@ -98,9 +96,11 @@ def update_score(db:Session, prof:schema_prof.Professional):
         {'error':}
     """
     if prof.score in range (0, 6):
-        db.query(Professional).filter(Professional.prof_id == prof.prof_id).update({"score": prof.score})
-        db.commit()
-        return db.query(Professional).get(prof.prof_id)
+        prof_update = db.query(Professional).filter(Professional.prof_id == prof.prof_id).first()
+        if prof_update:
+            prof_update.score = prof.score
+            db.commit()
+        return prof_update
     else:
         return {'error':'Value out of range (0-5)'}
     
