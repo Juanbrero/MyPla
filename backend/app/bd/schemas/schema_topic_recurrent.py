@@ -29,6 +29,8 @@ class TopicRecurrentCreate(TopicRecurrentBase):
         - prof_id: str
     """
     prof_id:str
+    class Config:
+        orm_mode = True
 
 #Respuesta get
 class TopicRecurrent(BaseModel):

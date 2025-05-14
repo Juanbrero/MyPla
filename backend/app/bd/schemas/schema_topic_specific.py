@@ -29,6 +29,9 @@ class TopicSpecificCreate(TopicSpecificBase):
     """
     prof_id:str
 
+    class Config:
+        orm_mode = True
+
 #Respuesta get
 class TopicSpecific(BaseModel):
     topic_name:str
