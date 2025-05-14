@@ -126,6 +126,11 @@ def add_specific_topic(prof_id:str, specific:schema_topic_specific.TopicSpecific
     specific_topic = schema_topic_specific.TopicSpecificCreate(**specific.dict(), prof_id=prof_id)
     return crud_topic_specific.add_crud_topic_specific(db, specific_topic)
 
+@router.delete('/specific', tags=['Specific'], response_model=Union[Info, Errors])
+def del_specific(prof_id:str, spec:schema_specific.ExceptionDelDat, db: Session = Depends(get_db)):
+    specific = schema_specific.ExceptionDel(**spec.dict, prof_id=prof_id)
+    return crud_topic_specific.delete_specific(db, specific)
+
 @router.delete('/specific/topic/', tags=['Specific'], response_model=Union[Info, Errors])
 def del_specific_topic(prof_id:str, specific:schema_topic_specific.TopicSpecificBase, db:Session = Depends(get_db)):
     """
