@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export default function ScheduleDate(props) {
-  const { taskData, isEditable } = props;
+  const { taskData, isEditable, onChangeData} = props;
 
   const [day, setDay] = React.useState(taskData?.day || 'Lunes');
   const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
@@ -31,6 +31,18 @@ export default function ScheduleDate(props) {
   
   console.log("render date");
   
+  const handleDayChange = (event) => {
+    const { target: {value} } = event;
+    setDay(value);
+    onChangeData?.({ day : value});
+  };
+
+  const handleDateChange = (newValue) => {
+    setSelectedDate(newValue);
+    onChangeData?.({ date : newValue});
+  };
+
+
   return (
     <>
       {!isEditable ? (
@@ -45,7 +57,7 @@ export default function ScheduleDate(props) {
               <InputLabel>Día</InputLabel>
               <Select
                 value={day}
-                onChange={(e) => setDay(e.target.value)}
+                onChange= {handleDayChange}
                 label="Día"
               >
                 {DAYS.map((d) => (
@@ -57,7 +69,7 @@ export default function ScheduleDate(props) {
             <DatePicker
               label="Fecha"
               value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
+              onChange={handleDateChange}
               slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
             />
           )

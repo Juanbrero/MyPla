@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ScheduleInformation from '../components/ScheduleInformation';
+import ScheduleEdit from '../components/ScheduleEdit';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -81,6 +81,13 @@ function Calendar() {
       newEvent
     ])
     handleCloseModal()
+
+    // console.log("CalendarPage.handleSaveTask(): TaskData.topics contiene -> " + taskName.topics);
+    // console.log("CalendarPage.handleSaveTask(): TaskData.date contiene -> " + taskName.date);
+    // console.log("CalendarPage.handleSaveTask(): TaskData.day contiene -> " + taskName.day);
+    // console.log("CalendarPage.handleSaveTask(): TaskData.start contiene -> " + taskName.start);
+    // console.log("CalendarPage.handleSaveTask(): TaskData.end contiene -> " + taskName.end);
+    // console.log("CalendarPage.handleSaveTask(): TaskData.recurrent contiene -> " + taskName.recurrent);
   };
 
   console.log("selected task: " + selectedTask.topics);
@@ -104,7 +111,7 @@ function Calendar() {
         height={"90vh"}
       />
       {/* agregar condicion para ver si abro create o info. */}
-      <ScheduleInformation
+      <ScheduleEdit
         open={modalOpen}
         onClose={handleCloseModal}
         taskData={selectedTask}

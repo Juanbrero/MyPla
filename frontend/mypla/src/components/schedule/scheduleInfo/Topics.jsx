@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 const TOPICS = ['Estrategia', 'Marketing', 'Ventas', 'Finanzas', 'Recursos Humanos'];
 
 export default function Topics(props) {
-  const { taskData, isEditable } = props;
+  const { taskData, isEditable, onChangeData } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = React.useState(taskData?.topics || []);
   console.log("creando componentes");
@@ -21,7 +21,9 @@ export default function Topics(props) {
 
   const handleTopicChange = (event) => {
       const { target: { value } } = event;
-      setSelectedTopicsState(typeof value === 'string' ? value.split(',') : value);
+      const newTopics = typeof value === 'string' ? value.split(',') : value;
+      setSelectedTopicsState(newTopics);
+      onChangeData?.({ topics : newTopics});
   };
 
   return (

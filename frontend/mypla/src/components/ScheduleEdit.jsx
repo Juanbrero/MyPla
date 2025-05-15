@@ -26,7 +26,7 @@ const style = {
 };
 
 
-export default function ScheduleInformation({
+export default function ScheduleEdit({
   open,
   onClose,
   taskData,
@@ -37,11 +37,19 @@ export default function ScheduleInformation({
 }) {
 
   const [isEditable, setIsEditable] = React.useState(false); // Controla si el formulario es editable
+  const [localTaskData, setLocalTaskData] = React.useState(taskData);
 
-
-  const handleCancelTask = () => {
-    onCancelTask?.(taskData);
+  React.useEffect(() => {
+    if (open) setLocalTaskData(taskData);
+  }, [open, taskData]);
+  
+  const handleTaskDataChange = (partialUpdate) => {
+    setLocalTaskData((prev) => ({
+      ...prev,
+      ...partialUpdate,
+    }));
   };
+  
 
   const handleCancelOneOccurrence = () => {
     onCancelOneOccurrence?.(taskData);
@@ -53,27 +61,24 @@ export default function ScheduleInformation({
 
 
   const handleSaveTask = () => {
-    // if (!selectedTopicsState.length || !startTime || !endTime) {
-    //   alert('Por favor complete todos los campos');
-    //   return;
-    // }
 
-    // if (startTime >= endTime) {
-    //   alert('La hora de inicio no puede ser mayor o igual que la de fin');
-    //   return;
-    // }
+    const { topics, start, end } = localTaskData;
 
-    // onSaveTask?.({
-    //   ...taskData,
-    //   topics: selectedTopicsState,
-    //   day: isRecurring ? day : null,
-    //   date: isRecurring ? null : selectedDate?.toISOString(),
-    //   start: formatTime(startTime),
-    //   end: formatTime(endTime),
-    //   isRecurring,
-    // });
-    // setIsEditable(false); // Regresar al modo de solo lectura después de guardar
+    if (!topics?.length || !start || !end) {
+      alert('Por favor complete todos los campos');
+      return;
+    }
+  
+    if (start >= end) {
+      alert('La hora de inicio no puede ser mayor o igual que la de fin');
+      return;
+    }
+  
+
+    onSaveTask?.(localTaskData);
+    setIsEditable(false); // Regresar al modo de solo lectura después de guardar
   };
+
 
   const handleCancelChanges = () => {
     setIsEditable(false); // Regresar al modo de solo lectura
@@ -83,9 +88,6 @@ export default function ScheduleInformation({
     setIsEditable(true); // Permite editar el horario
   };
 
-  console.log("taskData en scheduleInfo: " + taskData);
-
-
   return (
     <Modal open={open} onClose={onClose}>
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
@@ -94,18 +96,22 @@ export default function ScheduleInformation({
           <Topics 
             taskData={taskData}
             isEditable={isEditable}
+            onChangeData={handleTaskDataChange}
           />
           <ScheduleDate 
             taskData={taskData}
             isEditable={isEditable}
+            onChangeData={handleTaskDataChange}
           />
           <ScheduleTime
             taskData={taskData}
             isEditable={isEditable}
+            onChangeData={handleTaskDataChange}
           />
           <Recurrent
             taskData={taskData}
             isEditable={isEditable}
+            onChangeData={handleTaskDataChange}
           />
 
           {/* Botones */}

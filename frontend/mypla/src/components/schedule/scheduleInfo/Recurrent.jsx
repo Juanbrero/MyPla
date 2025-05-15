@@ -5,7 +5,7 @@ import {
 import { useEffect } from 'react'
 
 export default function ScheduleTime(props) {
-    const { taskData, isEditable } = props;
+    const { taskData, isEditable, onChangeData } = props;
 
     const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
 
@@ -17,6 +17,11 @@ export default function ScheduleTime(props) {
     }, [taskData?.recurrent]);
     
 
+    const handleRecurrentChange = (event) => {
+        const { target: { checked } } = event;
+        setIsRecurring(checked)
+        onChangeData?.({ recurrent : checked});
+    };
     return (
         <>
         {!isEditable ? (
@@ -28,7 +33,7 @@ export default function ScheduleTime(props) {
                control={
                     <Checkbox
                        checked={isRecurring}
-                       onChange={(e) => setIsRecurring(e.target.checked)}
+                       onChange={handleRecurrentChange}
                     />
                 }
                 label="Repetir semanalmente"

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import {
-  Box, Button, Typography, Modal, TextField, Checkbox, FormControlLabel,
-  MenuItem, Select, ListItemText, FormControl, InputLabel
+  Box, Button, Typography, Modal
 } from '@mui/material';
-import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale';
 import Topics from './schedule/scheduleInfo/Topics';
@@ -26,10 +25,8 @@ const style = {
   color: 'text.primary',
 };
 
-const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-const topics = ['Estrategia', 'Marketing', 'Ventas', 'Finanzas', 'Recursos Humanos'];
 
-export default function ScheduleInformation({
+export default function ScheduleCreate({
   open,
   onClose,
   taskData,
@@ -37,33 +34,39 @@ export default function ScheduleInformation({
   onSaveTask,
 }) {
 
+  const [localTaskData, setLocalTaskData] = React.useState(taskData);
+  
+  React.useEffect(() => {
+    if (open) setLocalTaskData(taskData);
+  }, [open, taskData]);
+    
+  const handleTaskDataChange = (partialUpdate) => {
+    setLocalTaskData((prev) => ({
+      ...prev,
+      ...partialUpdate,
+    }));
+  };
 
   const handleCancelTask = () => {
     onCancelTask?.(selectedTopicsState);
   };
 
-  const formatTime = (date) => date.toTimeString().slice(0, 5); // 'HH:MM'
 
   const handleSaveTask = () => {
-    // if (!selectedTopicsState.length || !startTime || !endTime) {
-    //   alert('Por favor complete todos los campos');
-    //   return;
-    // }
+    const { topics, start, end } = localTaskData;
 
-    // if (startTime >= endTime) {
-    //   alert('La hora de inicio no puede ser mayor o igual que la de fin');
-    //   return;
-    // }
-
-    // onSaveTask?.({
-    //   ...taskData,
-    //   topics: selectedTopicsState,
-    //   day: isRecurring ? day : null,
-    //   date: isRecurring ? null : selectedDate?.toISOString(),
-    //   startTime: formatTime(startTime),
-    //   endTime: formatTime(endTime),
-    //   isRecurring,
-    // });
+    if (!topics?.length || !start || !end) {
+      alert('Por favor complete todos los campos');
+      return;
+    }
+  
+    if (start >= end) {
+      alert('La hora de inicio no puede ser mayor o igual que la de fin');
+      return;
+    }
+  
+    onSaveTask?.(localTaskData);
+    setIsEditable(false); // Regresar al modo de solo lectura después de guardar
   };
 
   return (
@@ -75,18 +78,22 @@ export default function ScheduleInformation({
           <Topics 
             taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />
           <ScheduleDate 
             taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />
           <ScheduleTime
             taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />          
           <Recurrent
             taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />
          
           {/* Botones */}

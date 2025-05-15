@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
-import ScheduleInformation from './ScheduleInformation';
 import ScheduleCreate from './ScheduleCreate';
+import ScheduleEdit from './ScheduleEdit';
 
 export default function ScheduleManager() {
   const initialTask = {
@@ -70,7 +70,7 @@ export default function ScheduleManager() {
         Abrir para ver información
       </Button>
 
-      <ScheduleInformation
+      <ScheduleEdit
         open={infoModalOpen}
         onClose={handleCloseInfoModal}
         taskData={selectedTask}

@@ -6,7 +6,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { useEffect } from 'react'
 
 export default function ScheduleTime(props) {
-  const { taskData, isEditable } = props;
+  const { taskData, isEditable, onChangeData } = props;
 
   const [startTime, setStartTime] = React.useState(taskData?.start ? new Date(`1970-01-01T${taskData.start}:00`) : null);
   const [endTime, setEndTime] = React.useState(taskData?.end ? new Date(`1970-01-01T${taskData.end}:00`) : null);
@@ -32,6 +32,16 @@ export default function ScheduleTime(props) {
         return date.toTimeString().slice(0, 5)
     } // 'HH:MM'
     
+    const handleStartChange = (newValue) => {
+      console.log("nuevs start: " + newValue);
+      setStartTime(newValue);
+      onChangeData?.({ start : newValue});
+    };
+
+    const handleEndChange = (newValue) => {
+      setEndTime(newValue);
+      onChangeData?.({ end : newValue});
+    };
 
     return (
         <>
@@ -44,14 +54,14 @@ export default function ScheduleTime(props) {
               <TimePicker
                 label="Inicio"
                 value={startTime}
-                onChange={(newValue) => setStartTime(newValue)}
+                onChange={handleStartChange}
                 minutesStep={30}
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
               <TimePicker
                 label="Fin"
                 value={endTime}
-                onChange={(newValue) => setEndTime(newValue)}
+                onChange={handleEndChange}
                 minutesStep={30}
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
