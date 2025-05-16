@@ -28,6 +28,7 @@ const style = {
 
 export default function ScheduleEdit({
   open,
+  clickedEvent,
   onClose,
   taskData,
   onCancelTask,
@@ -35,6 +36,8 @@ export default function ScheduleEdit({
   onDeleteTask,
   onCancelOneOccurrence,
 }) {
+
+  console.log("render edit");
 
   const [isEditable, setIsEditable] = React.useState(false); // Controla si el formulario es editable
   const [localTaskData, setLocalTaskData] = React.useState(taskData);
@@ -118,7 +121,7 @@ export default function ScheduleEdit({
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             {!isEditable ? (
               <>
-                {taskData?.recurrent && (
+                {clickedEvent?.recurrent && (
                   <Button color="error" variant="outlined" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
                     Cancelar solo esta vez
                   </Button>

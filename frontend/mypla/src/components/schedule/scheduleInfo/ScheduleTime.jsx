@@ -33,14 +33,14 @@ export default function ScheduleTime(props) {
     } // 'HH:MM'
     
     const handleStartChange = (newValue) => {
-      console.log("nuevs start: " + newValue);
+      console.log("nuevs start: " + formatTime(newValue));
       setStartTime(newValue);
-      onChangeData?.({ start : newValue});
+      onChangeData?.({ start : formatTime(newValue)});
     };
 
     const handleEndChange = (newValue) => {
       setEndTime(newValue);
-      onChangeData?.({ end : newValue});
+      onChangeData?.({ end : formatTime(newValue)});
     };
 
     return (

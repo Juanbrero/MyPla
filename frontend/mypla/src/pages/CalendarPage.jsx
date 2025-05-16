@@ -1,24 +1,32 @@
 import React, { useState } from "react";
 import ScheduleEdit from '../components/ScheduleEdit';
+import ScheduleCreate from '../components/ScheduleCreate';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 
+
 function Calendar() {
 
-  console.log("Renderizando CalendarPage");
-
-
+  const [isCreated, setCreated] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  // const [selectedTask, setSelectedTask] = useState({
+  //    topics: ['Estrategia', 'Marketing'],
+  //    day: 'Lunes',
+  //    start: '14:00',
+  //    end: '15:00',
+  //    recurrent: true,
+  //    date: "2025-04-18",
+  // });
   const [selectedTask, setSelectedTask] = useState({
-     topics: ['Estrategia', 'Marketing'],
-     day: 'Lunes',
-     start: '14:00',
-     end: '15:00',
+     topics: [],
+     day: '',
+     start: '',
+     end: '',
      recurrent: true,
-     date: "2025-04-18",
+     date: "",
   });
 
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -31,12 +39,18 @@ function Calendar() {
       color: 'red'
     },
   ])
+
+  const [clickedEvent, setClickedEvent] = useState(null);
+
   const handleSelect = (info) => {
-    console.log(info)
-    const start = DateTime.fromISO(info.startStr)
-    const end = DateTime.fromISO(info.endStr)
+ 
+    setCreated(false);
+    const start = DateTime.fromISO(info.startStr);
+    const end = DateTime.fromISO(info.endStr);
+    
     setSelectedTask({
-      topics: ['Estrategia', 'Marketing'],
+      // topics: ['Estrategia', 'Marketing'],
+      topics: [],
       day: dias[new Date(start).getDay()],
       start: start.toFormat("HH:mm"),
       end: end.toFormat("HH:mm"),
@@ -56,46 +70,78 @@ function Calendar() {
   };
 
   const handleEventClick = (arg) => {
-    alert(`Evento: ${arg.event.title}`);
+    
+    let evento = {
+      title: arg.event.title,
+      daysOfWeek: arg.event.extendedProps.daysOfWeek,
+      start: arg.event.start,
+      startTime: arg.event.extendedProps.startTime,
+      end: arg.event.end,
+      endTime: arg.event.extendedProps.endTime,
+      recurrent: arg.event.extendedProps.recurrent,
+      topics: arg.event.extendedProps.topics,
+    };
+    
+    setClickedEvent(evento);
+    console.log("evento clickeado: ", evento);
+    setCreated(true);
+    setModalOpen(true);
+    // alert(`Evento: ${arg.event.title}`);
     // mostrar information
   };
 
   const handleSaveTask = (taskName) => {
+    
     const newEvent = {
-      title: 'evento',
-      color: 'green',
+      title: '',
+      color: '',
+      extendedProps: {
+        daysOfWeek: [],
+        startTime: "",
+        endTime: "",
+        recurrent: true,
+        topics: taskName.topics,
+      }
+      
     }
-    if (taskName.day) {
-      newEvent.daysOfWeek = [dias.indexOf(taskName.day)]
-      newEvent.startTime = taskName.start + ':00'
-      newEvent.endTime = taskName.end + ':00'
-    } else {
-      const dateO = DateTime.fromISO(taskName.date)
-      console.log(dateO.day)
-      const [startHour, startMinute] = taskName.start.split(":").map(Number);
-      const [endHour, endMinute] = taskName.end.split(":").map(Number);
-      newEvent.start = dateO.set({hour: startHour, minute: startMinute}).toISO()
-      newEvent.end = dateO.set({hour: endHour, minute: endMinute}).toISO()
+
+    if (taskName.recurrent) {
+      newEvent.daysOfWeek = [dias.indexOf(taskName.day)];
+      newEvent.extendedProps = {
+        daysOfWeek : [dias.indexOf(taskName.day)],
+        startTime : taskName.start,
+        endTime : taskName.end,
+      };
+      newEvent.startTime = taskName.start;
+      newEvent.endTime = taskName.end;
+      newEvent.color = 'green';
+    } 
+    else {
+      const eventDate = taskName.date;
+      newEvent.extendedProps = {
+        recurrent : false,
+      };
+      newEvent.start = `${eventDate}T${taskName.start}`;
+      newEvent.end = `${eventDate}T${taskName.end}`;
+      newEvent.color = 'orange';
     }
+
+    console.log("newEvent: ", newEvent);
+
     setEvents([...events, 
       newEvent
     ])
     handleCloseModal()
-
-    // console.log("CalendarPage.handleSaveTask(): TaskData.topics contiene -> " + taskName.topics);
-    // console.log("CalendarPage.handleSaveTask(): TaskData.date contiene -> " + taskName.date);
-    // console.log("CalendarPage.handleSaveTask(): TaskData.day contiene -> " + taskName.day);
-    // console.log("CalendarPage.handleSaveTask(): TaskData.start contiene -> " + taskName.start);
-    // console.log("CalendarPage.handleSaveTask(): TaskData.end contiene -> " + taskName.end);
-    // console.log("CalendarPage.handleSaveTask(): TaskData.recurrent contiene -> " + taskName.recurrent);
   };
 
-  console.log("selected task: " + selectedTask.topics);
+  const handleDeleteTask = (taskName) => {
+
+
+  }
+
 
   return (
     <div>
-      <p>Calendario debería aparecer aquí</p>
-
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -110,15 +156,28 @@ function Calendar() {
         events={events}
         height={"90vh"}
       />
-      {/* agregar condicion para ver si abro create o info. */}
-      <ScheduleEdit
-        open={modalOpen}
-        onClose={handleCloseModal}
-        taskData={selectedTask}
-        // onCancelSlot={handleCancelSlot}
-        onCancelTask={handleCancelTask}
-        onSaveTask={handleSaveTask}
-      />
+      <>
+        {isCreated ? (
+          <ScheduleEdit
+            open={modalOpen}
+            clickedEvent={clickedEvent}
+            onClose={handleCloseModal}
+            taskData={selectedTask}
+            // onCancelSlot={handleCancelSlot}
+            onCancelTask={handleCancelTask}
+            onSaveTask={handleSaveTask}
+          />
+        ) : (
+          <ScheduleCreate
+            open={modalOpen}
+            onClose={handleCloseModal}
+            taskData={selectedTask}
+            // onCancelSlot={handleCancelSlot}
+            onCancelTask={handleCancelTask}
+            onSaveTask={handleSaveTask}
+          />
+        )}
+      </>
     </div>
   );
 }

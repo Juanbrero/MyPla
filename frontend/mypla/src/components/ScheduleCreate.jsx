@@ -36,6 +36,8 @@ export default function ScheduleCreate({
 
   const [localTaskData, setLocalTaskData] = React.useState(taskData);
   
+  console.log("render create");
+
   React.useEffect(() => {
     if (open) setLocalTaskData(taskData);
   }, [open, taskData]);
@@ -48,7 +50,7 @@ export default function ScheduleCreate({
   };
 
   const handleCancelTask = () => {
-    onCancelTask?.(selectedTopicsState);
+    onCancelTask?.(localTaskData);
   };
 
 
@@ -64,16 +66,16 @@ export default function ScheduleCreate({
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
       return;
     }
-  
+    console.log(" en create");
     onSaveTask?.(localTaskData);
-    setIsEditable(false); // Regresar al modo de solo lectura después de guardar
+
   };
 
   return (
     <Modal open={open} onClose={onClose}>
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
         <Box sx={style}>
-          <Typography variant="h6" mb={2}>Editar Horario</Typography>
+          <Typography variant="h6" mb={2}>Crear Horario</Typography>
 
           <Topics 
             taskData={taskData}
