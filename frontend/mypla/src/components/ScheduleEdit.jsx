@@ -111,11 +111,13 @@ export default function ScheduleEdit({
           />
           <ScheduleTime
             taskData={taskData}
+            clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
           />
           <Recurrent
             taskData={taskData}
+            clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
           />

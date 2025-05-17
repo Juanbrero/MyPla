@@ -5,16 +5,19 @@ import {
 import { useEffect } from 'react'
 
 export default function ScheduleTime(props) {
-    const { taskData, isEditable, onChangeData } = props;
+   
+    const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
     const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
-
+    const [editRecurrent, setEditRecurrent] = React.useState(clickedEvent?.recurrent);
+    
 
     useEffect(() => {
     
         setIsRecurring(taskData?.recurrent || false);
+        setEditRecurrent(clickedEvent?.recurrent);
     
-    }, [taskData?.recurrent]);
+    }, [taskData?.recurrent, clickedEvent?.recurrent]);
     
 
     const handleRecurrentChange = (event) => {
@@ -26,7 +29,9 @@ export default function ScheduleTime(props) {
         <>
         {!isEditable ? (
             <Box>
-                <Typography variant="subtitle1"><strong>Es recurrente:</strong> {isRecurring ? 'Sí' : 'No'}</Typography>
+                <Typography variant="subtitle1">
+                    <strong>Es recurrente:</strong> {editRecurrent ? 'Sí' : 'No'}
+                </Typography>
             </Box>
         ) : (
             <FormControlLabel
