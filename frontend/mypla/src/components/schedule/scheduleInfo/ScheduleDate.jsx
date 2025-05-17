@@ -4,15 +4,18 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useEffect } from 'react'
+import { DateTime } from "luxon";
 
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export default function ScheduleDate(props) {
-  const { taskData, isEditable, onChangeData} = props;
+  const { taskData, clickedEvent, isEditable, onChangeData} = props;
 
   const [day, setDay] = React.useState(taskData?.day || 'Lunes');
   const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
   const [selectedDate, setSelectedDate] = React.useState(taskData?.date ? new Date(taskData.date) : new Date());
+  const [editDate, setEditDate] = React.useState(new Date(clickedEvent?.date));
+  const [editDay, setEditDay] = React.useState(clickedEvent?.day);
 
   useEffect(() => {
     if (taskData?.day && taskData.day !== day) {
@@ -27,7 +30,18 @@ export default function ScheduleDate(props) {
     } else if (!taskData?.date && selectedDate.toDateString() !== new Date().toDateString()) {
       setSelectedDate(new Date());
     }
-    }, [taskData?.day, taskData?.date]);
+
+    if(clickedEvent?.date) {
+      const [eventYear, eventMonth, eventDay] = clickedEvent.date.split("-");
+      const generateEventDate = new Date(eventYear, eventMonth - 1, eventDay);
+      setEditDate(generateEventDate);
+    }
+    
+    if(clickedEvent?.day) {
+      setEditDay(clickedEvent.day);
+    }
+
+    }, [taskData?.day, taskData?.date, clickedEvent?.date, clickedEvent?.day]);
   
   console.log("render date");
   
@@ -47,12 +61,13 @@ export default function ScheduleDate(props) {
     <>
       {!isEditable ? (
         <Box>
-          <Typography variant="subtitle1"><strong>{isRecurring ? 'Día' : 'Fecha'}:</strong> 
-            {isRecurring ? day : selectedDate.toLocaleDateString()}
+          <Typography variant="subtitle1">
+            <strong>{clickedEvent?.recurrent ? 'Día' : 'Fecha'}: </strong> 
+            {clickedEvent?.recurrent ? editDay : editDate.toLocaleDateString()}
           </Typography>
         </Box>  
         ) : (
-          isRecurring ? (
+          clickedEvent?.recurrent ? (
             <FormControl fullWidth margin="normal">
               <InputLabel>Día</InputLabel>
               <Select

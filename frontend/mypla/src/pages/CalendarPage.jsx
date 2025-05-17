@@ -75,6 +75,8 @@ function Calendar() {
     let evento = {
       title: arg.event.title,
       daysOfWeek: arg.event.extendedProps.daysOfWeek,
+      day: arg.event.extendedProps.day,
+      date: arg.event.extendedProps.date,
       start: arg.event.start,
       startTime: arg.event.extendedProps.startTime,
       end: arg.event.end,
@@ -107,11 +109,13 @@ function Calendar() {
     if (taskName.recurrent) {
       const dayIndex = dias.indexOf(taskName.day);
       newEvent.daysOfWeek = [dayIndex];
+      newEvent.day = taskName.day;
       newEvent.startTime = taskName.start;
       newEvent.endTime = taskName.end;
       newEvent.extendedProps = {
         ...baseProps,
         daysOfWeek : [dayIndex],
+        day : taskName.day,
         startTime : taskName.start,
         endTime : taskName.end,
       };
@@ -120,6 +124,10 @@ function Calendar() {
       const eventDate = taskName.date;
       newEvent.start = `${eventDate}T${taskName.start}`;
       newEvent.end = `${eventDate}T${taskName.end}`;
+      newEvent.extendedProps = {
+        ...baseProps,
+        date : eventDate,
+      }
     }
 
     console.log("newEvent: ", newEvent);

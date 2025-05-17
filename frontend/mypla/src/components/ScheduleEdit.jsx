@@ -105,6 +105,7 @@ export default function ScheduleEdit({
           />
           <ScheduleDate 
             taskData={taskData}
+            clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
           />
