@@ -42,6 +42,7 @@ function Calendar() {
 
   const [clickedEvent, setClickedEvent] = useState(null);
 
+
   const handleSelect = (info) => {
  
     setCreated(false);
@@ -79,7 +80,7 @@ function Calendar() {
       end: arg.event.end,
       endTime: arg.event.extendedProps.endTime,
       recurrent: arg.event.extendedProps.recurrent,
-      topics: arg.event.extendedProps.topics,
+      eventTopics: arg.event.extendedProps.eventTopics,
     };
     
     setClickedEvent(evento);
@@ -92,38 +93,33 @@ function Calendar() {
 
   const handleSaveTask = (taskName) => {
     
+    const baseProps = {
+      recurrent: taskName.recurrent,
+      eventTopics: taskName.topics || [], // por si no está definido
+    };
+
     const newEvent = {
       title: '',
-      color: '',
-      extendedProps: {
-        daysOfWeek: [],
-        startTime: "",
-        endTime: "",
-        recurrent: true,
-        topics: taskName.topics,
-      }
-      
+      color: taskName.recurrent ? 'green' : 'orange',
+      extendedProps: baseProps,      
     }
 
     if (taskName.recurrent) {
-      newEvent.daysOfWeek = [dias.indexOf(taskName.day)];
+      const dayIndex = dias.indexOf(taskName.day);
+      newEvent.daysOfWeek = [dayIndex];
+      newEvent.startTime = taskName.start;
+      newEvent.endTime = taskName.end;
       newEvent.extendedProps = {
-        daysOfWeek : [dias.indexOf(taskName.day)],
+        ...baseProps,
+        daysOfWeek : [dayIndex],
         startTime : taskName.start,
         endTime : taskName.end,
       };
-      newEvent.startTime = taskName.start;
-      newEvent.endTime = taskName.end;
-      newEvent.color = 'green';
     } 
     else {
       const eventDate = taskName.date;
-      newEvent.extendedProps = {
-        recurrent : false,
-      };
       newEvent.start = `${eventDate}T${taskName.start}`;
       newEvent.end = `${eventDate}T${taskName.end}`;
-      newEvent.color = 'orange';
     }
 
     console.log("newEvent: ", newEvent);

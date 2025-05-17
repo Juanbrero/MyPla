@@ -7,16 +7,20 @@ import { useEffect } from 'react'
 const TOPICS = ['Estrategia', 'Marketing', 'Ventas', 'Finanzas', 'Recursos Humanos'];
 
 export default function Topics(props) {
-  const { taskData, isEditable, onChangeData } = props;
+  const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = React.useState(taskData?.topics || []);
+  const [editTopics, setEditTopics] = React.useState(clickedEvent?.eventTopics || []);
   console.log("creando componentes");
   
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {
       setSelectedTopicsState(taskData.topics);
     }
-  }, [taskData?.topics]);
+    if (clickedEvent?.eventTopics) {
+      setEditTopics(clickedEvent.eventTopics);
+    }
+  }, [taskData?.topics, clickedEvent?.eventTopics]);
 
 
   const handleTopicChange = (event) => {
@@ -30,9 +34,9 @@ export default function Topics(props) {
     <>
     {!isEditable ? (
       <Box>
-      <Typography variant="subtitle1"><strong>Posibles topicos:</strong></Typography>
-      {selectedTopicsState.length ? (
-        selectedTopicsState.map((topic) => (
+      <Typography variant="subtitle1"><strong>Topicos asignados:</strong></Typography>
+      {editTopics.length ? (
+        editTopics.map((topic) => (
           <Chip key={topic} label={topic} sx={{ marginRight: 1, marginBottom: 1 }} />
         ))
       ) : (

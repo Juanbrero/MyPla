@@ -91,6 +91,7 @@ export default function ScheduleEdit({
     setIsEditable(true); // Permite editar el horario
   };
 
+
   return (
     <Modal open={open} onClose={onClose}>
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
@@ -98,6 +99,7 @@ export default function ScheduleEdit({
           <Typography variant="h6" mb={2}>Información del Horario</Typography>
           <Topics 
             taskData={taskData}
+            clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
           />
