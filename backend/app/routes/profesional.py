@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.config.database import get_db
 from typing import List, Union
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/professionals",tags=["Professionals"])
 
 @router.get("", 
             response_model=List[schema_prof.Professional])
-async def get_all_prof(db : Session = Depends(get_db)):
+def get_all_prof(db : Session = Depends(get_db)):
     """
     Retorna todos los profesionales
     Args:
@@ -26,7 +26,7 @@ async def get_all_prof(db : Session = Depends(get_db)):
 
 
 @router.get("/{prof_id}", response_model=Union[schema_prof.Professional, Errors])
-async def find_prof(prof_id: str, db: Session = Depends(get_db)):
+def find_prof(prof_id: str, db: Session = Depends(get_db)):
     """
     Retorna un profesional
     Args:
@@ -37,11 +37,13 @@ async def find_prof(prof_id: str, db: Session = Depends(get_db)):
         Errors
 
     """
-    response = crud_prof.get_prof_id(db, prof_id)       
+    response = crud_prof.get_prof_id(db, prof_id)   
+    if response:
+        raise HTTPException(status_code=404, detail='Professional not exist')
     return response
 
 
-@router.delete("/{prof_id}",response_model=Union[Info, Errors])
+@router.delete("/{prof_id}")
 def del_user(prof_id:str, db:Session = Depends(get_db)):
     """
     Eliminar un profesional
@@ -53,13 +55,16 @@ def del_user(prof_id:str, db:Session = Depends(get_db)):
         Info
         Errors
     """
-    return crud_prof.del_prof(db, prof_id)
+    sucess = crud_prof.del_prof(db, prof_id)
+    if not sucess:
+       raise HTTPException(status_code=404, detail='Professional not found')
+    return {'detail': 'Professional deleted sucessfully'}
 
 
 #Para Desarrollo
 @router.post("", 
              response_model=Union[Info, Errors])
-async def create_prof(prof : schema_prof.ProfessionalID, 
+def create_prof(prof : schema_prof.ProfessionalID, 
                 db : Session = Depends(get_db)):
     """
     Funcion de desarrollo para crear un profesional
@@ -72,6 +77,7 @@ async def create_prof(prof : schema_prof.ProfessionalID,
         Info
         Errors
     """
+    
     return crud_prof.create_prof(db, prof.prof_id)
 
 @router.put("/{prof_id}",response_model=Union[schema_prof.Professional, Errors])

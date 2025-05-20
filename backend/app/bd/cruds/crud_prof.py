@@ -15,7 +15,7 @@ def get_prof(db: Session):
     return db.query(Professional).all()
 
 
-def get_prof_id(db:Session, professional: schema_prof.ProfessionalID):
+def get_prof_id(db:Session, prof_id: schema_prof.ProfessionalID):
     """
     Retorna un profesional
     Args:
@@ -24,14 +24,9 @@ def get_prof_id(db:Session, professional: schema_prof.ProfessionalID):
             - prof_id: str
     Return:
         {prof_id:, score:}
-        {'error':}
+        None
     """
-    try:
-        response = db.query(Professional).filter(Professional.prof_id == professional).first()
-        if response is None: #<- Se define la falla
-            response = {"error": "id no existente"}
-    except:
-        response = {'error':'On get_id_prof'}
+    response = db.query(Professional).filter(Professional.prof_id == prof_id).first()
     return response
 
 
@@ -46,16 +41,13 @@ def del_prof(db:Session, id_prof:schema_prof.ProfessionalID):
         {'info':}
         {'error':}
     """
-    try:
-        response = db.query(Professional).filter(Professional.prof_id == id_prof).first()
-        #db.query(Professional).filter(Professional.prof_id == id_prof).delete() no es afectado por el try
-        if response.rowcount > 0:
-            db.commit()
-            return {'info':f'Delete of Profesional {id_prof}'}
-        else:
-            raise
-    except:
-        return {"error":f'On delete Professional {id_prof}'}
+    response = db.query(Professional).filter(Professional.prof_id == id_prof).first()
+    if not response is None:
+        db.delete(response)
+        db.commit()
+        return True
+    else:
+        return False
     
 
 #TEST, se hace por back
