@@ -1,22 +1,58 @@
-from .base import BaseRepository
+from .schedule_repository import ScheduleRepository
 from ..models import SpecificSchedule
 from app.bd.schemas import schema_topic_specific
 from sqlalchemy.orm import Session
 from sqlalchemy import extract, func, update
+from datetime import time
 
 
-
-class SpecificRepository(BaseRepository[SpecificSchedule]):
+class SpecificRepository(ScheduleRepository[SpecificSchedule]):
     
     def __init__(self, db: Session):
         super().__init__(SpecificSchedule, db)
 
-    def isCompleteHour(self, start, end):
+    def trunc_time(self, horario):
+        """
+        Trunca el horario a horas y minutos
+        """
+        return super().trunc_time(horario)
+
+    def isCompleteHour(self, start:time, end:time):
         return super().isCompleteHour(start, end)
     
-    def isValidTime(self, start, end):
+    def isValidTime(self, start:time, end:time):
         return super().isValidTime(start, end)
     
+    def isInclude(self, schedule:schema_topic_specific.SpecificSchema):
+        """
+            Args:
+               - schedule:dict
+                    - prof_id
+                    - start
+                    - end
+                    - day
+            Return
+                - True Esta incluido
+                - False No esta Incluido
+        """
+        query = schedule.copy()
+        query.pop('end')
+        query.pop('start')
+        query.update({'isCanceling':False})
+        exist = self.filter_by(**query)
+        return super().isInclude(exist, schedule['start'], schedule['end'])    
+    
+    def isIncludeUpdate(self, start:time, schedule:schema_topic_specific.SpecificSchema):
+        """
+        Busca si el valor ingresado esta en la DB, omitiendo el valor start (valor a actualizar)
+        """
+        query = schedule.copy()
+        query.pop('end')
+        query.pop('start')
+        query.update({'isCanceling': False})
+        exist = self.get_ommit(start,**query)
+        return super().isInclude(exist, schedule['start'], schedule['end'])
+
     def create(self, schedule:schema_topic_specific.SpecificSchema) -> SpecificSchedule:
         """
         Insert Specific Schedule
@@ -33,14 +69,7 @@ class SpecificRepository(BaseRepository[SpecificSchedule]):
         specific = self.model(**schedule)
         return self.add(specific)
     
-    def isInclude(self, schedule:schema_topic_specific.SpecificSchema):
-        
-        query = schedule.dict()
-        query.pop('end')
-        query.pop('start')
-        query.update({'isCanceling':False})
-        exist = self.filter_by(**query)
-        return super().isInclude(exist, schedule.start, schedule.end)
+    
 
     def get_day(self, specific_get: schema_topic_specific.SpecificDatID):
         """
@@ -53,10 +82,6 @@ class SpecificRepository(BaseRepository[SpecificSchedule]):
             Return:
                 - response: SpecificSchedule
         """
-        """query = {'isCanceling' : False,
-        'day' : specific_get['day'],
-        'prof_id' : specific_get['prof_id'],
-        'start' : specific_get['start']}"""
         specific_get.update({'isCanceling': False})
 
         return self.first_by(**specific_get)
@@ -69,6 +94,8 @@ class SpecificRepository(BaseRepository[SpecificSchedule]):
                     - prof_id: str
                     - month: int
                     - year: int = today().year
+            Returns:
+                - List[SpecificSchedule]
 
         """
         specific_get.update({'isCanceling': False})
@@ -79,7 +106,7 @@ class SpecificRepository(BaseRepository[SpecificSchedule]):
         """
         Actualiza hora de inicio y fin 
             Args:
-                - specific: SpecificSchedule
+                - specific: OBJ: SpecificSchedule
                 - specific_update: dict
                     - prof_id
                     - day
@@ -88,15 +115,14 @@ class SpecificRepository(BaseRepository[SpecificSchedule]):
             Returns:
                 - specific
         """
-        specific.start = specific_update['start']
-        specific.end = specific_update['end']
-        self.commit()
-        self.db.refresh(specific)
-        return specific
+        return super().update(specific, specific_update)
 
     def delete(self, specific: SpecificSchedule):
+        """
+        - specific: OBJ: SpecificSchedule
+        """
         super().delete(specific)
-        return 'OK'
+        return True
 
     def commit(self):
         super().commit()
