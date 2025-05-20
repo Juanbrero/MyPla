@@ -989,7 +989,26 @@ PUT /topics/professionals/{prof_id}
  
 
 # Test
-En backend/test/, se encuentra el archivo test_EP_bd.py, donde se insertan datos en la BD.
+Para ejecutar los test se utiliza **pytest**, el mismo debe ser ejecutado desde **/backend**
+~~~
+# Ejecuta todos los archivos test_*, y las funciones que comienza con test_*
+(venv)/backend$ pytest
+
+# Ejecutar test en paticular
+## Directorio
+(venv)/backend$ pytest app/tests
+
+## Archivo particular
+(venv)/backend$ pytest app/tests/test_EP_user.py
+
+## una ::funcion/clase en particular
+(venv)/backend$ pytest app/tests/test_EP_user.py::TestSpecificRepository[::FUNCTION]
+
+~~~
+Para los test se utiliza **unittest** para crear las clases que probaran los diferentes casos
+
+En backend/tests/, se encuentra el archivo test_EP_bd.py, con un codigo procedural
+Todo codigo que comience con test_, se ejecutara automaticamente.
 
 Luego de la ejecución las tablas quedaran asi:
 
@@ -1112,10 +1131,101 @@ Luego de la ejecución las tablas quedaran asi:
    - Se admite la actualización de horario de inicio y/o fin
    - Se admite el agregado o eliminación de topicos, (INDIVIDUAL)
 
-              
+# Errores
+- Si se intenta ingresar hora de fin 0 Hs, como todo es mayor que 0 no admite insertar,
+   - 22-0 -> como 22 > 0 no se permite insertar
+   - mi metodo de control para hora completa es comparar minutos
+- ATENCION: en unas pruebas, cuando se realiza la actualización, se omite el db.execute, y se procede al commit, pero se supondria que no deberia funcionar, VER EN PROXIMAS EJECUCIONES si funcionan o no la actualizaciones
+
+# HACER
+- Revisar
+   - Errores lanzados para mejorar la captura
+   - cambiar a ORM clasico
+      - se usa db.query().filter para recuperar un objeto y actualizar/eliminar
+      - se usa db.add() para agregar un objeto
+- Seguir con test y creacion se Specific Repository
 
 ## Datos necesarios del front
 Crear un usuario -> ID + info front(rol)
 
 
 
+# Endpoints
+## User
+   - POST /users
+      - Recibira en un JSON los datos a almacenar
+   - GET /users
+      - TEMP: Implementación temporal para recupera todos los usuarios
+   - DELETE /users
+      - Elimina un usuario
+   - PUT?
+## Professional
+   - POST /professionals
+      - TEMP: Implementacion temporal para crear profesionales, esto se realizara usando la info de USER
+   - GET /professionals/{prof_id}
+      - Recupera datos del profesional, VER de acortar a score o que otros datos
+   - GET /professionals
+      - Recupera todos los profesionales
+   - PUT /professionals/{prof_id}
+      - TEMP: modifica el score, se debe hacer por back
+   - DELETE /professionales/{prof_id}
+      - Elimina un profesional
+## Topics
+   - POST /topics
+      - Agrega un topicos
+   - GET /topics
+      - Recupera todos los topicos
+   - DELETE /topics
+      - Elimina un topico
+## Professional Topic
+   - POST /topics/professionals/{prof_id}
+      - Agrega un topico a un profesional, con su precio
+   - GET /topics/professionals/{prof_id}
+      - recupera todos los topicos de un profesional
+   - PUT /topics/professionals/{prof_id}
+      - actualiza el precio de un topico para un profesional
+   - DELETE /topics/professionals/{prof_id}
+      - elimina un topico de un profesional
+## Recurrent
+   - POST /professionals/{prof_id}/agenda/recurrent
+      - Crea un dia recurrente para un profesional con sus topicos elegidos
+   - GET /professionals/{prof_id}/agenda/recurrent
+      - recupera todos los dias recurrente de un profesional
+   - PUT /professionals/{prof_id}/agenda/recurrent
+      - Actualiza el horario de inicio y/o fin de un dia recurrente
+   - DELETE /professionals/{prof_id}/agenda/recurrent
+      - elimina un dia recurrente
+   
+   ---
+   - POST /professionals/{prof_id}/agenda/recurrent/topics
+      - Agrega un topico a un dia recurrente
+   - DELETE /professionals/{prof_id}/agenda/recurrent/topics
+      - Elimina un topico de un dia recurrente
+## Specific
+   - POST /professionals/{prof_id}/agenda/specific
+      - Crea un dia especifico par un profesional
+   - GET /professionals/{prof_id}/agenda/specific
+      - TEMP: Recupera todos los dias especificos de un profesional
+   - GET /professionals/{prof_id}/agenda/specific/{month}
+      - Recupera todos los dias del mes indicado, MEJORA: limitar a año en curso
+   - PUT /professionals/{prof_id}/agenda/specific
+      - Actualiza el horario de inicio y/o fin de un dia especifico
+   - DELETE /professionals/{prof_id}/agenda/specific
+      - Elimina un dia especifico
+   ---
+   - POST /professionals/{prof_id}/agenda/specific/topics
+      - Agrega un topico a un dia especifico
+   - DELETE /professionals/{prof_id}/agenda/specific/topics
+      - Elimina un topico a un dia especifico
+## Exception
+   - POST /professionals/{prof_id}/agenda/exception
+      - Crea un dia excepcion (no disponible)
+   - GET /professionals/{prof_id}/agenda/exception
+      - Recupera todas las excepciones, MEJORA: limitar a mes-año
+   - PUT /professionals/{prof_id}/agenda/exception
+      - Actualiza hora de inicio y/o final
+   - DELETE /professionals/{prof_id}/agenda/exception
+      - Elimina una excepcion
+## Available
+   - GET /professionals/{prof_id}/agenda/available 
+      - Recupera toda la agenda de un profesional para su muestra

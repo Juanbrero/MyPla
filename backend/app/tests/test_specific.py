@@ -10,7 +10,7 @@ from app.bd.schemas import schema_topic_specific
 from app.config.database import get_db
 from app.repository.specific_repository import SpecificRepository
 from app.models import SpecificSchedule
-import unittest
+from unittest import TestCase
 from random import randint
 
 
@@ -59,7 +59,7 @@ def del_user (user_id:str):
     assert response_user.status_code == 200
     return 200
 
-class TestSpecificRepository(unittest.TestCase):
+class TestSpecificRepository(TestCase):
 
     
     def setUp(self):
@@ -392,14 +392,13 @@ class TestSpecificRepository(unittest.TestCase):
         test = self.specific_repository.trunc_time(time.fromisoformat('20:01:23'))
         self.assertEqual(test, time.fromisoformat('20:01'))  
 
-class TestSpecificEP(unittest.TestCase):
+class TestSpecificEP(TestCase):
 
     def setUp(self):
         self.client = TestClient(app)
         self.prof_id = create_professional(uuid())
     
     def tearDown(self):
-        pass
         del_user(self.prof_id)
 
     def test_EP_specific_hour_incomplete(self):
@@ -689,6 +688,3 @@ class TestSpecificEP(unittest.TestCase):
         self.assertEqual(response.json(), {'detail':'Day deleted sucessfully'})
 
             
-
-if __name__ == '__main__':
-    unittest.main()
