@@ -52,7 +52,7 @@ def create_specific(prof_id:str, specific: schema_topic_specific.SpecificInsert,
     db_specific = specific_repo.get_day(sele)
 
     if not db_specific is None:
-        raise HTTPException(status_code=400, detail='Dia especifico ya existente')
+        raise HTTPException(status_code=400, detail='Day exist')
     
     response = specific_repo.create(insert)
     return response

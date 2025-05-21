@@ -51,7 +51,7 @@ def create_exception(prof_id:str, excep: schema_exception.ExceptionBase, db: Ses
 
     db_exception = exception_repository.get_day(insert)
     if not db_exception is None:
-        raise HTTPException(status_code=400, detail='Recurrent day exist')
+        raise HTTPException(status_code=400, detail='Day exist')
     
     return exception_repository.create(insert)
     

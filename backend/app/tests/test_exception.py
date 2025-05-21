@@ -477,6 +477,22 @@ class TestExceptionEP(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), test)
 
+    def test_EP_exception_insert_two(self):
+        print(f'Insert via /exception two idem exception')
+        print('Two time idem exception')
+
+        data = {
+            'start': '0:00',
+            'end': '00:00',
+            'day': '2025-02-03'
+        }
+        self.client.post(f'/professionals/{self.prof_id}/agenda/exceptions', json= data)
+        
+        response = self.client.post(f'/professionals/{self.prof_id}/agenda/exceptions', json= data)
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail':'Day exist'}) 
+
     def test_EP_exception_get_hours(self):
         print('Get hours from Day')
         data = {

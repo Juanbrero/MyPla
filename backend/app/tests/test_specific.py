@@ -513,7 +513,23 @@ class TestSpecificEP(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), test)
+
+    def test_EP_specific_insert_two(self):
+        print(f'Insert via /specifics two idem specific')
+        print('Two time idem specific')
+
+        data = {
+            'start': '0:00',
+            'end': '00:00',
+            'day': '2025-02-03'
+        }
+        self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
         
+        response = self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail':'Day exist'}) 
+
     def test_EP_specific_get(self):
         month = 1
         print(f'Get Specific Month {month}')
@@ -738,7 +754,7 @@ class TestSpecificEP(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'detail':'Day deleted sucessfully'})
 
-    def test_EP_specif_get_hours(self):
+    def test_EP_specific_get_hours(self):
         print('Get hours from Day')
         data = {
             'start': time.fromisoformat('15:00'),
