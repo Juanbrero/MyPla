@@ -12,56 +12,73 @@ from app.bd.bd_utils import Errors, Info
 from datetime import date, time
 
 
-router = APIRouter(prefix="/professionals/{prof_id}/agenda")
+router = APIRouter(prefix="/professionals/{prof_id}/agenda/specifics")
 
 #SPECIFIC
 
-@router.post('/specific', tags=['Specific'])
+def validateTime(obj, respository, Ostart: time = None):
+    """
+        - obj
+            - day/week
+            - start
+            - end
+            - prof_id
+    """
+    if not respository.isCompleteHour(obj.start, obj.end):
+        raise HTTPException(status_code=400, detail='No es una hora completa')
+    if not respository.isValidTime(obj.start,obj.end):
+        raise HTTPException(status_code=400, detail='Start > End incorrect')
+    if Ostart is None:
+        if respository.isInclude(obj):
+            raise HTTPException(status_code=400, detail='Time include')
+    else:
+        if respository.isIncludeUpdate(Ostart, obj):
+            raise HTTPException(status_code=400, detail='Time incluide')
+
+
+@router.post('', tags=['Specific'])
 def create_specific(prof_id:str, specific: schema_topic_specific.SpecificInsert, db: Session = Depends(get_db)):
-    # Agregar truncado de tiempo
     # Topicos
     # Validar Professional
 
     specific_repo = SpecificRepository(db)
     specific.start = specific_repo.trunc_time(specific.start)
     specific.end = specific_repo.trunc_time(specific.end)
-    
     insert = schema_topic_specific.SpecificSchema(**specific.dict(), prof_id= prof_id)
-    insert_json = jsonable_encoder(insert)
 
-    if not specific_repo.isCompleteHour(specific.start, specific.end):
-        raise HTTPException(status_code=400, detail='No es una hora completa')
-        
-    if not specific_repo.isValidTime(specific.start, specific.end):
-        raise HTTPException(status_code=400, detail='Start > End incorrect')
-    
-    if specific_repo.isInclude(insert_json):
-        raise HTTPException(status_code=400, detail='Time incluide')
+    validateTime(insert,specific_repo)
 
-    sele = schema_topic_specific.SpecificDatID(**specific.dict(), prof_id= prof_id)
-    sele = jsonable_encoder(sele)
+    sele = schema_topic_specific.SpecificDaySID(**insert.dict())
     db_specific = specific_repo.get_day(sele)
 
     if not db_specific is None:
         raise HTTPException(status_code=400, detail='Dia especifico ya existente')
     
-    response = specific_repo.create(insert_json)
+    response = specific_repo.create(insert)
     return response
 
-@router.get('/specific', tags=['Specific'])
+@router.get('/day', tags=['Specific'])
+def get_specific_day(prof_id: str, day:date, db:Session = Depends(get_db)):
+    specific_repository = SpecificRepository(db)
+    specific_get = schema_topic_specific.SpecificDayID(day= day, prof_id=prof_id)
+    specific = specific_repository.get_day_hours(specific_get)
+    return {'specific': specific}
+
+@router.get('', tags=['Specific'])
 def get_specific_month_year(prof_id: str, 
                             month: int,
-                             year: int | None = None, 
-                             db: Session = Depends(get_db)):
+                            year: int | None = None, 
+                            db: Session = Depends(get_db)):
     specific_repository = SpecificRepository(db)
     if year is None:
         year = date.today().year
     if not month in range(0, 13):
         raise HTTPException(status_code=400, detail='Valor de mes invalido')
     specific = schema_topic_specific.TopicSpecificMonthYear(month= month, year= year, prof_id= prof_id)
-    return specific_repository.get_month_year(jsonable_encoder(specific))
+    month_year = specific_repository.get_month_year(specific)
+    return {'specific': month_year }
 
-@router.put('/specific', tags=['Specific'])
+@router.put('', tags=['Specific'])
 def update_specific(prof_id: str, specific_update:schema_topic_specific.SpecificUpdateInfo, db: Session= Depends(get_db)):
     
     if specific_update.Nstart is None and specific_update.Nend is None:
@@ -71,8 +88,8 @@ def update_specific(prof_id: str, specific_update:schema_topic_specific.Specific
 
     specific_update.start = specific_repository.trunc_time(specific_update.start)
 
-    sele = schema_topic_specific.SpecificDatID(**specific_update.dict(), prof_id= prof_id)
-    db_specific = specific_repository.get_day(jsonable_encoder(sele))
+    sele = schema_topic_specific.SpecificDaySID(**specific_update.dict(), prof_id= prof_id)
+    db_specific = specific_repository.get_day(sele)
 
     if db_specific is None:
         raise HTTPException(status_code=404, detail='Day not found')
@@ -84,34 +101,27 @@ def update_specific(prof_id: str, specific_update:schema_topic_specific.Specific
         update.start = specific_repository.trunc_time(specific_update.Nstart)
     if not specific_update.Nend is None:
         update.end =  specific_repository.trunc_time(specific_update.Nend)
-        
-    if not specific_repository.isCompleteHour(update.start, update.end):
-        raise HTTPException(status_code=400, detail='No es una hora completa')
-        
-    if not specific_repository.isValidTime(update.start, update.end):
-        raise HTTPException(status_code=400, detail='Start > End incorrect')
+   
     
-    if specific_repository.isIncludeUpdate(sele.start, update.dict()):
-        raise HTTPException(status_code=400, detail='Time incluide')
+    validateTime(update, specific_repository, sele.start)
     
-    sucess = specific_repository.update(db_specific, update.dict())
+    sucess = specific_repository.update(db_specific, update)
     return sucess
 
 
-@router.delete('/specific', tags=['Specifio'])
-def delete_specific(prof_id: str, day:date,start:time, db: Session = Depends(get_db)):
-    specific_repository = SpecificRepository(db)
-    start = specific_repository.trunc_time(start)
+@router.delete('', tags=['Specific'])
+def delete_specific(prof_id: str, day:date, start:time, db: Session = Depends(get_db)):
+    specific_repository = SpecificRepository(db) 
 
-    data = schema_topic_specific.SpecificDatID(day=day, start= start, prof_id= prof_id)
-    db_specific = specific_repository.get_day(data.dict())
+    data = schema_topic_specific.SpecificDaySID(day=day, start= specific_repository.trunc_time(start), prof_id= prof_id)
+    db_specific = specific_repository.get_day(data)
     if db_specific is None:
         raise HTTPException(status_code=404, detail='Day not found')
     sucess = specific_repository.delete(db_specific)
     return {'detail':'Day deleted sucessfully'}
 
 
-
+##################################################
 #Crea el dia disponible especifico, con los topicos
 #@router.post('/specific/test',tags=["Specific"])
 def create_specific_day(prof_id:str, specific:schema_topic_specific.TopicSpecificCr1, db:Session = Depends(get_db)):

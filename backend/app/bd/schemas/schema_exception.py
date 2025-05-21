@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 from datetime import date, time
 from typing import Optional
+from .schema_prof import ProfessionalID
 
 class SpecificBase(BaseModel):
-   
     start: time
     end: time
 
@@ -33,16 +33,6 @@ class Specific(SpecificBase):
         orm_mode=True
 
 
-class SpecificSchema(Specific):
-    """
-        - prof_id: str 
-        - day: date
-        - start: time
-        - end: time
-
-    """
-    prof_id: str
-
 
 
 class ExceptionBase(BaseModel):
@@ -56,7 +46,7 @@ class ExceptionBase(BaseModel):
     start: time
     end: time
 
-class ExceptionCreate(ExceptionBase):
+class ExceptionCreate(ExceptionBase, ProfessionalID):
     """
     Esquema que agrega el prof_id, para pasar a la funcion
         - day: date
@@ -86,8 +76,14 @@ class ExceptionGetDat(BaseModel):
     prof_id: str
     day: date
 
-class ExceptionGet(ExceptionBase):
 
+class ExceptionGet(ExceptionBase):
+    """
+    Esquema con ORM, con informacion de dia
+    - day
+    - start
+    - end
+    """
 
     class Config:
         orm_mode=True
@@ -134,3 +130,11 @@ class ExceptionUpdate(ExceptionUp):
     """
     prof_id:str
 
+class ExceptionMonthYear(ProfessionalID):
+    """
+        - prof_id
+        - month
+        - year = today().year
+    """
+    month: int
+    year: int = date.today().year

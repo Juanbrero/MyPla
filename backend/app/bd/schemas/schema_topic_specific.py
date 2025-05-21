@@ -6,6 +6,91 @@ from typing import Optional
 #Aqui van los esqueletos de respuestas que podran obtener
 
 
+
+class SpecificDat(BaseModel):
+    """
+    - day: date
+    - start: time
+    """
+    day: date
+    start: time
+
+class SpecificInsert(SpecificDat):
+    """
+    - day: date
+    - start: time
+    - end_time
+    """
+    end: time
+
+class SpecificDaySID(SpecificDat, ProfessionalID):
+    """
+    - day: date
+    - start: time
+    - prof_id: str
+    """
+    pass
+
+class SpecificSchema(SpecificDaySID):
+    """
+        - prof_id: str 
+        - day: date
+        - start: time
+        - end: time
+    """
+    end: time
+
+    class Config:
+        orm_mode=True
+
+
+class SpecificGet(SpecificDaySID):
+    """
+    - day: date
+    - start: time
+    - prof_id: str
+    - end: time
+    - isCanceling: bool = False
+    """
+    end:time
+    isCanceling: bool = False
+
+    class Config:
+        orm_mode= True
+
+class SpecificUpdateInfo(BaseModel):
+    """
+    Esquema con la información para actualizar
+        Nstart o Nend pueden no estar
+        - day: date
+        - start:time
+        - Nstart: time
+        - Nend: time
+    """
+    day: date
+    start:time
+    Nstart: Optional[time]
+    Nend: Optional[time]
+
+class SpecificUpdate(SpecificUpdateInfo, ProfessionalID):
+    """
+    Esquema que completa la información para actualizar
+        - day: date
+        - start:time
+        - Nstart: time
+        - Nend: time
+        - prof_id: str
+    """
+    pass
+
+class SpecificDayID(ProfessionalID):
+    """
+    - prof_id
+    - day: date
+    """
+    day : date
+
+### Topic Specific
 #Esquema para pedir en insert
 class TopicSpecificBase(BaseModel):
     """
@@ -19,7 +104,7 @@ class TopicSpecificBase(BaseModel):
     topic_name: str
 
 #Esquema que se envia al crud
-class TopicSpecificCreate(TopicSpecificBase):
+class TopicSpecificCreate(TopicSpecificBase, ProfessionalID):
     """
     Esquema que completa la informacion para agregar/eliminar un topico
         - day: date
@@ -27,7 +112,6 @@ class TopicSpecificCreate(TopicSpecificBase):
         - topic_name: str
         - prof_id: str
     """
-    prof_id:str
 
     class Config:
         orm_mode = True
@@ -40,13 +124,12 @@ class TopicSpecific(BaseModel):
         #Permite convertir desde SQLAlchemy (no dicts)
         orm_mode= True
 
-class TopicSpecificSchema(BaseModel):
+class TopicSpecificSchema(ProfessionalID):
     """ 
         - day: date
         - start:time
         - prof_id: str
     """
-    prof_id:str
     day: date
     start: time
 
@@ -65,7 +148,7 @@ class TopicSpecificCr1(BaseModel):
     end: time
     topics: list[Topic]
 
-class TopicSpecificIn(TopicSpecificCr1):
+class TopicSpecificIn(TopicSpecificCr1, ProfessionalID):
     """
     Agrega los datos necesarios para la creacion
        - day: date
@@ -76,41 +159,19 @@ class TopicSpecificIn(TopicSpecificCr1):
        - prof_id: str
        - isCanceling: bool = False
     """
-    prof_id: str
     isCanceling: bool = False
 
 
-class TopicSpecificMonth(ProfessionalID):
+class TopicSpecificMonthYear(ProfessionalID):
     """
     Esquema que contine el prof_id y un month(int)
-    Para recuperar los dias de un mes particular
-        - prof_id: str
-        - month: int
+        Para recuperar los dias de un mes particular
+            - prof_id: str
+            - month: int
+            - year: int = today().year
     """
     month: int
+    year: int = date.today().year
 
-class TopicSpecificDay(BaseModel):
-    """
-    Esquema con la información para actualizar
-        Nstart o Nend pueden no estar
-        - day: date
-        - start:time
-        - Nstart: time
-        - Nend: time
 
-    """
-    day: date
-    start:time
-    Nstart: Optional[time]
-    Nend: Optional[time]
 
-class TopicSpecificUpdate(TopicSpecificDay):
-    """
-    Esquema que completa la información para actualizar
-        - day: date
-        - start:time
-        - Nstart: time
-        - Nend: time
-        - prof_id: str
-    """
-    prof_id: str

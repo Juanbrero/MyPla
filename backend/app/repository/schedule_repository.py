@@ -20,15 +20,18 @@ class ScheduleRepository(BaseRepository[ModelType]):
         """
         return time(hour=horario.hour, minute=horario.minute)
 
-    def update(self, schedule_obj:ModelType, schedule_dict:dict ):
+    def update(self, schedule_obj:ModelType, updates:dict ):
         """
         Recibe objeto schedule con los datos de la DB, actualizados para insertar
             Args:
                 - schedule: OBJ: ModelType
+                - updates: OBJ
+                    - start
+                    - end
 
         """
-        schedule_obj.start = schedule_dict['start']
-        schedule_obj.end = schedule_dict['end']
+        schedule_obj.start = updates.start
+        schedule_obj.end = updates.end
         self.commit()
         self.db.refresh(schedule_obj)
         return schedule_obj
@@ -73,8 +76,8 @@ class ScheduleRepository(BaseRepository[ModelType]):
                 - True Esta incluido
                 - False No esta Incluido
         """
-        inicio = time.fromisoformat(start) if type(start) is str else start
-        fin = time.fromisoformat(end) if type(end) is str else end
+        inicio =  start
+        fin =  end
         for dbe in exist:
             if not (fin <= dbe.start or inicio >= dbe.end):
                 return True

@@ -1,12 +1,12 @@
 from .schedule_repository import ScheduleRepository
 from ..models import SpecificSchedule
-from app.bd.schemas import schema_topic_specific
+from app.bd.schemas import schema_exception
 from sqlalchemy.orm import Session
 from sqlalchemy import extract, func, update
 from datetime import time
 
 
-class SpecificRepository(ScheduleRepository[SpecificSchedule]):
+class ExceptionRepository(ScheduleRepository[SpecificSchedule]):
     
     def __init__(self, db: Session):
         super().__init__(SpecificSchedule, db)
@@ -23,10 +23,10 @@ class SpecificRepository(ScheduleRepository[SpecificSchedule]):
     def isValidTime(self, start:time, end:time):
         return super().isValidTime(start, end)
     
-    def isInclude(self, schedule:schema_topic_specific.SpecificSchema):
+    def isInclude(self, schedule: schema_exception.ExceptionCreate):
         """
             Args:
-               - schedule: SpecificSchema
+               - schedule:dict
                     - prof_id
                     - start
                     - end
@@ -38,71 +38,69 @@ class SpecificRepository(ScheduleRepository[SpecificSchedule]):
         query = schedule.dict()
         query.pop('end')
         query.pop('start')
-        query.update({'isCanceling':False})
+        query.update({'isCanceling':True})
         exist = self.filter_by(**query)
         return super().isInclude(exist, schedule.start, schedule.end)    
     
-    def isIncludeUpdate(self, start:time, schedule:schema_topic_specific.SpecificSchema):
+    def isIncludeUpdate(self, start:time, schedule: schema_exception.ExceptionCreate):
         """
         Busca si el valor ingresado esta en la DB, omitiendo el valor start (valor a actualizar)
         """
         query = schedule.dict()
         query.pop('end')
         query.pop('start')
-        query.update({'isCanceling': False})
-        exist = self.get_ommit(start,**query)
+        query.update({'isCanceling': True})
+        exist = self.get_ommit(start, **query)
         return super().isInclude(exist, schedule.start, schedule.end)
-    
 
-    def create(self, schedule:schema_topic_specific.SpecificSchema) -> SpecificSchedule:
+    def create(self, schedule:schema_exception.ExceptionCreate) -> SpecificSchedule:
         """
         Insert Specific Schedule
             Args:
-                - schedule: SpecifiSchema
+                - schedule: ExceptionCreate
                     - day: date
                     - start: time
                     - end: time
                     - prof_id: str
             Return:
-                - specific: SpecificSchedule
+                - excepcion: SpecificSchedule
         """
         schedule_dict = schedule.dict()
-        schedule_dict.update({'isCanceling': False})
-        specific = self.model(**schedule_dict)
-        return self.add(specific)
+        schedule_dict.update({'isCanceling': True})
+        excepcion = self.model(**schedule_dict)
+        return self.add(excepcion)
     
-    def get_day_hours(self, specific_get:schema_topic_specific.SpecificDayID):
+    def get_day_hours(self, excepcion_get:schema_exception.ExceptionGetDat):
         """
         Recupera todos los horarios de un dia
             - prof_id
             - day
         """
-        specific_dict = specific_get.dict()
-        specific_dict.update({'isCanceling': False})
-        return self.filter_by(**specific_dict)
-            
+        excepcion_dict = excepcion_get.dict()
+        excepcion_dict.update({'isCanceling': True})
+        return self.filter_by(**excepcion_dict)
+        
 
-    def get_day(self, specific_get: schema_topic_specific.SpecificDaySID):
+    def get_day(self, excepcion_get:schema_exception.ExceptionDel):
         """
-        Get day complete
+        Get day 
             Args:
-                - specific_get: SpecificDatID
+                - excepcion_get: Exception
                     - day: date (Completo)
                     - prof_id: str
-                    - start: time
             Return:
                 - response: SpecificSchedule
         """
-        specific_dict = specific_get.dict()
-        specific_dict.update({'isCanceling': False})
+        excepcion_dict = excepcion_get.dict()
+        excepcion_dict.update({'isCanceling': True})
+             
+        return self.first_by(**excepcion_dict)
 
-        return self.first_by(**specific_dict)
-
-    def get_month_year(self, specific_get: schema_topic_specific.TopicSpecificMonthYear):
+    def get_month_year(self, excepcion_get:schema_exception.ExceptionMonthYear):
         """
         Recupera todos los dias de un mes año
             Args:
-                -specific_get: TopicSpecificMonthYear
+                -excepcion_get: ExceptionMonthYear
                     - prof_id: str
                     - month: int
                     - year: int = today().year
@@ -110,31 +108,32 @@ class SpecificRepository(ScheduleRepository[SpecificSchedule]):
                 - List[SpecificSchedule]
 
         """
-        specific_dict = specific_get.dict()
-        specific_dict.update({'isCanceling': False})
-        return self.filter_month_year(**specific_dict)
+        excepcion_dict= excepcion_get.dict()
+        excepcion_dict.update({'isCanceling': True})
+        return self.filter_month_year(**excepcion_dict)
 
 
-    def update(self, specific: SpecificSchedule, specific_update:schema_topic_specific.SpecificSchema):
+    def update(self, excepcion: SpecificSchedule, excepcion_update:schema_exception.ExceptionCreate):
         """
         Actualiza hora de inicio y fin 
             Args:
-                - specific: OBJ: SpecificSchedule
-                - specific_update: SpecifiSchema
+                - excepcion: OBJ: SpecificSchedule
+                - excepcion_update: dict
+                    - prof_id
+                    - day
                     - start
                     - end
             Returns:
-                - specific
+                - excepcion
         """
-        return super().update(specific, specific_update)
+        return super().update(excepcion, excepcion_update)
 
-    def delete(self, specific: SpecificSchedule):
+    def delete(self, excepcion: SpecificSchedule):
         """
-        - specific: OBJ: SpecificSchedule
+        - excepcion: OBJ: SpecificSchedule
         """
-        super().delete(specific)
+        super().delete(excepcion)
         return True
 
     def commit(self):
         super().commit()
-    

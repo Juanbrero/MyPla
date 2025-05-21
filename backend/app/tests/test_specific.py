@@ -81,8 +81,8 @@ class TestSpecificRepository(TestCase):
                                                             end= time(hour=12),
                                                             prof_id= self.prof_id
                                                             )
-        dict_specific = specific.dict()
-        obj_spec_create = self.specific_repository.create(dict_specific)
+
+        obj_spec_create = self.specific_repository.create(specific)
         self.assertEqual(obj_spec_create.prof_id, self.prof_id)
         self.assertEqual( obj_spec_create.isCanceling, False) 
         
@@ -100,10 +100,9 @@ class TestSpecificRepository(TestCase):
                                                             prof_id= self.prof_id
                                                             )
         
-        dict_specific = jsonable_encoder(specific)
-        obj_specific_create = self.specific_repository.create(dict_specific)
+        obj_specific_create = self.specific_repository.create(specific)
 
-        obj_spec_get = self.specific_repository.get_day(dict_specific)
+        obj_spec_get = self.specific_repository.get_day(specific)
         dict_spec_test = schema_topic_specific.SpecificGet.from_orm(obj_spec_get)
 
         test_json = jsonable_encoder({
@@ -116,6 +115,32 @@ class TestSpecificRepository(TestCase):
 
         self.assertEqual( jsonable_encoder(dict_spec_test), test_json)
 
+    def test_specific_get_day(self):
+        """
+        Recupera todos los horarios de un dia Specific
+        """
+        
+        print('Get Specific Day')
+        
+        specific = schema_topic_specific.SpecificSchema( day=date(year=2025,month=1,day=23),
+                                                            start=time(hour=9),
+                                                            end= time(hour=12),
+                                                            prof_id= self.prof_id
+                                                            )
+        
+        obj_specific_create = self.specific_repository.create(specific)
+        obj_spec_get = self.specific_repository.get_day(specific)
+        dict_spec_test = schema_topic_specific.SpecificGet.from_orm(obj_spec_get)
+
+        test_json = jsonable_encoder({
+            'day': date(year=2025,month=1,day=23),
+            'start':time(hour=9),
+            'end': time(hour=12),
+            'prof_id': self.prof_id,
+            'isCanceling': False
+        })
+
+        self.assertEqual( jsonable_encoder(dict_spec_test), test_json)
 
     def test_specific_get_month(self):
         """
@@ -134,14 +159,12 @@ class TestSpecificRepository(TestCase):
                                                             end= time(hour=12),
                                                             prof_id= self.prof_id
                                                             )
-        dict_specific = jsonable_encoder(specific)
-        obj_spec_create = self.specific_repository.create(dict_specific)
+        obj_spec_create = self.specific_repository.create(specific)
        
-        dict_specific_MY = schema_topic_specific.TopicSpecificMonthYear(prof_id= self.prof_id,
+        specific_MY = schema_topic_specific.TopicSpecificMonthYear(prof_id= self.prof_id,
                                                                 month= 6)
-        json_specific_MY = jsonable_encoder(dict_specific_MY)
 
-        list_obj_spec_get = self.specific_repository.get_month_year(json_specific_MY)
+        list_obj_spec_get = self.specific_repository.get_month_year(specific_MY)
         test = [{
             'day': date(year=2025,month=1,day=23),
             'start':time(hour=9),
@@ -156,9 +179,28 @@ class TestSpecificRepository(TestCase):
             test_value = test[spec]
             self.assertEqual( jsonable_encoder(spec_test), jsonable_encoder(test_value))
 
+    def test_specific_get_hours(self):
+        print('Get hours from one day')
+        specific = schema_topic_specific.SpecificSchema( day=date(year=2025,month=9,day=23),
+                                                            start=time(hour=9),
+                                                            end= time(hour=12),
+                                                            prof_id= self.prof_id
+                                                            )
+        obj_spec_create = self.specific_repository.create(specific)
+
+        spec_get = schema_topic_specific.SpecificDayID(day=specific.day, prof_id= specific.prof_id)
+        list_hours = self.specific_repository.get_day_hours(spec_get)
+        dict_test = specific.dict()
+        dict_test.update({'isCanceling':False})
+        list(dict_test)
+        for spec in range(len(list_hours) -1):
+            spec_dict = schema_topic_specific.SpecificGet.from_orm(list_hours[spec])
+            test_value = dict_test[spec]
+            self.assertAlmostEqual(spec_dict, test_value)
 
 
-    def test_specific_not_year(self):
+
+    def test_specific_get_not_year(self):
         """
         Error de buscar dias especificos con un año inexistente
         """
@@ -166,17 +208,16 @@ class TestSpecificRepository(TestCase):
         print('Get Specific Day from Not exist Year')
                
         
-        dict_specific_MY = schema_topic_specific.TopicSpecificMonthYear(prof_id= self.prof_id,
+        specific_MY = schema_topic_specific.TopicSpecificMonthYear(prof_id= self.prof_id,
                                                                 month= 6,
                                                                 year= 2024)
-        json_specific_MY = jsonable_encoder(dict_specific_MY)
-
-        list_spec_get = self.specific_repository.get_month_year(json_specific_MY)
+        
+        list_spec_get = self.specific_repository.get_month_year(specific_MY)
 
         self.assertEqual(len(list_spec_get), 0)
        
 
-    def test_specific_start_update(self):
+    def test_specific_update_start(self):
         """
         Actualizar hora de inicio
         """
@@ -189,29 +230,30 @@ class TestSpecificRepository(TestCase):
                                                             end= time(hour=12),
                                                             prof_id= self.prof_id
                                                             )
-        dict_specific_insert = jsonable_encoder(specific_insert)
-        obj_spec_create = self.specific_repository.create(dict_specific_insert)
+        
+        obj_spec_create = self.specific_repository.create(specific_insert)
        
 
-        obj_spec_get = self.specific_repository.get_day(dict_specific_insert)
+        obj_spec_get = self.specific_repository.get_day(specific_insert)
         # Se utiliza el esquema SpecificGet, pero se ignora el isCanceling
         spec_update = schema_topic_specific.SpecificGet(day=date(year=2025,month=6,day=23),
                                                             start=time(hour=7),
                                                             end= time(hour=12),
                                                             prof_id= self.prof_id,
                                                             isCanceling=False)
-        dict_spec_update = jsonable_encoder(spec_update)
+        
 
-        specific_update = self.specific_repository.update(obj_spec_get, dict_spec_update)
+        specific_update = self.specific_repository.update(obj_spec_get, spec_update)
 
 
         spec_test = schema_topic_specific.SpecificGet.from_orm(specific_update)
         spec_test = jsonable_encoder(spec_test)
+        dict_spec_update = jsonable_encoder(spec_update)
 
         self.assertEqual( spec_test, dict_spec_update)
 
 
-    def test_specific_end_update(self):
+    def test_specific_update_end(self):
         """
         Actualizar hora de fin
         """
@@ -224,24 +266,25 @@ class TestSpecificRepository(TestCase):
                                                             end= time(hour=12),
                                                             prof_id= self.prof_id
                                                             )
-        dict_specific_insert = jsonable_encoder(specific_insert)
-        obj_spec_create = self.specific_repository.create(dict_specific_insert)
+        obj_spec_create = self.specific_repository.create(specific_insert)
        
 
-        obj_spec_get = self.specific_repository.get_day(dict_specific_insert)
+        obj_spec_get = self.specific_repository.get_day(specific_insert)
         # Se utiliza el esquema SpecificGet, pero se ignora el isCanceling
         spec_update = schema_topic_specific.SpecificGet(day=date(year=2025,month=6,day=23),
                                                             start=time(hour=9),
                                                             end= time(hour=23),
                                                             prof_id= self.prof_id,
                                                             isCanceling=False)
-        dict_spec_update = jsonable_encoder(spec_update)
+       
 
-        specific_update = self.specific_repository.update(obj_spec_get, dict_spec_update)
+        specific_update = self.specific_repository.update(obj_spec_get, spec_update)
 
 
         spec_test = schema_topic_specific.SpecificGet.from_orm(specific_update)
+
         spec_test = jsonable_encoder(spec_test)
+        dict_spec_update = jsonable_encoder(spec_update)
 
         self.assertEqual( spec_test, dict_spec_update)
 
@@ -260,24 +303,24 @@ class TestSpecificRepository(TestCase):
                                                                 end= time(hour=13),
                                                                 prof_id= self.prof_id
                                                                 )
-            dict_specific_insert = jsonable_encoder(specific_insert)
-            obj_spec_create = self.specific_repository.create(dict_specific_insert)
+            obj_spec_create = self.specific_repository.create(specific_insert)
         
 
-            obj_spec_get = self.specific_repository.get_day(dict_specific_insert)
+            obj_spec_get = self.specific_repository.get_day(specific_insert)
             # Se utiliza el esquema SpecificGet, pero se ignora el isCanceling
             spec_update = schema_topic_specific.SpecificGet(day=date(year=2025,month=6,day=23),
                                                                 start=time(hour=6),
                                                                 end= time(hour=22),
                                                                 prof_id= self.prof_id,
                                                                 isCanceling=False)
-            dict_spec_update = jsonable_encoder(spec_update)
+            
 
-            specific_update = self.specific_repository.update(obj_spec_get, dict_spec_update)
+            specific_update = self.specific_repository.update(obj_spec_get, spec_update)
 
 
             spec_test = schema_topic_specific.SpecificGet.from_orm(specific_update)
             spec_test = jsonable_encoder(spec_test)
+            dict_spec_update = jsonable_encoder(spec_update)
 
             self.assertEqual( spec_test, dict_spec_update)
 
@@ -286,19 +329,20 @@ class TestSpecificRepository(TestCase):
         
         print('Delete Specific')
         
-        spec_insert = schema_topic_specific.SpecificSchema( day=date(year=2024,month=7,day=8),
+        specific_insert = schema_topic_specific.SpecificSchema( day=date(year=2024,month=7,day=8),
                                                             start=time(hour=15),
                                                             end= time(hour=20),
                                                             prof_id= self.prof_id
                                                             )
-        specific_insert_dict = jsonable_encoder(spec_insert)
+        
 
-        spec_create = self.specific_repository.create(specific_insert_dict)
+        spec_create = self.specific_repository.create(specific_insert)
        
 
-        obj_spec_get = self.specific_repository.get_day(specific_insert_dict)
+        obj_spec_get = self.specific_repository.get_day(specific_insert)
 
         spec_delete = self.specific_repository.delete(obj_spec_get)
+        specific_insert_dict = jsonable_encoder(specific_insert)
         
         self.assertTrue (spec_delete, specific_insert_dict)
     
@@ -309,12 +353,12 @@ class TestSpecificRepository(TestCase):
                                                             end= time(hour=18),
                                                             prof_id= self.prof_id
                                                             )
-        dict_specific = specific.dict()
-        self.specific_repository.create(dict_specific)
+        
+        self.specific_repository.create(specific)
         specific.start = time(hour=19)
         specific.end = time(hour=21)
 
-        self.specific_repository.create(specific.dict())
+        self.specific_repository.create(specific)
 
         times = [
                 {'start': time(hour=8),
@@ -344,12 +388,16 @@ class TestSpecificRepository(TestCase):
                 {'start': time(hour=10),
                 'end': time(hour=18)}
                 ]
-        
-        test = [True, False, False, True, True, True, True, True, True]
-        for tim in range(len(times)):
-            dict_specific.update(times[tim])
+        dict_specific = specific.dict()
 
-            isInclude = self.specific_repository.isInclude(dict_specific)
+        test = [True, False, False, True, True, True, True, True, True]
+
+        for tim in range(len(times)):
+            
+            dict_specific.update(times[tim])
+            include = schema_topic_specific.SpecificSchema(**dict_specific)
+
+            isInclude = self.specific_repository.isInclude(include)
             self.assertEqual(isInclude, test[tim], dict_specific)
             
     def test_isValid(self):
@@ -401,8 +449,8 @@ class TestSpecificEP(TestCase):
     def tearDown(self):
         del_user(self.prof_id)
 
-    def test_EP_specific_hour_incomplete(self):
-        print(f' ERROR: Insert via /specific hora incompleta \n S:10:00 E:12:30')
+    def test_EP_specific_insert_hour_incomplete(self):
+        print(f' ERROR: Insert via /specifics hora incompleta \n S:10:00 E:12:30')
 
 
         data = {
@@ -410,12 +458,12 @@ class TestSpecificEP(TestCase):
             'end': '12:30',
             'day': '2025-03-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual( response.json(), {'detail': 'No es una hora completa'})
 
-    def test_EP_specific_hour_invalid(self):
-        print(f' ERROR: Insert via /specific hora incorrecta')
+    def test_EP_specific_insert_hour_invalid(self):
+        print(f' ERROR: Insert via /specifics hora incorrecta')
         print('End > Start')
 
         data = {
@@ -423,12 +471,12 @@ class TestSpecificEP(TestCase):
             'end': '10:00',
             'day': '2025-03-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'detail': 'Start > End incorrect'})
     
-    def test_EP_specific_E0_hour(self):
-        print(f'Insert via /specific hora End: 0')
+    def test_EP_specific_insert_E0_hour(self):
+        print(f'Insert via /specifics hora End: 0')
         print('End == 0')
 
         data = {
@@ -436,7 +484,7 @@ class TestSpecificEP(TestCase):
             'end': '00:00',
             'day': '2025-03-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
         test = jsonable_encoder({'start': time(hour=1),
             'end': time(hour=0),
             'day': date(year=2025, month=3, day=3),
@@ -446,8 +494,8 @@ class TestSpecificEP(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), test)
 
-    def test_EP_specific_S0E0_hour(self):
-        print(f'Insert via /specific hora start == end == 0')
+    def test_EP_specific_insert_S0E0_hour(self):
+        print(f'Insert via /specifics hora start == end == 0')
         print('Start == End == 0')
 
         data = {
@@ -455,7 +503,7 @@ class TestSpecificEP(TestCase):
             'end': '00:00',
             'day': '2025-02-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
         test = jsonable_encoder(
             {'start': time(hour=0),
             'end': time(hour=0),
@@ -475,9 +523,9 @@ class TestSpecificEP(TestCase):
             'end': '13:00',
             'day': '2025-01-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
 
-        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specific?month={month}')
+        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specifics?month={month}')
         self.assertEqual(response.status_code, 200)
         test = jsonable_encoder({'start': time(hour=10),
             'end': time(hour=13),
@@ -485,33 +533,36 @@ class TestSpecificEP(TestCase):
             'prof_id': self.prof_id,
             'isCanceling': False})
         
-        self.assertEqual(response.json(), [test])
+        self.assertEqual(response.json(), {'specific': [test]})
 
     def test_EP_specific_get_void(self):
         year = 2023
         month = 1
-        print('Get Specific Month {month} Year {year}')
+        print(f'Get Specific Month {month} Year {year}')
 
         data = {
             'start': '10:00',
             'end': '13:00',
             'day': '2025-01-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
 
-        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specific?month={month}&year={year}')
+        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specifics?month={month}&year={year}')
         self.assertEqual(response.status_code, 200)
         
-        self.assertEqual(response.json(), [])
+        self.assertEqual(response.json(), {'specific': []})
 
-    def test_EP_specific_invalid_month(self):
+    def test_EP_specific_get_invalid_month(self):
         month = 20
         print(f' ERROR: Get month= {month} Specific')
 
-        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specific?month={month}')
+        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specifics?month={month}')
         self.assertEqual(response.status_code, 400)
         
         self.assertEqual(response.json(), {'detail':'Valor de mes invalido'})
+
+
+
 
     def test_EP_specific_update_None(self):
         print('ERROR: Update  None data')
@@ -520,12 +571,12 @@ class TestSpecificEP(TestCase):
             'end': '13:00',
             'day': '2025-01-02'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
         update = {
             'start': '10:00',
             'day': '2025-02-03'
         }
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'detail':'Not update'})
 
@@ -536,14 +587,14 @@ class TestSpecificEP(TestCase):
             'end': '13:00',
             'day': '2025-02-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)   
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)   
         
         update = {
             'start': '10:00',
             'day': '2025-02-03',
             'Nstart': '03:00'
         }
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
         self.assertEqual(response.status_code, 200)
         test = jsonable_encoder(
             {
@@ -563,13 +614,13 @@ class TestSpecificEP(TestCase):
             'end': '19:00',
             'day': '2025-01-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)     
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)     
         update = {
             'start': '13:00',
             'day': '2025-01-03',
             'Nend': '23:00'
         }
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
         self.assertEqual(response.status_code, 200)
         test = jsonable_encoder(
             {
@@ -589,7 +640,7 @@ class TestSpecificEP(TestCase):
             'end': '13:00',
             'day': '2025-02-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
 
         update = {
             'start': '10:00',
@@ -597,7 +648,7 @@ class TestSpecificEP(TestCase):
             'Nend': '19:00',
             'Nstart': '15:00'
         }
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
 
         self.assertEqual(response.status_code, 200)
         test = jsonable_encoder(
@@ -613,7 +664,7 @@ class TestSpecificEP(TestCase):
 
     def test_EP_specific_update_not_complete(self):
         print('ERROR: Update Hour not complete')
-        self.test_EP_specific_S0E0_hour()
+        self.test_EP_specific_insert_S0E0_hour()
         update = {
             'start': '00:00',
             'day': '2025-02-03',
@@ -621,13 +672,13 @@ class TestSpecificEP(TestCase):
             'Nend': '22:30'
             
         }
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'detail':'No es una hora completa'})
     
     def test_EP_specific_update_not_valid(self):
         print('ERROR: Update start > end')
-        self.test_EP_specific_S0E0_hour()
+        self.test_EP_specific_insert_S0E0_hour()
         update = {
             'start': '00:00',
             'day': '2025-02-03',
@@ -635,7 +686,7 @@ class TestSpecificEP(TestCase):
             'Nend': '20:00'
             
         }
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'detail':'Start > End incorrect'})
 
@@ -646,14 +697,14 @@ class TestSpecificEP(TestCase):
             'end': '10:00',
             'day': '2025-01-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
 
         data = {
             'start': '15:00',
             'end': '19:00',
             'day': '2025-01-03'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
 
         update = {
             'start': '00:00',
@@ -662,14 +713,14 @@ class TestSpecificEP(TestCase):
             'Nend': '23:00'
         }
 
-        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specific', json=update)
+        response = self.client.put(f'/professionals/{self.prof_id}/agenda/specifics', json=update)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'detail':'Time incluide'})
 
     def test_EP_specific_not_delete(self):
         print('ERROR: Delete Specific not exist')
         data = {'start':'10:20', 'day':'2025-05-02'}
-        response = self.client.delete(f'/professionals/{self.prof_id}/agenda/specific', params=data)
+        response = self.client.delete(f'/professionals/{self.prof_id}/agenda/specifics', params=data)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {'detail':'Day not found'})
     
@@ -680,11 +731,26 @@ class TestSpecificEP(TestCase):
             'end': '19:00',
             'day': '2025-05-02'
         }
-        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specific', json= data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
 
         data = {'start':'15:00', 'day':'2025-05-02'}
-        response = self.client.delete(f'/professionals/{self.prof_id}/agenda/specific', params=data)
+        response = self.client.delete(f'/professionals/{self.prof_id}/agenda/specifics', params=data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'detail':'Day deleted sucessfully'})
 
-            
+    def test_EP_specif_get_hours(self):
+        print('Get hours from Day')
+        data = {
+            'start': time.fromisoformat('15:00'),
+            'end': time.fromisoformat('19:00'),
+            'day': '2025-05-02'
+        }
+        data = jsonable_encoder(data)
+        response =  self.client.post(f'/professionals/{self.prof_id}/agenda/specifics', json= data)
+
+        response = self.client.get(f'/professionals/{self.prof_id}/agenda/specifics/day?day={data["day"]}')
+
+        self.assertEqual(response.status_code, 200)
+        data.update({'prof_id':self.prof_id, 'isCanceling':False})
+        
+        self.assertEqual(response.json(), {'specific': [data]})        
