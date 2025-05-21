@@ -6,6 +6,56 @@ from typing import Optional
 #Aqui van los esqueletos de respuestas que podran obtener
 
 
+class RecurrentBase(BaseModel):
+    """
+        -week
+        - start
+        - end
+    """
+    week_day: int
+    start: time
+    end: time
+
+class RecurrentCreate(RecurrentBase):
+    """
+    ORM
+        -week
+        - start
+        - end
+    """
+    class Config:
+        orm_mode= True
+
+class RecurrentSchema(RecurrentBase, ProfessionalID):
+    """
+    Esquema de respuesta Recurrent ORM
+
+        - week_day: int
+        - start: time
+        - end: time
+        - prof_id
+    """
+    
+    class Config:
+        orm_mode=True
+
+class RecurrentWID(ProfessionalID):
+    """
+    - prof_id
+    - week_day: int
+    """
+    week_day: int
+
+class RecurrentGet(RecurrentWID):
+    """
+    Esqueam con la informacion para eliminar
+
+        - week_day: int
+        - start: time
+        - prof_id
+    """
+    start: time
+
 #Esquema para pedir en insert
 class TopicRecurrentBase(BaseModel):
     """
@@ -22,6 +72,7 @@ class TopicRecurrentBase(BaseModel):
 #Esquema que se envia al crud
 class TopicRecurrentCreate(TopicRecurrentBase):
     """
+    ORM
     Esquema que completa la informacion para agregar un topico
         - week_day: int
         - start:time
@@ -34,6 +85,9 @@ class TopicRecurrentCreate(TopicRecurrentBase):
 
 #Respuesta get
 class TopicRecurrent(BaseModel):
+    """
+    ORM
+    """
     topic_name:str
     
     class Config:
