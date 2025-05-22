@@ -25,6 +25,6 @@ class TopicRecurrent(Base):
     start: Mapped[time] = mapped_column(primary_key=True)
     week_day: Mapped[int] = mapped_column(primary_key=True)
 
-    topic: Mapped['ProfessionalTopic'] = relationship(back_populates='recurrent_topic')
+    #topic: Mapped['ProfessionalTopic'] = relationship(back_populates='recurrent_topic')
 
 

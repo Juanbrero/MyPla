@@ -17,3 +17,4 @@ PyJWT==2.4.0
 pydantic==1.10.2
 alembic
 icecream
+dotenv

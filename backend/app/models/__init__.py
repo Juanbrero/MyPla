@@ -6,5 +6,9 @@ from .Topic import Topic
 from .ProfessionalTopic import ProfessionalTopic
 from .TopicRecurrent import TopicRecurrent
 from .TopicSpecific import TopicSpecific
+from .Student import Student
+from .Class import Class
+from .Meeting import Meeting
+from .Reservation import Reservation
 
 from app.config.database import Base

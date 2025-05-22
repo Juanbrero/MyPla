@@ -105,19 +105,19 @@ def include_time(db_recurrent:list[Schedule], schedule:Schedule) -> bool:
     else:
         fin = schedule.end.replace(hour=23, minute=59)
         del finaux
-    ic(f'{inicio, fin}')
+    #ic(f'{inicio, fin}')
     for dbe in db_recurrent:
         if inicio <= dbe.start < fin and  inicio < dbe.end <= fin:
-            ic('INCLUIDO')
+            #ic('INCLUIDO')
             incluido = True
             break
         elif inicio <= dbe.start < fin and not (inicio < dbe.end <= fin):
             incluido = True
-            ic(f'Start in range, ampliar rango')
+            #ic(f'Start in range, ampliar rango')
             break
         elif inicio < dbe.end <= fin and not (inicio <= dbe.start < fin):
             incluido = True
-            ic(f'End in range, reducir rango')
+            #ic(f'End in range, reducir rango')
             break
     return incluido
 

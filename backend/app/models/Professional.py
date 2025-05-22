@@ -14,11 +14,12 @@ class Professional(Base):
                                     index=True)
     score: Mapped[float] = mapped_column(default=0, server_default=text('0'))
 
-    user: Mapped['User'] = relationship(back_populates='professional')
+    #user: Mapped['User'] = relationship(back_populates='professional')
     
-    specific: Mapped[List["SpecificSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
-    recurrent: Mapped[List["RecurrentSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
-    topics: Mapped[List["ProfessionalTopic"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
+    #specific: Mapped[List["SpecificSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
+    #recurrent: Mapped[List["RecurrentSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
+    #topics: Mapped[List["ProfessionalTopic"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
+    #meetings: Mapped[List["Meeting"]] = relationship(back_populates="professional")
     #invite: Mapped[List['Invite']] = relationship(back_populates='invite', cascade='all, delete-orphan')
 
 

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.config.database import Base
 from datetime import time
 from typing import List
+from datetime import datetime
 
 #from sqlalchemy import ForeignKeyConstraint
 
@@ -17,6 +18,6 @@ class RecurrentSchedule(Base):
     prof_id: Mapped[str] = mapped_column(ForeignKey("professional.prof_id", ondelete="CASCADE"), primary_key= True)
     end: Mapped[time] = mapped_column(nullable= False)
     #create: Mapped[datetime] = mapped_column(default=datetime.today(), server_default='CURRENT_TIMESTAMP') #CURRENT_DATE, CURRENT_TIME 
-    professional: Mapped["Professional"] = relationship(back_populates= "recurrent")
+    #professional: Mapped["Professional"] = relationship(back_populates= "recurrent")
 
     

@@ -25,6 +25,6 @@ class TopicSpecific(Base):
     start: Mapped[time] = mapped_column(primary_key=True)
     day: Mapped[date] = mapped_column(primary_key=True)
 
-    topic: Mapped['ProfessionalTopic'] = relationship(back_populates='specific_topic')
+    #topic: Mapped['ProfessionalTopic'] = relationship(back_populates='specific_topic')
 
 

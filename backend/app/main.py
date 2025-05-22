@@ -67,8 +67,6 @@ def run_migrations():
     alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
     command.upgrade(alembic_cfg, "head")
 
-
-
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
         if filename.endswith(".py") and filename != "__init__.py":

@@ -8,6 +8,6 @@ class User(Base):
     user_id: Mapped[str] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(nullable=False)
 
-    professional: Mapped['Professional'] = relationship(back_populates='user', cascade='all, delete-orphan')
+    #professional: Mapped['Professional'] = relationship(back_populates='user', cascade='all, delete-orphan')
     #student: Mapped['Student'] = relationship(back_populates='user', cascade='all, delete-orphan')
 

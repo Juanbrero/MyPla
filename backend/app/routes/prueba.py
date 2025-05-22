@@ -32,7 +32,7 @@ async def test(res:schema_response.Response):
     return None
 
 ###
-@router.post('/users',tags=["USER"], response_model=[schema_users.Users, Errors])
+@router.post('/users',tags=["USER"])
 async def create_user(user: schema_users.UsersBase, db: Session = Depends(get_db)):
     """
     Insercion de un usuario
