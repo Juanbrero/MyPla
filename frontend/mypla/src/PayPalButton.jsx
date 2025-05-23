@@ -1,8 +1,12 @@
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
+const createOrder = import.meta.env.VITE_PP_CREATE;
+const captureOrder = import.meta.env.VITE_PP_CAPTURE;
+const clientID = import.meta.env.VITE_PP_CLIENT_ID;
+
 const PayPalButton = () => {
     return (
-        <PayPalScriptProvider options={{ "client-id": "ARGUVtWZMyf9-h-k0_L_xGyODWmlP9mHvg7flo691pbKhjmuw-GjxurNkyxOJQIu48T4PedCn6uq9GZ1" }}>
+        <PayPalScriptProvider options={{ "client-id": clientID }}>
             <PayPalButtons
                 style={{
                     layout: "horizontal", // "vertical" o "horizontal"
@@ -12,22 +16,31 @@ const PayPalButton = () => {
                     tagline: false        // Mostrar o no tagline
                   }}
                 createOrder={async () => {
-                    const response = await fetch("http://localhost:8002/create-order", {
+                    const response = await fetch(createOrder, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ product_id: "curso_python" })
                     });
                 
+                    if (!response.ok) {
+                        throw new Error("Error al crear la orden");
+                    }
+
                     const data = await response.json();
                     return data.id;
                 }}
                 
                 onApprove={async (data) => {
-                    const response = await fetch(`http://localhost:8002/capture-order`, {
+                    const response = await fetch(captureOrder, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ orderID: data.orderID }),
                     });
+
+                    if (!response.ok) {
+                        throw new Error("Error al capturar el pago");
+                    }
+                    
                     const details = await response.json();
                     alert(`Pago realizado por ${details.payer.name.given_name}`);
                 }}

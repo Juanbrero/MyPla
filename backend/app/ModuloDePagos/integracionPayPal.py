@@ -3,7 +3,7 @@ import requests
 
 PAYPAL_CLIENT_ID = getenv("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET = getenv("PAYPAL_SECRET")
-PAYPAL_API_URL = "https://api-m.sandbox.paypal.com"  # Cambia a producción cuando sea necesario
+PAYPAL_API_URL = getenv("PAYPAL_API_URL")  # Cambia a producción cuando sea necesario
 
 # Obtener el token de PayPal
 def get_paypal_token():

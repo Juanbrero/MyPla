@@ -3,6 +3,6 @@ from app.ModuloDePagos import integracionMP
 
 router = APIRouter()
 
-@router.post("/create_preference")
+@router.post("/api/mp/create-preference")
 def get_preferenceId():
     return integracionMP.getPreference()

@@ -3,13 +3,20 @@
 # Etapa 1: build
 FROM node:18-alpine AS build
 
+
+# Permitir pasar el modo de Vite como argumento (por defecto, 'production')
+ARG VITE_MODE=production
+ENV VITE_MODE=$VITE_MODE
+
+
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build
+# Build del frontend usando el modo correspondiente (carga .env.$VITE_MODE)
+RUN npm run build -- --mode $VITE_MODE
 
 # Etapa 2: servir con nginx
 FROM nginx:alpine
