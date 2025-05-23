@@ -32,12 +32,17 @@ class CreateReservation ():
         if start.minute != 0 and start.minute != 30 and valid_time(schedule_class):
             raise ValidationError('el horario no tiene un formato correcto')
         
-        recurrent= recurrentR.getRecurrentToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
-        specific= specificR.getSpecificToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
         exception= specificR.getExceptionToClass(reservationS.prof_id, reservationS.day_hour)
+
+        if len(exception) > 0:
+            raise NotFound("El profesional no esta disponible en ese momento")
         
-        if len(exception) > 0 or (len(specific) <= 0 and len(recurrent) <= 0):
-            raise NotFound("El profesional no tiene horario para esa clase")
+        specific= specificR.getSpecificToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
+
+        if len(specific) <= 0:
+            recurrent= recurrentR.getRecurrentToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
+            if len(recurrent) <= 0:
+                raise NotFound("El profesional no tiene horario para esa clase")
         
         meetings = meetingR.get_by(
             {
@@ -49,13 +54,6 @@ class CreateReservation ():
         if not (meetings is None) and len(meetings) > 0:
             raise ValidationError("El profesional tiene una reunion en ese momento")
         
-        meetingR.create({
-            "prof_id": reservationS.prof_id,
-            "day_hour": reservationS.day_hour,
-            "topic_name": reservationS.topic
-        })
-        db.flush()
-        
         topic = professional_topicR.get_by(
             {
                 "prof_id": reservationS.prof_id,
@@ -65,10 +63,18 @@ class CreateReservation ():
         
         if topic is None or len(topic) == 0:
             raise ValueError("No se encontró el precio para ese profesor y tema.")
-
+        
         topic = topic[0]
         
         price_value = topic.price_class  # Obtener el valor del precio
+        
+        meetingR.create({
+            "prof_id": reservationS.prof_id,
+            "day_hour": reservationS.day_hour,
+            "topic_name": reservationS.topic
+        })
+        
+        db.flush()
         
         # 3. Creamos la clase
         classR.create(

@@ -34,7 +34,6 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
     def getRecurrentToClass (self, prof_id: str, topic: str, day_hour: datetime):
         target_day = day_hour.isoweekday()
         target_time = day_hour.time()
-        print(target_day, target_time)
         smt = (
             select(RecurrentSchedule)
             .join(RecurrentSchedule.topic_recurrents)
