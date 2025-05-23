@@ -10,6 +10,7 @@ from app.bd.schemas import schema_reservation
 
 class ReservationController:
     def __init__ (self, db: Session):
+        self.db = db
         self.meetingR = MeetingRepository(db)
         self.professional_topicR = ProfessionalTopicRepository(db)
         self.reservationR = ReservationRepository(db)
