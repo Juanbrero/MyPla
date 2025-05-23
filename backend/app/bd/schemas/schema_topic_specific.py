@@ -60,7 +60,7 @@ class TopicSpecificCr1(BaseModel):
     day: date
     start: time
     end: time
-    topics: list[Topic]
+    topics: list[str]
 
 class TopicSpecificIn(TopicSpecificCr1):
     """
