@@ -1,5 +1,5 @@
 from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
-from app.models import Reservation, Meeting, ProfessionalTopic, Class
+from app.models import Reservation, Meeting, ProfessionalTopic, Class, RecurrentSchedule, SpecificSchedule
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_reservation 
@@ -17,6 +17,8 @@ class CreateReservation ():
         reservationR: Repository[Reservation],
         meetingR: Repository[Meeting],
         professional_topicR: Repository[ProfessionalTopic],
+        recurrentR: Repository[RecurrentSchedule],
+        specificR: Repository[SpecificSchedule],
         classR: Repository[Class],
         reservationS: schema_reservation.ReservationClassIn
     ):
@@ -24,81 +26,35 @@ class CreateReservation ():
         start = reservationS.day_hour.time()
         end = (reservationS.day_hour + timedelta(hours=1)).time()
         topic = reservationS.topic
-        week_day = reservationS.day_hour.isoweekday()
 
         schedule_class = Schedule(start=start, end=end)
 
         if start.minute != 0 and start.minute != 30 and valid_time(schedule_class):
             raise ValidationError('el horario no tiene un formato correcto')
         
-        prof = schema_prof.ProfessionalID(prof_id= reservationS.prof_id )
-        recurrent= crud_topic_recurrent.get_recurrent(prof, db).get('recurrent')
-        specific= crud_topic_specific.get_specific(prof, db).get('specific')
-        exception= None#crud_specific.get_exception(db, prof).get('exception')
-
-        if not (exception is None):
-            for e in exception:
-                if e.day == day and include_time(list(e), schedule_class):
-                    return {'error': 'El profesor no esta disponible en ese horario'}
-            
-                
-        specific_day = None
-        if not (specific is None):
-            i = 0
-            s = None
-            while i < len(specific) and specific_day is None:
-                s = specific[i]
-                if s.day == day and include_time(list(s), schedule_class):
-                    specific_day = s
-                i += 1
-                
-        valid = False
-
-        if not (specific_day is None) and topic in specific_day.topics:
-            valid = True
+        recurrent= recurrentR.getRecurrentToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
+        specific= specificR.getSpecificToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
+        exception= specificR.getExceptionToClass(reservationS.prof_id, reservationS.day_hour)
         
-        if not valid:
-            i = 0
-            r = None
-            recurrent_day = None
-            while i < len(recurrent) and recurrent_day is None:
-                r = recurrent[i]
-                if r.week_day == week_day and r.start <= schedule_class.start and r.end >= schedule_class.end:
-                    recurrent_day = r
-                i += 1
-            if not (recurrent_day is None) and {"topic_name": topic} in recurrent_day.topics:
-                valid = True
+        if len(exception) > 0 or (len(specific) <= 0 and len(recurrent) <= 0):
+            raise NotFound("El profesional no tiene horario para esa clase")
         
-        if not valid:
-            raise NotFound("El profesor no esta disponible en ese horario")
-        
-        print(reservationS)
-        try:
-            data = {
+        meetings = meetingR.get_by(
+            {
                 "prof_id": reservationS.prof_id,
                 "day_hour": reservationS.day_hour,
                 "topic_name": reservationS.topic
             }
-            meeting = meetingR.create(**data)
-            db.commit()
-        except Exception as e:
-            db.rollback()
-            print(f"Error al insertar meeting: {e}")
-            
-        #meeting = meetingR.create(  
-        #    {
-        #        "prof_id": reservationS.prof_id,
-        #        "day_hour": reservationS.day_hour,
-        #        "topic_name": reservationS.topic
-        #    }
-        #)
-        #db.commit()
-    
-        # 2. Consultamos el precio
-        #topic = db.query(ProfessionalTopic.price_class).filter(
-        #    (ProfessionalTopic.prof_id == reservationS.prof_id) &
-        #    (ProfessionalTopic.topic_name == reservationS.topic)
-        #).first()
+        )
+        if not (meetings is None) and len(meetings) > 0:
+            raise ValidationError("El profesional tiene una reunion en ese momento")
+        
+        meetingR.create({
+            "prof_id": reservationS.prof_id,
+            "day_hour": reservationS.day_hour,
+            "topic_name": reservationS.topic
+        })
+        db.flush()
         
         topic = professional_topicR.get_by(
             {

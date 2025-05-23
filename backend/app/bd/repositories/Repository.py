@@ -12,6 +12,7 @@ class Repository(Generic[T]):
 
     def create(self, **kwargs) -> T:
         instance = self.model(**kwargs)
+        print(vars(instance))
         self.session.add(instance)
         return instance
 

@@ -21,10 +21,17 @@ class TopicSpecific(Base):
     )
 
     prof_id: Mapped[str] = mapped_column(primary_key=True)
-    topic_name: Mapped[str] = mapped_column(primary_key=True)
+    topic_name: Mapped[str] = mapped_column(primary_key=False)
     start: Mapped[time] = mapped_column(primary_key=True)
     day: Mapped[date] = mapped_column(primary_key=True)
 
+    specific_schedule: Mapped["SpecificSchedule"] = relationship(
+        "SpecificSchedule",
+        primaryjoin="and_(TopicSpecific.prof_id == SpecificSchedule.prof_id, "
+                    "TopicSpecific.day == SpecificSchedule.day, "
+                    "TopicSpecific.start == SpecificSchedule.start)",
+        back_populates="topic_specifics"
+    )
     #topic: Mapped['ProfessionalTopic'] = relationship(back_populates='specific_topic')
 
 

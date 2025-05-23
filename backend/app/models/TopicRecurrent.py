@@ -24,6 +24,14 @@ class TopicRecurrent(Base):
     topic_name: Mapped[str] = mapped_column(primary_key=True)
     start: Mapped[time] = mapped_column(primary_key=True)
     week_day: Mapped[int] = mapped_column(primary_key=True)
+    
+    recurrent_schedule: Mapped["RecurrentSchedule"] = relationship(
+        "RecurrentSchedule",
+        primaryjoin="and_(TopicRecurrent.prof_id == RecurrentSchedule.prof_id, "
+                    "TopicRecurrent.week_day == RecurrentSchedule.week_day, "
+                    "TopicRecurrent.start == RecurrentSchedule.start)",
+        back_populates="topic_recurrents"
+    )
 
     #topic: Mapped['ProfessionalTopic'] = relationship(back_populates='recurrent_topic')
 
