@@ -1,7 +1,7 @@
 # Dockerfile
 
 # Etapa 1: build
-FROM node:18-alpine AS build
+FROM node:23-alpine AS build
 
 
 # Permitir pasar el modo de Vite como argumento (por defecto, 'production')
