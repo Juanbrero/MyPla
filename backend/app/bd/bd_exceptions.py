@@ -8,7 +8,7 @@ class MinuteError(Exception):
         super().__init__(self, msg)
     
     def __str__(self):
-        return f"Error el valor de minutos es {self.minuto} -> {self.msg}"
+        return f"Error minute value not equal {self.minuto} {self.msg}"
 
 class CompleteHour(Exception):
     """
@@ -21,7 +21,7 @@ class CompleteHour(Exception):
         super().__init__(self, msg)
     
     def __str__(self):
-        return f"Error los minutos ingresados no son iguales {self.mini} != {self.minf} {self.msg}"
+        return f"Error: Minute value of start and end not equal {self.mini} != {self.minf} {self.msg}"
     
 class WeekError(Exception):
     """
@@ -33,4 +33,4 @@ class WeekError(Exception):
         super().__init__(self, msg)
 
     def __str__(self):
-        return f'Dia de la semana fuera de rango (1..7) -> {self.week_day} '
+        return f'Week day is out of range (1..7) -> {self.week_day} '

@@ -16,7 +16,7 @@ router = APIRouter(prefix="/professionals/{prof_id}/agenda")
 
 #RECURRENT
 #Crea el recurrent, con los topicos
-@router.post('/recurrent',tags=["Recurrent"], response_model=Union[schema_topic_recurrent.TopicRecurrentIn, Errors])
+#@router.post('/recurrent',tags=["Recurrent"], response_model=Union[schema_topic_recurrent.TopicRecurrentIn, Errors])
 def create_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentCr1, db:Session = Depends(get_db)):
     """
     Creacion de un dia recurrente
@@ -26,7 +26,7 @@ def create_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurren
 
 #Recupera los datos del profesioanl especificado
 #Retorna un diccionario con los datos recuperados
-@router.get('/recurrent', tags=["Recurrent"], response_model=Union[schema_response.ResponseRecurrent, List[schema_topic_recurrent.TopicRecurrentCr1], Errors])
+#@router.get('/recurrent', tags=["Recurrent"], response_model=Union[schema_response.ResponseRecurrent, List[schema_topic_recurrent.TopicRecurrentCr1], Errors])
 def get_recurrent(prof_id:str,  db:Session = Depends(get_db)):
     """
     Recuperacion de todos los dias recurrentes
@@ -34,7 +34,7 @@ def get_recurrent(prof_id:str,  db:Session = Depends(get_db)):
     topicr = schema_prof.ProfessionalID( prof_id=prof_id)
     return crud_topic_recurrent.get_recurrent(topicr, db)
 
-@router.delete('/recurrent', tags=['Recurrent'], response_model=Union[Info, Errors])
+#@router.delete('/recurrent', tags=['Recurrent'], response_model=Union[Info, Errors])
 def del_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentWeekS, db:Session = Depends(get_db)):
     """
     Eliminacion de un dia recurrente
@@ -43,7 +43,7 @@ def del_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentWe
     return crud_topic_recurrent.delete_recurrent(db, recu)
 
 
-@router.put('/recurrent', tags=['Recurrent'], response_model=Union[Info, Errors])
+#@router.put('/recurrent', tags=['Recurrent'], response_model=Union[Info, Errors])
 def update_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentUp, db:Session = Depends(get_db)):
     """
     Permite actualizar la hora de inicio y/o hora de final dado una hora de inicio
@@ -59,7 +59,7 @@ def update_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurren
     return crud_topic_recurrent.update_recurrent_time(db, topicr)
 
 
-@router.post('/recurrent/topic', tags=['Recurrent'], response_model=Union[schema_topic_recurrent.TopicRecurrentCreate, Errors])
+#@router.post('/recurrent/topic', tags=['Recurrent'], response_model=Union[schema_topic_recurrent.TopicRecurrentCreate, Errors])
 def add_recurrent_topic(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentBase, db:Session = Depends(get_db)):
     """
     Agrega un topico a un dia recurrente particular
@@ -67,7 +67,7 @@ def add_recurrent_topic(prof_id:str, recurrent:schema_topic_recurrent.TopicRecur
     recurrent_topic = schema_topic_recurrent.TopicRecurrentCreate(**recurrent.dict(), prof_id=prof_id)
     return crud_topic_recurrent.add_topic_recurrent(db, recurrent_topic)
 
-@router.delete('/recurrent/topic', tags=['Recurrent'], response_model=Union[Info, Errors])
+#@router.delete('/recurrent/topic', tags=['Recurrent'], response_model=Union[Info, Errors])
 def del_recurrent_topic(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentBase, db:Session = Depends(get_db)):
     """
     Elimina un topico de un dia recurrente

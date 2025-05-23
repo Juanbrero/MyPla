@@ -51,3 +51,17 @@ class SpecificScheduleRepository(Repository[SpecificSchedule]):
             )
         )
         return self.session.execute(smt).scalars().all()
+    
+    def getWeekSpecific(self, prof_id:str, week_day: int, start: datetime.time, end: datetime.time):
+        smt = (
+            select(SpecificSchedule).where(
+                SpecificSchedule.prof_id == prof_id,
+                SpecificSchedule.start >= start,
+                SpecificSchedule.end <= end,
+                func.extract('dow', SpecificSchedule.day) == week_day
+            )
+        )
+
+        values = self.session.execute(smt).scalars().all()
+        print(values)
+        return len(values)

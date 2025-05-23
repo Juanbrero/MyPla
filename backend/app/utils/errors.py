@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi import status
 from pydantic import ValidationError as PydanticValidationError
 from json.decoder import JSONDecodeError
+from app.bd.bd_exceptions import CompleteHour, MinuteError
 
 class ValidationError(Exception):
     'raises a validation error'
@@ -24,6 +25,8 @@ class ErrorHandler():
         DataError: (status.HTTP_400_BAD_REQUEST, "DATA_ERROR"),
         ValueError: (status.HTTP_400_BAD_REQUEST, "VALUE_ERROR"),
         SQLAlchemyError: (status.HTTP_500_INTERNAL_SERVER_ERROR, "DATABASE_ERROR"),
+        MinuteError: (status.HTTP_406_NOT_ACCEPTABLE, "Minute value not valid"),
+        CompleteHour: (status.HTTP_400_BAD_REQUEST, 'Hour is incomplete'),
     }
 
     @classmethod
