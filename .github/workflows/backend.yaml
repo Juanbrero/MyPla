@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - SIP-73-armar-deployment-en-cloud
+      - main
     paths:
       - backend/**
 
