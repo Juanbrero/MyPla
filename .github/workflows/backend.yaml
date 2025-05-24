@@ -3,9 +3,9 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - SIP-73-armar-deployment-en-cloud
     paths:
-      - 'backend/**'
+      - backend/**
 
 env:
   IMAGE_NAME: matiasherrneder/mipla-backend
