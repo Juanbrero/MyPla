@@ -30,3 +30,5 @@ backend/*/*/*/__pycache__
 # Variables de entorno
 .env
 venv
+
+*secret.yaml
