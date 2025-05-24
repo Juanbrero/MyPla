@@ -14,7 +14,7 @@ def getPreference():
             {
                 "title": "Mi producto",
                 "quantity": 1,
-                "unit_price": 1.4,
+                "unit_price": 1.5,
             }
         ]
     }
