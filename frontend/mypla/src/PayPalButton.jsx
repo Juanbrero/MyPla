@@ -10,7 +10,7 @@ const PayPalButton = () => {
             <PayPalButtons
                 style={{
                     layout: "horizontal", // "vertical" o "horizontal"
-                    color: "silver",        // "gold" | "blue" | "silver" | "black"
+                    color: "blue",        // "gold" | "blue" | "silver" | "black"
                     shape: "sharp",       // "rect" | "pill" | "sharp"
                     label: "checkout",    // "paypal" | "checkout" | "buynow" | "pay"
                     tagline: false        // Mostrar o no tagline
