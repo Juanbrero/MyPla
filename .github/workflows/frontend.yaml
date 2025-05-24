@@ -34,9 +34,9 @@ jobs:
 
       - name: Update Kubernetes Manifests
         run: |
-          sed -i "s|image: .*|image: $IMAGE_NAME:${{ steps.vars.outputs.TAG }}|" deploy/base/deployment.yaml
+          sed -i "s|image: .*|image: $IMAGE_NAME:${{ steps.vars.outputs.TAG }}|" deploy/frontend/k8s.yaml
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add deploy/base/deployment.yaml
+          git add deploy/frontend/k8s.yaml
           git commit -m "Update image to $IMAGE_NAME:${{ steps.vars.outputs.TAG }}"
           git push
