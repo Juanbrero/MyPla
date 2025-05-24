@@ -1,14 +1,14 @@
-name: CI/CD Pipeline
+name: Backend Pipeline
 
 on:
   push:
     branches:
       - SIP-73-armar-deployment-en-cloud
     paths:
-      - frontend/**
+      - backend/**
 
 env:
-  IMAGE_NAME: matiasherrneder/mipla-frontend
+  IMAGE_NAME: matiasherrneder/mipla-backend
 
 jobs:
   build-and-deploy:
@@ -29,14 +29,14 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t $IMAGE_NAME:${{ steps.vars.outputs.TAG }} ./frontend/mypla
+          docker build -t $IMAGE_NAME:${{ steps.vars.outputs.TAG }} ./backend
           docker push $IMAGE_NAME:${{ steps.vars.outputs.TAG }}
 
       - name: Update Kubernetes Manifests
         run: |
-          sed -i "s|image: .*|image: $IMAGE_NAME:${{ steps.vars.outputs.TAG }}|" deploy/frontend/k8s.yaml
+          sed -i "s|image: .*|image: $IMAGE_NAME:${{ steps.vars.outputs.TAG }}|" deploy/backend/k8s.yaml
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add deploy/frontend/k8s.yaml
+          git add deploy/backend/k8s.yaml
           git commit -m "Update image to $IMAGE_NAME:${{ steps.vars.outputs.TAG }}"
           git push
