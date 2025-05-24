@@ -3,7 +3,8 @@ import axios from "axios";
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 
 // public key
-initMercadoPago('APP_USR-979783cf-8636-4eb2-a1d7-aa47e7134fcc');
+const mptoken = import.meta.env.VITE_MP_TOKEN;
+initMercadoPago(mptoken);
 
 const MPButton = () => {
   const [preferenceId, setPreferenceId] = useState(null);
