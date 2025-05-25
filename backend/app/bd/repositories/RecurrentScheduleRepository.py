@@ -51,3 +51,14 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
             .distinct()
         )
         return self.session.execute(smt).scalars().all()
+    
+   
+    def getOmmit(self, recurrent:dict):
+        stm =(
+            select(RecurrentSchedule)
+            .where(RecurrentSchedule.week_day == recurrent['week_day'],
+                   RecurrentSchedule.prof_id == recurrent['prof_id'],
+                   RecurrentSchedule.start != recurrent['start'])
+        )
+
+        return self.session.execute(stm).scalars().all()
