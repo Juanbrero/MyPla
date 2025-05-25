@@ -1,0 +1,348 @@
+from fastapi.testclient import TestClient
+from uuid import uuid4 as uuid
+
+from datetime import time
+from app.main import app
+
+from unittest import TestCase
+from app.controllers.RecurrentController import RecurrentController
+from app.tests.utils import get_db_repository, create_user, create_profesional, del_user, create_topic, del_topic, add_prof_topic, error_message
+from random import random, randint
+from app.bd.schemas import schema_topic_recurrent
+from fastapi.encoders import jsonable_encoder
+import json
+
+class TestRepository(TestCase):
+    def setUp(self):
+        self.recurrentC = RecurrentController(get_db_repository())
+        self.prof_id = str(uuid())
+        create_user(self.prof_id)
+        create_profesional(self.prof_id)
+        self.topic = create_topic(str(uuid()))
+        add_prof_topic(prof_id= self.prof_id, topic_name= self.topic, price_class= (randint( 1, 50) + random()))
+        print()
+
+    def tearDown(self):
+        del_user(self.prof_id)
+        del_topic(self.topic)
+    
+    def test_create(self):
+        print('Valid insertion')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '9:00',
+            end= '10:00',
+            week_day= 2,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+    def test_create_week_error(self):
+        print('Inserción de semana invalida')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '9:00',
+            end= '10:00',
+            week_day= 0,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+    
+        
+        response_error = error_message(response.body)
+        self.assertEqual(response.status_code, 400)
+        
+        # Para obtener el mensaje de error, se debe convertir el valor del body, por medio de json a un diccionario
+        # Luego se accede al diccionario error -> message
+        
+        #json_response = jsonable_encoder(response)
+        #value = json.loads(response['body'])['error']['message']
+        
+        self.assertEqual(response_error, 'Week is incorrect value')
+    
+    def test_create_minute_start_error(self):
+        print('Insert invalid minute start 03:15')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '03:15',
+            end= '10:00',
+            week_day= 1,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+        
+        self.assertEqual(response.status_code, 406)
+       
+        
+        message = error_message(response.body)
+        
+        self.assertEqual(message, 'Not accept value minute, minute valid 00 or 30')
+
+    def test_create_minute_end_error(self):
+        print('Invalid minute end 10:23')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '03:00',
+            end= '10:23',
+            week_day= 1,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+        self.assertEqual(response.status_code, 406)
+        
+        message = error_message(response.body)
+        
+        self.assertEqual(message, 'Not accept value minute, minute valid 00 or 30')
+
+    def test_create_schedule_incomplete_start_error(self):
+        print('Insert incomplete schedule 9:30-12:00')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '9:30',
+            end= '12:00',
+            week_day= 1,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+        self.assertEqual(response.status_code, 400)
+        
+        response_error = error_message(response.body)
+        
+        self.assertEqual(response_error, 'The schedule must be full hours')
+    
+    def test_create_schedule_incomplete__end_error(self):
+        print('Insert invalid schedule 10:00-15:30')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '10:00',
+            end= '15:30',
+            week_day= 1,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+              
+        self.assertEqual(response.status_code, 400)
+        
+        response_error = error_message(response.body)
+        
+        self.assertEqual(response_error, 'The schedule must be full hours')
+   
+    def test_create_week_minute_error(self):
+        print('Insert with week (0) and invalid hour 10:23 ')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '03:00',
+            end= '10:23',
+            week_day= 0,
+            topics= [self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+    
+       
+        self.assertEqual(response.status_code, 400)
+        
+        message = error_message(response.body)
+        self.assertEqual(message, 'Week is incorrect value')
+
+    def test_create_invalid_schedule(self):
+        print('Invalid schedule S= 11:00 E= 09:00')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00',
+            end= '09:00',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+    
+       
+        self.assertEqual(response.status_code, 400)
+        
+        message = error_message(response.body)
+        self.assertEqual(message, 'Hour format is incorrect')
+
+    def test_create_end_0(self):
+        print('Insert complete day S= 00:00 E= 00:00')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '00:00',
+            end= '00:00',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+    def test_create_include(self):
+        print('Insert complete day and insert S= 10:00 E= 15:00')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '00:00:15',
+            end= '00:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        recurrentS1 = schema_topic_recurrent.TopicRecurrentIn(
+            start= '10:00',
+            end= '15:00',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+        response = self.recurrentC.createRecurrent(recurrentS1)
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body), 'Time is include in Recurrent') 
+        
+    
+    def test_get(self):
+        print('Get week schedule')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+        
+        get = schema_topic_recurrent.TopicRecurrentWeekGet(prof_id= recurrentS.prof_id, week_day= recurrentS.week_day)
+        response = self.recurrentC.getRecurrentWeek(get)
+        self.assertListEqual(response,[{
+            'week_day':6,
+            'start': time(hour=11),
+            'end':time(hour=12)
+        }])
+
+    def test_get_not_week(self):
+        print('Get not week schedule')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+        
+        get = schema_topic_recurrent.TopicRecurrentWeekGet(prof_id= recurrentS.prof_id, week_day= 10)
+        response = self.recurrentC.getRecurrentWeek(get)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body),'Week is incorrect value')
+
+        
+
+
+
+class TestEndpoint(TestCase):
+     
+    def setUp(self):
+        self.client = TestClient(app)
+        self.prof_id = str(uuid())
+        create_user(self.prof_id)
+        create_profesional(self.prof_id)
+
+        #U1 = self.client.post('/users', json={'user_id': self.prof_id})
+        #self.assertEqual(U1.status_code, 200)
+        #P1 = self.client.post('/professionals', json={'prof_id': self.prof_id})
+        
+
+    def tearDown(self):
+        del_user(self.prof_id)
+
+        #self.client.delete(f'/users/{self.prof_id}')
+
+
+    def test_insert(self):
+        topic = create_topic('griego') 
+        add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
+        
+        data = {
+            'start': '01:00',
+            'end': '10:00',
+            'week_day': 2,
+            'topics':[
+                topic
+            ]
+        }
+        response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), 'Recurrent created')
+
+
+    def test_get(self):
+        self.test_insert()
+
+        response = self.client.get('/recurrent/', params={'prof_id':self.prof_id, 'week_day': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [{'end':'10:00:00', 'start':'01:00:00', 'week_day':2}])
+
+    
+    def test_update_not(self):
+        self.test_insert()
+
+        json_data = {
+            'week_day': 2,
+            'start': '1:00'
+        }
+       
+        response = self.client.put('/recurrent/', params={'prof_id': self.prof_id}, json= json_data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json().get('error')['message'], 'Not update information')
+
+    def test_update_start(self):
+        self.test_insert()
+
+        json_data = {
+            'week_day': 2,
+            'start': '1:00',
+            'Nstart': '5:00'
+        }
+        
+        response = self.client.put('/recurrent/', params={'prof_id': self.prof_id}, json= json_data)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Recurrent updated')
+
+    def test_del(self):
+        self.test_insert()
+        
+        response = self.client.delete('/recurrent/', params={'prof_id':self.prof_id, 'week_day': 2, 'start':'1:00'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Recurrent deleted')
