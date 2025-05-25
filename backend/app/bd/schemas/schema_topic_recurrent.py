@@ -44,13 +44,13 @@ class TopicRecurrentCr1(BaseModel):
     Esquema para recibir la información para crear un dia recurrente con sus topicos
         - week_day: int
         - start:time
-        - topics: list[Topic]
+        - topics: list[str]
             - topic_name: str
     """
     week_day: int
     start: time
     end: time
-    topics: list[Topic]
+    topics: list[str]
 
 class TopicRecurrentIn(TopicRecurrentCr1):
     """
@@ -105,3 +105,22 @@ class TopicRecurrentUpdate(TopicRecurrentUp, ProfessionalID):
         - Nend: time | None  
     """
     pass
+
+class TopicRecurrentWeekGet(ProfessionalID):
+    """
+        - prof_id
+        - week_day
+    """
+    week_day: int
+    
+
+class TopicRecurrentWeekRes(TopicRecurrentWeekS):
+    """
+     - week_day
+     - start
+     - end
+    """
+    end:time
+
+    class Config:
+        orm_mode= True
