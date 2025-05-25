@@ -2,26 +2,26 @@ class MinuteError(Exception):
     """
     Error que se lanzara si los minutos no son los admitidos 
     """
-    def __init__(self, minuto, msg='Los minutos deben ser "00" o "30" '):
+    def __init__(self, minuto, msg='Not accept value minute, minute valid 00 or 30'):
         self.minuto = minuto
         self.msg = msg
         super().__init__(self, msg)
     
     def __str__(self):
-        return f"Error minute value not equal {self.minuto} {self.msg}"
+        return f"{self.msg}"
 
 class CompleteHour(Exception):
     """
     Error que se lanzara si los minutos no son iguales, es decir, la hora no es completa
     """
-    def __init__(self, mini, minf, msg='Las horas deben ser completas'):
+    def __init__(self, mini, minf, msg='The schedule must be full hours'):
         self.mini = mini
         self.minf = minf
         self.msg = msg
         super().__init__(self, msg)
     
     def __str__(self):
-        return f"Error: Minute value of start and end not equal {self.mini} != {self.minf} {self.msg}"
+        return f"{self.msg}"
     
 class WeekError(Exception):
     """
