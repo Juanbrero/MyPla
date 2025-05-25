@@ -18,3 +18,4 @@ pydantic==1.10.2
 alembic
 icecream
 dotenv
+pytest
