@@ -49,14 +49,22 @@ async def get_all(db:Session = Depends(get_db)):
     """
     return crud_user.get_users(db)
 
-@router.delete('/users',tags=["USER"], response_model=Union[Info, Errors])
-async def delete_user(user:schema_users.UsersBase, db:Session = Depends(get_db)):
+@router.delete('/users/{user}',tags=["USER"], response_model=Union[Info, Errors])
+async def delete_user(user:str, db:Session = Depends(get_db)):
     """
     Eliminacion de un usuarios
     """
+    user = schema_users.UsersBase(user_id= user)
     return crud_user.del_user(db, user)
     
-
+from app.models.Student import Student
+@router.post('/students/{user}', tags=['Student'])
+def create_student(user:str, db: Session = Depends(get_db)):
+    student = Student(student_id= user)
+    db.add(student)
+    db.commit()
+    db.refresh(student)
+    return student
 ###
 
 
