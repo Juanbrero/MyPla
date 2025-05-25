@@ -29,12 +29,14 @@ async def get_topic(db:Session = Depends(get_db)):
     """
     return crud_topic.get_all_topic(db)
 
-@router.delete('', tags=['Topics'], response_model=Union[Errors, Info])
-async def delete_topic(topic:schema_topic.TopicCreate, db:Session = Depends(get_db)):
+@router.delete('/', tags=['Topics'], response_model=Union[Errors, Info])
+async def delete_topic(topic_name:str, db:Session = Depends(get_db)):
     """
     Elimina un topico
     - topic_name: str ( not case sensitive)
     """
+
+    topic = schema_topic.TopicCreate(topic_name= topic_name)
     return crud_topic.delete_topic(db, topic)
 
 
