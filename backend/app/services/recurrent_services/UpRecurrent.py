@@ -16,9 +16,8 @@ class UpRecurrent():
     def run(
         db:Session,
         recurrentS: schema_topic_recurrent.TopicRecurrentUpdate,
-        recurrentR: Repository[RecurrentSchedule],
-        meetingR: Repository[Meeting]
-    ):
+        recurrentR: Repository[RecurrentSchedule]
+        ):
         
         if not recurrentS.week_day in range(1, 8):
             raise ValueError('Week is incorrect value')
@@ -50,10 +49,6 @@ class UpRecurrent():
         if not valid_time(Schedule(**update)):
             raise ValueError('Hour format is incorrect')
         
-        meetings = meetingR.getMeetingRecurrent(recurrentS.prof_id, recurrentS.week_day, update['start'], update['end'])
-
-        if len(meetings) > 0:
-            raise ValidationError("In hour you have a meeting")
         
         list_week = recurrentR.getOmmit(
             query
