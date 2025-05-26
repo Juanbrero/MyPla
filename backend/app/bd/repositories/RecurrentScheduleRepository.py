@@ -54,6 +54,9 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
     
    
     def getOmmit(self, recurrent:dict):
+        """
+        Recupera todos los horarios de un día de la semana, omitiendo el valor del start ingresado
+        """
         stm =(
             select(RecurrentSchedule)
             .where(RecurrentSchedule.week_day == recurrent['week_day'],
