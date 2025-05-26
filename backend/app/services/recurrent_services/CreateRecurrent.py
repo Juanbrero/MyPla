@@ -1,13 +1,11 @@
 from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
-from app.models import  Meeting, ProfessionalTopic, RecurrentSchedule, SpecificSchedule
+from app.models import ProfessionalTopic, RecurrentSchedule, TopicRecurrent
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_topic_recurrent
-from datetime import timedelta
-from app.bd.bd_utils import error_hand, Schedule, include_time, include_time1, valid_time, strip_time_hour_minute
-from app.bd.schemas import schema_topic_recurrent
 
-from app.bd.cruds import crud_topic_recurrent, crud_topic_specific, crud_specific
+from app.bd.bd_utils import Schedule, include_time, valid_time, strip_time_hour_minute
+from app.bd.schemas import schema_topic_recurrent
 
 from fastapi.responses import JSONResponse
 from fastapi import status
@@ -19,13 +17,17 @@ class CreateRecurrent():
         db: Session,
         recurrentS: schema_topic_recurrent.TopicRecurrentIn,
         recurrentR: Repository[RecurrentSchedule],
-        meetingR: Repository[Meeting],
-        professional_topicR: Repository[ProfessionalTopic]
+        professional_topicR: Repository[ProfessionalTopic],
+        topic_recurrentR: Repository[TopicRecurrent]
         
     ):
         
         if not recurrentS.week_day in range(1, 8):
             raise ValueError('Week is incorrect value')
+        
+        
+        if len(recurrentS.topics) == 0:
+            raise ValidationError('Recurrent day need topics')
         
 
         recurrentS.start = strip_time_hour_minute(recurrentS.start)
@@ -42,11 +44,7 @@ class CreateRecurrent():
         if recurrentS.end.hour == 0:
             recurrentS.end = time(hour=23, minute=59)
         
-        meetings = meetingR.getMeetingRecurrent(recurrentS.prof_id, recurrentS.week_day, recurrentS.start, recurrentS.end)
-
-        if len(meetings) > 0:
-            raise ValidationError("In hour you have a meeting")
-        
+              
         recurrent = recurrentR.get_by({
             'prof_id': recurrentS.prof_id,
             'week_day': recurrentS.week_day
@@ -64,8 +62,23 @@ class CreateRecurrent():
             'start': recurrentS.start,
             'end': recurrentS.end
         }
-
         )
+        
+        prof_topics = professional_topicR.getTopics(recurrentS.prof_id)
+
+        for topic in recurrentS.topics:
+            if not topic in prof_topics:
+                raise NotFound(f'{topic} not is from Professional')
+            topic_recurrentR.create({
+            'prof_id': recurrentS.prof_id,
+            'week_day': recurrentS.week_day,
+            'start': recurrentS.start,
+            'topic_name': topic
+        }
+                
+            )
+
+        
 
         db.commit()
 
