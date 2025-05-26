@@ -21,3 +21,15 @@ class ProfessionalTopicRepository(Repository[ProfessionalTopic]):
         )
         result = self.session.execute(stmt).scalar_one()
         return result == len(topic_names)
+    
+
+    def getTopics(self, prof_id: str):
+        """
+        Recupera todos los topicos de un professional
+        """
+        stm = (
+            select(ProfessionalTopic.topic_name)
+            .where(ProfessionalTopic.prof_id == prof_id)
+        )
+        result = self.session.execute(stm).scalars().all()
+        return result
