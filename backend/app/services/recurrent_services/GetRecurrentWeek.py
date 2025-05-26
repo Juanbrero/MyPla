@@ -3,10 +3,7 @@ from app.models import RecurrentSchedule
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_topic_recurrent
-from datetime import timedelta
-from app.bd.bd_utils import error_hand, Schedule, include_time, include_time1, valid_time, strip_time_hour_minute
-from app.bd.schemas import schema_prof
-from app.bd.cruds import crud_topic_recurrent
+
 from fastapi.responses import JSONResponse
 from fastapi import status
 
@@ -18,17 +15,21 @@ class GetRecurrentWeek():
         recurrentS: schema_topic_recurrent.TopicRecurrentWeekGet,
         recurrentR: Repository[RecurrentSchedule]
     ):
-        
+
         
         if not recurrentS.week_day in range(0, 8):
             raise ValueError('Week is incorrect value')
 
-        response = recurrentR.get_by({
-            'prof_id': recurrentS.prof_id,
-            'week_day': recurrentS.week_day
-        })
-
-        respuesta = [ schema_topic_recurrent.TopicRecurrentWeekRes.from_orm(recu).dict() for recu in response ]
-
+        response = recurrentR.getRecurrentsWithTopics(recurrentS.prof_id)
+        
+      
+        respuesta = [ 
+            schema_topic_recurrent.TopicRecurrentCr1(week_day= recu.week_day,
+                                                     start= recu.start,
+                                                     end= recu.end,
+                                                     topics=[topic.topic_name for topic in recu.topic_recurrents]).dict() 
+            for recu in response if recu.week_day == recurrentS.week_day 
+            ]
+        
         return respuesta
 
