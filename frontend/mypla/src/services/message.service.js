@@ -1,6 +1,6 @@
 import { callExternalApi } from "./external-api.service";
 
-const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;// ?? 'http://localhost:8002';
+const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
 export const getPublicResource = async () => {
   const config = {
