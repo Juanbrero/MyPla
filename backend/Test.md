@@ -32,11 +32,11 @@ Ejecutar un archivo o función especifica
  - [ ]  Caso existos -> 201
    - [x]  Repository
    - [ ]  Endpoint
-
+---
  - [ ] Week invalido -> 400
    - [x]  Repository
    - [ ]  Endpoint
-
+---
  - [ ] Hora invalida(not 00 or 30) 13:25  -> 406
 
    - [ ] Inicio
@@ -46,9 +46,9 @@ Ejecutar un archivo o función especifica
    - [ ] Fin
      - [x]  Repository
      - [ ]  Endpoint
-
+---
  - [ ] Horario incompleta 10:00-12:30 | 12:30-15:00 -> 400
-
+    
    - [ ] Inicio
      - [x]  Repository
      - [ ]  Endpoint
@@ -56,111 +56,110 @@ Ejecutar un archivo o función especifica
    - [ ] Fin
      - [x]  Repository
      - [ ]  Endpoint
-
+---
  - [ ] Week and horario error  -> 400
      - [x]  Repository
      - [ ]  Endpoint
-
+---
  - [x] Horario invalida 16:30-12:30
     - [x]  Repository
     - [ ]  Endpoint
-
- - [ ] Meeting error
-    - [x]  Repository
-    - [ ]  Endpoint
-
+---
  - [ ] Time include
     - [x]  Repository
     - [ ]  Endpoint
-
+---
  - [ ] Hora de fin 00
     - [x]  Repository
     - [ ]  Endpoint
-
+---
  - [ ] Topics
    - [ ] Topico valido
-      - [ ]  Repository
+      - [X]  Repository
       - [ ]  Endpoint
 
    - [ ] Topicos validos
-      - [ ]  Repository
+      - [X]  Repository
       - [ ]  Endpoint
 
-   - [ ] Topico 
-      - [ ]  Repository
+   - [ ] Topico inexistente
+      - [X]  Repository
       - [ ]  Endpoint
 
    - [ ] Topico no perteneciente
-      - [ ]  Repository
+      - [X]  Repository
       - [ ]  Endpoint
+
+---
 
 ### Get Recurrent
 - [ ] Recuperar un dia de la semana (week)
   - [x]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Recuperar un dia de la semana sin horarios (week)
-  - [ ]  Repository
+  - [X]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Recuperar un dia de la semana invalido (week != [1-7])
-  - [ ]  Repository
+  - [X]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Topics
   - [ ] Recuperar todos los topicos de un recurrente
-    - [ ]  Repository
+    - [X]  Repository
     - [ ]  Endpoint
-    
+
+--- 
 ### Update Recurrent
 - [ ] Actualizar sin enviar datos
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar con hora invalida
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar con horarios invalido
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar inicio
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar fin
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar sin horarios (vacio)
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar con horarios colisionantes
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar con semana invalida
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Actualizar colisionando con una Meeting
   - [ ]  Repository
   - [ ]  Endpoint
-
+---
 - [ ] Topicos
   
   - [ ] Agregar Topico valido
-    - [ ]  Repository
+    - [X]  Repository
     - [ ]  Endpoint
   
   - [ ] Agregar topico Invalido
-    - [ ]  Repository
+    - [X]  Repository
     - [ ]  Endpoint
   
   - [ ] Eliminar topico valido
-    - [ ]  Repository
+    - [X]  Repository
     - [ ]  Endpoint
   
   - [ ] Eliminar topico invalido
@@ -168,7 +167,7 @@ Ejecutar un archivo o función especifica
     - [ ]  Endpoint
   
   - [ ] Eliminar último topico
-    - [ ]  Repository
+    - [X]  Repository
     - [ ]  Endpoint
 
 ### Delete Recurrent
@@ -176,8 +175,8 @@ Ejecutar un archivo o función especifica
 - [ ] Eliminar Horario valido
     - [ ]  Repository
     - [ ]  Endpoint
-
-- [ ] Eliminar horario Invlaido
+---
+- [ ] Eliminar horario Invalido
     - [ ]  Repository
     - [ ]  Endpoint
 

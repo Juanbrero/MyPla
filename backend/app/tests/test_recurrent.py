@@ -6,6 +6,7 @@ from app.main import app
 
 from unittest import TestCase
 from app.controllers.RecurrentController import RecurrentController
+from app.controllers.TopicRecurrentController import TopicRecurrentController
 from app.tests.utils import get_db_repository, create_user, create_profesional, del_user, create_topic, del_topic, add_prof_topic, error_message
 from random import random, randint
 from app.bd.schemas import schema_topic_recurrent
@@ -20,12 +21,14 @@ class TestRepository(TestCase):
         create_profesional(self.prof_id)
         self.topic = create_topic(str(uuid()))
         add_prof_topic(prof_id= self.prof_id, topic_name= self.topic, price_class= (randint( 1, 50) + random()))
+        self.topic_recurrentC = TopicRecurrentController(get_db_repository())
         print()
 
     def tearDown(self):
         del_user(self.prof_id)
         del_topic(self.topic)
-    
+        
+    #INSERT
     def test_create(self):
         print('Valid insertion')
         recurrentS = schema_topic_recurrent.TopicRecurrentIn(
@@ -37,7 +40,7 @@ class TestRepository(TestCase):
         )
 
         response = self.recurrentC.createRecurrent(recurrentS)
-
+        
         self.assertEqual(response.status_code, 201)
         self.assertEqual(json.loads(response.body), 'Recurrent created')
 
@@ -219,7 +222,91 @@ class TestRepository(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(error_message(response.body), 'Time is include in Recurrent') 
         
+    def test_create_with_topics(self):
+        print('Insert many topics')
+
+        create_topic('Frances')
+        add_prof_topic(self.prof_id, 'FRANCES', 15)
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '09:00:15',
+            week_day= 6,
+            prof_id= self.prof_id,
+            topics=[self.topic, 'FRANCES']
+        )
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        del_topic('France')
     
+    def test_create_not_topic(self):
+        print('Insert with not topic from professional')
+        
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '09:00:15',
+            week_day= 6,
+            prof_id= self.prof_id,
+            topics=['GRIEGO']
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(error_message(response.body), 'GRIEGO not is from Professional')
+
+    
+    def test_create_with_invalid_topics(self):
+        print('Insert one topic valid, one invalid')
+
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '09:00:15',
+            week_day= 6,
+            prof_id= self.prof_id,
+            topics=[self.topic, 'FRANCES']
+        )
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(error_message(response.body), 'FRANCES not is from Professional')
+
+    def test_create_not_professional_topic(self):
+        print('Insert one topic valid, one exist but not from professional')
+        create_topic('FRANCES')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '09:00:15',
+            week_day= 6,
+            prof_id= self.prof_id,
+            topics=[self.topic, 'FRANCES']
+        )
+        response = self.recurrentC.createRecurrent(recurrentS)
+    
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(error_message(response.body), 'FRANCES not is from Professional')
+        del_topic('FRANCES')
+
+
+    def test_create_not_topic(self):
+        print('Insert void topics')
+
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '09:00:15',
+            week_day= 6,
+            prof_id= self.prof_id,
+            topics=[]
+        )
+        response = self.recurrentC.createRecurrent(recurrentS)
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body), 'Recurrent day need topics')
+
+
+    #GET         
     def test_get(self):
         print('Get week schedule')
         recurrentS = schema_topic_recurrent.TopicRecurrentIn(
@@ -237,11 +324,36 @@ class TestRepository(TestCase):
         
         get = schema_topic_recurrent.TopicRecurrentWeekGet(prof_id= recurrentS.prof_id, week_day= recurrentS.week_day)
         response = self.recurrentC.getRecurrentWeek(get)
+        
         self.assertListEqual(response,[{
             'week_day':6,
             'start': time(hour=11),
-            'end':time(hour=12)
+            'end':time(hour=12),
+            'topics':[self.topic]
         }])
+
+    def test_get_void_week(self):
+        print('Get week without schedule')
+
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        get = schema_topic_recurrent.TopicRecurrentWeekGet(prof_id= recurrentS.prof_id, week_day= 5)
+        response = self.recurrentC.getRecurrentWeek(get)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertListEqual(json.loads(response.body), [])
+
 
     def test_get_not_week(self):
         print('Get not week schedule')
@@ -264,9 +376,123 @@ class TestRepository(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(error_message(response.body),'Week is incorrect value')
 
+    # Update
+    def test_add_topic(self):
+        print('Add topic to recurrent day')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+        
+        create_topic('JAPONES')
+        add_prof_topic(self.prof_id, 'JAPONES', 3)
+        
+        topic_recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= recurrentS.start,
+            end= recurrentS.end,
+            week_day= recurrentS.week_day,
+            prof_id= recurrentS.prof_id,
+            topics=['JAPONES']
+        )
+        
+        response = self.topic_recurrentC.addTopic(topic_recurrentS)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.body), 'Recurrent topics updated')
+        
+        del_topic('JAPONES')
+
+    def test_add_topic_invalid(self):
+        print('Try add topic not from professional')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+        
+        create_topic('JAPONES')
+        add_prof_topic(self.prof_id, 'JAPONES', 3)
+        
+        topic_recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= recurrentS.start,
+            end= recurrentS.end,
+            week_day= recurrentS.week_day,
+            prof_id= recurrentS.prof_id,
+            topics=['JAPONES','SUECO']
+        )
+        
+        response = self.topic_recurrentC.addTopic(topic_recurrentS)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(error_message(response.body), 'SUECO not is from Professional')
+        
+        del_topic('JAPONES')
+
+    def test_del_topic(self):
+        print('Del topic of recurrent day')
+        create_topic('JAPONES')
+        add_prof_topic(self.prof_id, 'JAPONES', 3)
+
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic,'JAPONES'],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+        
+        
+        topic_recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= recurrentS.start,
+            end= recurrentS.end,
+            week_day= recurrentS.week_day,
+            prof_id= recurrentS.prof_id,
+            topics=['JAPONES']
+        )
+        
+        response = self.topic_recurrentC.delTopic(topic_recurrentS)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.body), 'Recurrent topics deleted')
+        del_topic('JAPONES')
+
+    def test_last_topic(self):
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '11:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')      
         
 
-
+        response = self.topic_recurrentC.delTopic(recurrentS)
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body),'Delete all topics not possible')  
+        
 
 class TestEndpoint(TestCase):
      

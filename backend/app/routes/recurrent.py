@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from typing import List, Union
 from ..controllers.RecurrentController import RecurrentController
+from ..controllers.TopicRecurrentController import TopicRecurrentController
 from app.bd.schemas import schema_topic_recurrent
 from datetime import time
 
@@ -36,7 +37,23 @@ def update_hour(prof_id:str, update:schema_topic_recurrent.TopicRecurrentUp, db:
     return RecurrentController(db= db).updateRecurrent(rescurrentS)
 
 
+@router.put('{prof_id}/topics', tags=['Recurrent'])
+def add_recurrent_topics(prof_id:str, update:schema_topic_recurrent.TopicRecurrentCr1,db: Session =Depends(get_db)):
+    """
+    Recibe una lista de topicos a insertar en un dia recurrente especifico
+    """
+    topic_recurrentS= schema_topic_recurrent.TopicRecurrentIn(**update.dict(), prof_id= prof_id)
+    return TopicRecurrentController(db= db).addTopic(topic_recurrentS)
 
+@router.delete('{prof_id}/topics', tags=['Recurrent'])
+def del_recurrent_topic(prof_id:str, delete:schema_topic_recurrent.TopicRecurrentCr1, db:Session = Depends(get_db)):
+    topic_recurrentS= schema_topic_recurrent.TopicRecurrentCr1(**delete.dict(), prof_id= prof_id)
+    return TopicRecurrentController(db= db).delTopic(topic_recurrentS)
+
+
+#############################
+# Old code to clear when Repository Recurrent is OK#
+##############################
 #@router.post('/recurrent',tags=["Recurrent"], response_model=Union[schema_topic_recurrent.TopicRecurrentIn, Errors])
 def create_recurrent(prof_id:str, recurrent:schema_topic_recurrent.TopicRecurrentCr1, db:Session = Depends(get_db)):
     """

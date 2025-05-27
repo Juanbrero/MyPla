@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import time
+from datetime import time, date
 from .schema_topic import Topic
 from .schema_prof import ProfessionalID
 from typing import Optional
@@ -41,6 +41,7 @@ class TopicRecurrent(BaseModel):
 
 class TopicRecurrentCr1(BaseModel):
     """
+    ORM
     Esquema para recibir la información para crear un dia recurrente con sus topicos
         - week_day: int
         - start:time
@@ -51,6 +52,8 @@ class TopicRecurrentCr1(BaseModel):
     start: time
     end: time
     topics: list[str]
+    class Config:
+        orm_mode= True
 
 class TopicRecurrentIn(TopicRecurrentCr1):
     """
@@ -124,3 +127,13 @@ class TopicRecurrentWeekRes(TopicRecurrentWeekS):
 
     class Config:
         orm_mode= True
+
+
+class TopicRecurrentMonthYear(ProfessionalID):
+    """
+    prof_id
+    month: int
+    year: int = today().year
+    """
+    month: int
+    year: int = date.today().year
