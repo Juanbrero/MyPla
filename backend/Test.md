@@ -173,11 +173,11 @@ Ejecutar un archivo o función especifica
 ### Delete Recurrent
 
 - [ ] Eliminar Horario valido
-    - [ ]  Repository
+    - [x]  Repository
     - [ ]  Endpoint
 ---
-- [ ] Eliminar horario Invalido
-    - [ ]  Repository
+- [ ] Eliminar semana Invalido
+    - [X]  Repository
     - [ ]  Endpoint
 
 

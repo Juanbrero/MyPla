@@ -18,7 +18,7 @@ class GetRecurrentWeek():
 
         
         if not recurrentS.week_day in range(0, 8):
-            raise ValueError('Week is incorrect value')
+            raise ValueError('Week value is incorrect')
 
         response = recurrentR.getRecurrentsWithTopics(recurrentS.prof_id)
         

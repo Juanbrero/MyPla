@@ -20,7 +20,7 @@ class DelRecurrent():
         recurrentR: Repository[RecurrentSchedule] 
     ):
         if not recurrentS.week_day in range(1, 8):
-            raise ValueError('Week is incorrect value')
+            raise ValueError('Week value is incorrect')
         
         recurrentS.start = strip_time_hour_minute(recurrentS.start)
         deleted = recurrentR.delete(recurrentS.dict())

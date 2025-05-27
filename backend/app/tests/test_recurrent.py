@@ -67,7 +67,7 @@ class TestRepository(TestCase):
         #json_response = jsonable_encoder(response)
         #value = json.loads(response['body'])['error']['message']
         
-        self.assertEqual(response_error, 'Week is incorrect value')
+        self.assertEqual(response_error, 'Week value is incorrect')
     
     def test_create_minute_start_error(self):
         print('Insert invalid minute start 03:15')
@@ -160,7 +160,7 @@ class TestRepository(TestCase):
         self.assertEqual(response.status_code, 400)
         
         message = error_message(response.body)
-        self.assertEqual(message, 'Week is incorrect value')
+        self.assertEqual(message, 'Week value is incorrect')
 
     def test_create_invalid_schedule(self):
         print('Invalid schedule S= 11:00 E= 09:00')
@@ -373,7 +373,7 @@ class TestRepository(TestCase):
         response = self.recurrentC.getRecurrentWeek(get)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(error_message(response.body),'Week is incorrect value')
+        self.assertEqual(error_message(response.body),'Week value is incorrect')
 
     # Update
     def test_update_not_data(self):
@@ -794,6 +794,52 @@ class TestRepository(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(error_message(response.body),'Delete all topics not possible')  
         
+
+    #DELETE
+
+    def test_delete_valid(self):
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '01:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')  
+
+        delete = schema_topic_recurrent.TopicRecurrentSchema(prof_id= self.prof_id,
+                                                             start= recurrentS.start,
+                                                             week_day= recurrentS.week_day)
+
+        response = self.recurrentC.delRecurrent(delete)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.body), 'Recurrent deleted')
+
+    def test_delete_invalid(self):
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '01:00:15',
+            end= '12:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')  
+
+        delete = schema_topic_recurrent.TopicRecurrentSchema(prof_id= self.prof_id,
+                                                             start= recurrentS.start,
+                                                             week_day= 10)
+
+        response = self.recurrentC.delRecurrent(delete)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body), 'Week value is incorrect')
 
 class TestEndpoint(TestCase):
      
