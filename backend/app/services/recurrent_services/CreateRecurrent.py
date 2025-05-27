@@ -68,7 +68,7 @@ class CreateRecurrent():
 
         for topic in recurrentS.topics:
             if not topic in prof_topics:
-                raise NotFound(f'{topic} not is from Professional')
+                raise NotFound(f'{topic} is not of the Professional')
             topic_recurrentR.create({
             'prof_id': recurrentS.prof_id,
             'week_day': recurrentS.week_day,

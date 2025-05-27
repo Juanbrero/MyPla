@@ -48,5 +48,7 @@ class RecurrentController:
         return UpRecurrent.run(
             db = self.db,
             recurrentS = recurrentS,
-            recurrentR = self.recurrentR
+            recurrentR = self.recurrentR,
+            professional_topicR= self.professional_topicR,
+            topic_recurrentR= self.topic_recurrentR
         )

@@ -12,12 +12,12 @@ class TopicRecurrentBase(BaseModel):
     Esquema para agregar/ eliminar un topicos
         - week_day: int
         - start:time
-        - topic_name: str
+        - topics: list[str]
 
     """
     week_day: int
     start:time
-    topic_name: str
+    topics: list[str]
 
 #Esquema que se envia al crud
 class TopicRecurrentCreate(TopicRecurrentBase):
@@ -25,7 +25,7 @@ class TopicRecurrentCreate(TopicRecurrentBase):
     Esquema que completa la informacion para agregar un topico
         - week_day: int
         - start:time
-        - topic_name: str
+        - topics: list[str]
         - prof_id: str
     """
     prof_id:str
@@ -42,11 +42,12 @@ class TopicRecurrent(BaseModel):
 class TopicRecurrentCr1(BaseModel):
     """
     ORM
-    Esquema para recibir la información para crear un dia recurrente con sus topicos
-        - week_day: int
-        - start:time
-        - topics: list[str]
-            - topic_name: str
+        Esquema para recibir la información para crear un dia recurrente con sus topicos
+            - week_day: int
+            - start:time
+            - end: time
+            - topics: list[str]
+                - topic_name: str
     """
     week_day: int
     start: time
@@ -94,9 +95,11 @@ class TopicRecurrentUp(TopicRecurrentWeekS):
         - start:time
         - Nstart: time | None
         - Nend: time | None
+        - topics: list[str] | None
     """
     Nstart: Optional[time]
     Nend: Optional[time]
+    topics: Optional[list[str]]
 
 class TopicRecurrentUpdate(TopicRecurrentUp, ProfessionalID):
     """

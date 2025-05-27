@@ -28,145 +28,159 @@ Ejecutar un archivo o función especifica
 |[Class](#class-reservation)| |
 
 ## Recurrent
+Orden de evaluación
+  - week
+  - topic
+  - hour
+  - schedule
+  - include
+  - professional topics
+
 ### Insert Recurrent
  - [ ]  Caso existos -> 201
    - [x]  Repository
-   - [ ]  Endpoint
+   - [x]  Endpoint
 ---
  - [ ] Week invalido -> 400
    - [x]  Repository
-   - [ ]  Endpoint
+   - [x]  Endpoint
 ---
  - [ ] Hora invalida(not 00 or 30) 13:25  -> 406
 
    - [ ] Inicio
      - [x]  Repository
-     - [ ]  Endpoint
+     - [x]  Endpoint
 
    - [ ] Fin
      - [x]  Repository
-     - [ ]  Endpoint
+     - [x]  Endpoint
 ---
  - [ ] Horario incompleta 10:00-12:30 | 12:30-15:00 -> 400
     
    - [ ] Inicio
      - [x]  Repository
-     - [ ]  Endpoint
+     - [x]  Endpoint
 
    - [ ] Fin
      - [x]  Repository
-     - [ ]  Endpoint
+     - [x]  Endpoint
 ---
  - [ ] Week and horario error  -> 400
      - [x]  Repository
-     - [ ]  Endpoint
+     - [x]  Endpoint
 ---
- - [x] Horario invalida 16:30-12:30
+ - [x] Horario invalida 16:30-12:30 -> 400
     - [x]  Repository
-    - [ ]  Endpoint
+    - [x]  Endpoint
 ---
- - [ ] Time include
+ - [ ] Time include -> 400
     - [x]  Repository
-    - [ ]  Endpoint
+    - [x]  Endpoint
 ---
- - [ ] Hora de fin 00
+ - [ ] Hora de fin 00 -> 201
     - [x]  Repository
-    - [ ]  Endpoint
+    - [x]  Endpoint
 ---
  - [ ] Topics
-   - [ ] Topico valido
+   - [ ] Topico valido -> 201
       - [X]  Repository
-      - [ ]  Endpoint
+      - [x]  Endpoint
 
-   - [ ] Topicos validos
-      - [X]  Repository
-      - [ ]  Endpoint
+   - [ ] Topicos validos -> 201
+      - [x]  Repository
+      - [x]  Endpoint
 
-   - [ ] Topico inexistente
+   - [ ] Topico inexistente -> 404
       - [X]  Repository
-      - [ ]  Endpoint
+      - [x]  Endpoint
 
-   - [ ] Topico no perteneciente
+   - [ ] Topico no perteneciente -> 404
       - [X]  Repository
-      - [ ]  Endpoint
+      - [x]  Endpoint
+
+    - [ ] Topics vacio -> 400 
+      - [X]  Repository
+      - [x]  Endpoint
 
 ---
 
 ### Get Recurrent
-- [ ] Recuperar un dia de la semana (week)
+- [ ] Recuperar un dia de la semana (week) -> 200
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Recuperar un dia de la semana sin horarios (week)
+- [ ] Recuperar un dia de la semana sin horarios (week) -> 200 -> []
   - [X]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Recuperar un dia de la semana invalido (week != [1-7])
+- [ ] Recuperar un dia de la semana invalido (week != [1-7]) -> 400
   - [X]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Topics
-  - [ ] Recuperar todos los topicos de un recurrente
+  - [ ] Recuperar todos los topicos de un recurrente -> 200
     - [X]  Repository
     - [ ]  Endpoint
 
 --- 
 ### Update Recurrent
-- [ ] Actualizar sin enviar datos (llamada vacia)
+- [ ] Actualizar sin enviar datos (llamada vacia) -> 400
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar con hora invalida (Minute != 00/30)
+- [ ] Actualizar con hora invalida (Minute != 00/30) -> 406
   - [X]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar con horarios invalido (Start > End)
+- [ ] Actualizar con horarios invalido (Start > End) -> 400
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar inicio
+- [ ] Actualizar inicio -> 200
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar fin
+- [ ] Actualizar fin -> 200
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar sin horarios (vacio)
+- [ ] Actualizar sin horarios (no existe) -> 404
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar con horarios colisionantes
+- [ ] Actualizar con horarios colisionantes -> 400
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar con semana invalida
+- [ ] Actualizar con semana invalida -> 400
   - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar completo
+- [ ] Actualizar completo -> 200
   - [x]  Repository
   - [ ]  Endpoint
+---
+- [ ] Actualizar sin cambio de horario -> 200
 ---
 - [ ] Topicos
   
-  - [ ] Agregar Topico valido
+  - [ ] Agregar Topico valido -> 200
     - [X]  Repository
     - [ ]  Endpoint
   
-  - [ ] Agregar topico Invalido
+  - [ ] Agregar topico Invalido -> 404
     - [X]  Repository
     - [ ]  Endpoint
   
-  - [ ] Eliminar topico valido
+  - [ ] Eliminar topico valido -> 200 
     - [X]  Repository
     - [ ]  Endpoint
   
-  - [ ] Eliminar topico invalido
+  - [ ] Eliminar topico invalido ->
     - [ ]  Repository
     - [ ]  Endpoint
   
-  - [ ] Eliminar último topico
+  - [ ] Eliminar último topico ->
     - [X]  Repository
     - [ ]  Endpoint
 
