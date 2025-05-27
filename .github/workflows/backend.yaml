@@ -3,7 +3,7 @@ name: Backend Pipeline
 on:
   push:
     branches:
-      - SIP-73-armar-deployment-en-cloud
+      - main
     paths:
       - backend/**
 
@@ -40,5 +40,5 @@ jobs:
           git add deploy/backend/k8s.yaml
           git commit -m "Update image to $IMAGE_NAME:${{ steps.vars.outputs.TAG }}" || echo "No changes to commit"
 
-          git pull --rebase origin SIP-73-armar-deployment-en-cloud
-          git push origin SIP-73-armar-deployment-en-cloud
+          git pull --rebase origin main
+          git push origin main
