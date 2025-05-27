@@ -11,6 +11,22 @@ class SpecificScheduleRepository(Repository[SpecificSchedule]):
     def create(self, data):
         return super().create(**data)
     
+    def getAllWithTopics (self, prof_id: str, isCanceling: bool = None):
+        smt = (
+            select(SpecificSchedule)
+            .join(SpecificSchedule.topic_specifics)
+            .options(selectinload(SpecificSchedule.topic_specifics))
+        )
+    
+        filters = [SpecificSchedule.prof_id == prof_id]
+    
+        if isCanceling is not None:
+            filters.append(SpecificSchedule.isCanceling == isCanceling)
+    
+        smt = smt.where(*filters)
+    
+        return self.session.execute(smt).scalars().all()
+    
     def getSpecificToClass (self, prof_id: str, topic: str, day_hour: datetime):
         target_day = day_hour.date()
         target_time = day_hour.time()
