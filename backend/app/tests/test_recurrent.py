@@ -351,8 +351,7 @@ class TestRepository(TestCase):
         get = schema_topic_recurrent.TopicRecurrentWeekGet(prof_id= recurrentS.prof_id, week_day= 5)
         response = self.recurrentC.getRecurrentWeek(get)
         
-        self.assertEqual(response.status_code, 200)
-        self.assertListEqual(json.loads(response.body), [])
+        self.assertListEqual(response, [])
 
 
     def test_get_not_week(self):
@@ -377,6 +376,308 @@ class TestRepository(TestCase):
         self.assertEqual(error_message(response.body),'Week is incorrect value')
 
     # Update
+    def test_update_not_data(self):
+        print('Update hour, not information')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = {}
+        ic(update)
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 500)
+
+
+    def test_update_not(self):
+        print('Update hour, not information')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body),'Not update information')
+
+    def test_update_invalid_start(self):
+        print('Update hour, invalid star hour')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nstart= '7:15:20'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 406)
+        self.assertEqual(error_message(response.body),'Not accept value minute, minute valid 00 or 30')
+
+    def test_update_invalid_end(self):
+        print('Update hour, invalid end hour')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nend= '13:15:20'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 406)
+        self.assertEqual(error_message(response.body),'Not accept value minute, minute valid 00 or 30')
+
+    def test_update_invalid_schedule(self):
+        print('Update hour, invalid hour')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nstart= '17:00:20',
+            Nend= '10:00:50'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body),'Hour format is incorrect')
+
+    def test_update_start(self):
+        print('Update hour, start')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nstart= '10:00:20'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.body),'Recurrent updated')
+
+
+    def test_update_end(self):
+        print('Update hour, end')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nend= '10:00:20'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.body),'Recurrent updated')
+
+
+    def test_update_include(self):
+        print('Update hour, end')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        recurrentS1 = schema_topic_recurrent.TopicRecurrentIn(
+            start= '18:00:15',
+            end= '21:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS1)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nstart= '19:00:20',
+            Nend= '20:00:00'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body),'Time is include in Recurrents')
+
+
+    def test_update_week_not_exist(self):
+        print('Update hour, week informtaion not exist')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= 3,
+            Nstart= '12:00:20',
+            Nend= '13:00:50'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(error_message(response.body),'Recurrent not found')
+
+    def test_update_invalid_week(self):
+        print('Update hour, week informtaion not exist')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= 12,
+            Nstart= '13:00:20',
+            Nend= '17:00:50'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(error_message(response.body),'Week value is incorrect')
+
+    def test_update_complete(self):
+        print('Update hour, start and end')
+        recurrentS = schema_topic_recurrent.TopicRecurrentIn(
+            start= '05:00:15',
+            end= '15:00:15',
+            week_day= 6,
+            topics=[self.topic],
+            prof_id= self.prof_id
+        )
+
+        response = self.recurrentC.createRecurrent(recurrentS)
+       
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json.loads(response.body), 'Recurrent created')
+
+
+        update = schema_topic_recurrent.TopicRecurrentUpdate(
+            prof_id= self.prof_id,
+            start= recurrentS.start,
+            week_day= recurrentS.week_day,
+            Nstart= '19:00:20',
+            Nend= '20:00:00'
+        )
+
+        response = self.recurrentC.updateRecurrent(update)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.body),'Recurrent updated')
+
     def test_add_topic(self):
         print('Add topic to recurrent day')
         recurrentS = schema_topic_recurrent.TopicRecurrentIn(

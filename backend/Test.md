@@ -112,40 +112,40 @@ Ejecutar un archivo o función especifica
 
 --- 
 ### Update Recurrent
-- [ ] Actualizar sin enviar datos
-  - [ ]  Repository
+- [ ] Actualizar sin enviar datos (llamada vacia)
+  - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar con hora invalida
-  - [ ]  Repository
+- [ ] Actualizar con hora invalida (Minute != 00/30)
+  - [X]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar con horarios invalido
-  - [ ]  Repository
+- [ ] Actualizar con horarios invalido (Start > End)
+  - [x]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Actualizar inicio
-  - [ ]  Repository
+  - [x]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Actualizar fin
-  - [ ]  Repository
+  - [x]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Actualizar sin horarios (vacio)
-  - [ ]  Repository
+  - [x]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Actualizar con horarios colisionantes
-  - [ ]  Repository
+  - [x]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Actualizar con semana invalida
-  - [ ]  Repository
+  - [x]  Repository
   - [ ]  Endpoint
 ---
-- [ ] Actualizar colisionando con una Meeting
-  - [ ]  Repository
+- [ ] Actualizar completo
+  - [x]  Repository
   - [ ]  Endpoint
 ---
 - [ ] Topicos
