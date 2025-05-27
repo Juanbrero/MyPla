@@ -9,7 +9,7 @@ from app.bd.schemas import schema_prof
 from app.bd.cruds import crud_topic_recurrent
 from fastapi.responses import JSONResponse
 from fastapi import status
-
+from datetime import time
 
 class UpRecurrent():
     @handle_errors
@@ -22,7 +22,7 @@ class UpRecurrent():
         ):
         
         if not recurrentS.week_day in range(1, 8):
-            raise ValueError('Week value is incorrect')
+            raise ValueError('Week value is invalid')
         
         if not (recurrentS.Nstart or recurrentS.Nend or recurrentS.topics):
             raise ValidationError('Not update information')
@@ -47,9 +47,16 @@ class UpRecurrent():
             'start': strip_time_hour_minute(nstart) if (nstart := recurrentS.Nstart) is not None else obj_to_update[0].start,
             'end': strip_time_hour_minute(nend) if (nend := recurrentS.Nend) is not None else obj_to_update[0].end
         }
+        
+        if update['start'].minute != update['end'].minute:
+            raise ValidationError('Hour incomplete')
 
-        if not valid_time(Schedule(**update)):
-            raise ValueError('Hour format is incorrect')
+        if update['end'].hour == 0:
+            update['end'] = time(hour=23, minute=59)
+
+
+        if update['start'] >= update['end']:
+            raise ValueError('The range hour is invalid')
         
         
         list_week = recurrentR.getOmmit(

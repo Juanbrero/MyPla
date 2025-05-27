@@ -23,11 +23,11 @@ class CreateRecurrent():
     ):
         
         if not recurrentS.week_day in range(1, 8):
-            raise ValueError('Week value is incorrect')
+            raise ValueError('Week value is invalid')
         
         
         if len(recurrentS.topics) == 0:
-            raise ValidationError('Recurrent day need topics')
+            raise ValidationError("You don't have a topic")
         
 
         recurrentS.start = strip_time_hour_minute(recurrentS.start)
@@ -36,15 +36,18 @@ class CreateRecurrent():
         
         recurrent_valid = Schedule(start= recurrentS.start, end= recurrentS.end)
 
-        
-        if not valid_time(recurrent_valid):
-            raise ValidationError('Hour format is incorrect')
+        if recurrentS.start.minute != recurrentS.end.minute:
+            raise ValidationError('Hour incomplete')
         
         # Conversion de hora fin 0 a 23:59, para comparaciones y almacenado, 0 < all 
         if recurrentS.end.hour == 0:
             recurrentS.end = time(hour=23, minute=59)
         
-              
+        if recurrentS.start >= recurrentS.end:
+            raise ValidationError('The range hour is invalid')
+        
+        
+    
         recurrent = recurrentR.get_by({
             'prof_id': recurrentS.prof_id,
             'week_day': recurrentS.week_day
@@ -66,9 +69,10 @@ class CreateRecurrent():
         
         prof_topics = professional_topicR.getTopics(recurrentS.prof_id)
 
+        if not professional_topicR.checkTopicProf(recurrentS.prof_id, recurrentS.topics):
+            raise ValidationError("You don't have a topic")
+        
         for topic in recurrentS.topics:
-            if not topic in prof_topics:
-                raise NotFound(f'{topic} is not of the Professional')
             topic_recurrentR.create({
             'prof_id': recurrentS.prof_id,
             'week_day': recurrentS.week_day,

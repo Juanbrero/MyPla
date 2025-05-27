@@ -18,18 +18,19 @@ class GetRecurrentWeek():
 
         
         if not recurrentS.week_day in range(0, 8):
-            raise ValueError('Week value is incorrect')
+            raise ValueError('Week value is invalid')
 
         response = recurrentR.getRecurrentsWithTopics(recurrentS.prof_id)
+
+        data = []
+        for recurrent in response:
+            if recurrent.week_day == recurrentS.week_day:
+                item = {"week_day": recurrent.week_day,
+                "start": recurrent.start.isoformat(),
+                "end": recurrent.end.isoformat(),
+                "topics":[topic.topic_name for topic in recurrent.topic_recurrents]
+                }
+                data.append(item)
         
-      
-        respuesta = [ 
-            schema_topic_recurrent.TopicRecurrentCr1(week_day= recu.week_day,
-                                                     start= recu.start,
-                                                     end= recu.end,
-                                                     topics=[topic.topic_name for topic in recu.topic_recurrents]).dict() 
-            for recu in response if recu.week_day == recurrentS.week_day 
-            ]
-        
-        return respuesta
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"recurrent": data})
 

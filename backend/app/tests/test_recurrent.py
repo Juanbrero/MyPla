@@ -68,7 +68,7 @@ class TestEndpointPOST(TestCase):
         response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Week value is incorrect')
+        self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_insert_invalid_start(self):
@@ -87,7 +87,7 @@ class TestEndpointPOST(TestCase):
         response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 406)
-        self.assertEqual(response.json()['error']['message'], 'Not accept value minute, minute valid 00 or 30')
+        self.assertEqual(response.json()['error']['message'], 'Not accept i n minute, minute valid 00 or 30')
         del_topic(topic)
 
     def test_insert_invalid_end(self):
@@ -125,7 +125,7 @@ class TestEndpointPOST(TestCase):
         response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Week value is incorrect')
+        self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_insert_invalid_schedule(self):
@@ -144,7 +144,7 @@ class TestEndpointPOST(TestCase):
         response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Hour format is incorrect')
+        self.assertEqual(response.json()['error']['message'], 'The range hour is invalid')
         del_topic(topic)
 
     def test_insert_E_0(self):
@@ -200,8 +200,8 @@ class TestEndpointPOST(TestCase):
 
         response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()['error']['message'], 'topic is not of the Professional')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error']['message'], "You don't have a topic")
 
     def test_insert_topic_not_professional(self):
         print('Insert via /recurrent/, with unknown')
@@ -215,9 +215,10 @@ class TestEndpointPOST(TestCase):
 
         response = self.client.post('/recurrent/', params={'prof_id': self.prof_id}, json= data)
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()['error']['message'], f'{topic} is not of the Professional')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error']['message'], "You don't have a topic")
         del_topic(topic)
+
 
 
 
@@ -261,10 +262,10 @@ class TestEndpointGET(TestCase):
 
         response = self.client.get('/recurrent/', params={'prof_id':self.prof_id, 'week_day': 2})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [{'end':'10:00:00',
+        self.assertEqual(response.json(), {"recurrent": [{'end':'10:00:00',
                                              'start':'01:00:00',
                                                'week_day':2, 
-                                               'topics':[topic]}])
+                                               'topics':[topic]}]})
         del_topic(topic)
 
     def test_get_valid_not_schedule(self):
@@ -288,7 +289,7 @@ class TestEndpointGET(TestCase):
 
         response = self.client.get('/recurrent/', params={'prof_id':self.prof_id, 'week_day': 5})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [])
+        self.assertEqual(response.json(), {"recurrent":[]})
         del_topic(topic)
 
     def test_get_invalid_week(self):
@@ -312,7 +313,7 @@ class TestEndpointGET(TestCase):
 
         response = self.client.get('/recurrent/', params={'prof_id':self.prof_id, 'week_day': -10})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Week value is incorrect')
+        self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_get_valid_many_schedule(self):
@@ -350,7 +351,7 @@ class TestEndpointGET(TestCase):
         response = self.client.get('/recurrent/', params={'prof_id':self.prof_id, 'week_day': 2})
         
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(response.json(),[{'start':'00:00:00',
+        self.assertListEqual(response.json()['recurrent'],[{'start':'00:00:00',
                                              'end':'05:00:00',
                                                'week_day':2, 
                                                'topics':[topic]},
@@ -498,7 +499,7 @@ class TestEndpointPUT(TestCase):
         response = self.client.put('/recurrent/', params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Hour format is incorrect')
+        self.assertEqual(response.json()['error']['message'], 'The range hour is invalid')
         del_topic(topic)
 
 
@@ -682,7 +683,7 @@ class TestEndpointPUT(TestCase):
         response = self.client.put('/recurrent/', params={'prof_id': self.prof_id}, json= json_data)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json().get('error')['message'], 'Week value is incorrect')
+        self.assertEqual(response.json().get('error')['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_update_topic_add(self):
@@ -940,5 +941,5 @@ class TestEndpointDELETE(TestCase):
         
         response = self.client.delete('/recurrent/', params={'prof_id':self.prof_id, 'week_day': 200, 'start':'1:00'})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Week value is incorrect')
+        self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
