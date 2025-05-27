@@ -37,7 +37,7 @@ def update_hour(prof_id:str, update:schema_topic_recurrent.TopicRecurrentUp, db:
     return RecurrentController(db= db).updateRecurrent(rescurrentS)
 
 
-@router.put('{prof_id}/topics', tags=['Recurrent'])
+@router.put('/{prof_id}/topics', tags=['Recurrent'])
 def add_recurrent_topics(prof_id:str, update:schema_topic_recurrent.TopicRecurrentCr1,db: Session =Depends(get_db)):
     """
     Recibe una lista de topicos a insertar en un dia recurrente especifico
@@ -45,7 +45,7 @@ def add_recurrent_topics(prof_id:str, update:schema_topic_recurrent.TopicRecurre
     topic_recurrentS= schema_topic_recurrent.TopicRecurrentIn(**update.dict(), prof_id= prof_id)
     return TopicRecurrentController(db= db).addTopic(topic_recurrentS)
 
-@router.delete('{prof_id}/topics', tags=['Recurrent'])
+@router.delete('/{prof_id}/topics', tags=['Recurrent'])
 def del_recurrent_topic(prof_id:str, delete:schema_topic_recurrent.TopicRecurrentCr1, db:Session = Depends(get_db)):
     topic_recurrentS= schema_topic_recurrent.TopicRecurrentCr1(**delete.dict(), prof_id= prof_id)
     return TopicRecurrentController(db= db).delTopic(topic_recurrentS)
