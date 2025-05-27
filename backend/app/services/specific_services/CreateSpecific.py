@@ -1,7 +1,7 @@
 from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
 from app.bd.schemas import schema_topic_specific
 from sqlalchemy.orm import Session
-from app.models import Meeting, SpecificSchedule, ProfessionalTopic
+from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific
 from app.bd.repositories.Repository import Repository
 from app.bd.bd_utils import strip_time_hour_minute
 from fastapi.responses import JSONResponse
@@ -14,6 +14,7 @@ class CreateSpecific:
         specificS: schema_topic_specific.TopicSpecificIn, 
         specificR: Repository[SpecificSchedule],
         professional_topicR: Repository[ProfessionalTopic],
+        topic_specificR: Repository[TopicSpecific],
         meetingR: Repository[Meeting]
     ):
         specificS.start = strip_time_hour_minute(specificS.start)
@@ -40,6 +41,14 @@ class CreateSpecific:
             "prof_id": specificS.prof_id,
             "isCanceling": False
         })
+        
+        for topic in specificS.topics:
+            topic_specificR.create({
+                "day": specificS.day,
+                "start": specificS.start,
+                "topic_name": topic,
+                "prof_id": specificS.prof_id
+            })
         
         db.commit()
         

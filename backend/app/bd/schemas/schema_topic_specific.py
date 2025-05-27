@@ -47,7 +47,6 @@ class TopicSpecificSchema(BaseModel):
     day: date
     start: time
 
-
 class TopicSpecificCr1(BaseModel):
     """
     Esquema para la insercion de dias especificos con sus topicos
@@ -98,16 +97,34 @@ class TopicSpecificDay(BaseModel):
     """
     day: date
     start:time
+    Nday: Optional[date]
     Nstart: Optional[time]
     Nend: Optional[time]
+    topics: Optional[list[str]]
 
 class TopicSpecificUpdate(TopicSpecificDay):
     """
     Esquema que completa la información para actualizar
         - day: date
         - start:time
+        - Nday: date
         - Nstart: time
         - Nend: time
+        - prof_id: str
+        - topics: list[str]
+    """
+    prof_id: str
+    
+class TopicSpecificDeleteCtrl (BaseModel):
+    """ 
+        - day: date
+        - start:time
+    """
+    day: date
+    start: time
+  
+class TopicSpecificDeleteIn (TopicSpecificDeleteCtrl):
+    """ 
         - prof_id: str
     """
     prof_id: str

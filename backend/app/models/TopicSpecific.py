@@ -21,7 +21,7 @@ class TopicSpecific(Base):
     )
 
     prof_id: Mapped[str] = mapped_column(primary_key=True)
-    topic_name: Mapped[str] = mapped_column(primary_key=False)
+    topic_name: Mapped[str] = mapped_column(primary_key=True)
     start: Mapped[time] = mapped_column(primary_key=True)
     day: Mapped[date] = mapped_column(primary_key=True)
 
