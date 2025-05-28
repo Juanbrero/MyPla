@@ -37,7 +37,7 @@ class TestSpecificEP(TestCase):
             ]
         }
 
-        response =  self.client.post(f'/specific/',params= {'prof_id':self.prof_id}, json= data)
+        response =  self.client.post(f'/specific',params= {'prof_id':self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Specific created')

@@ -20,7 +20,7 @@ class TestEndpointPOST(TestCase):
         self.prof_id = str(uuid())
         create_user(self.prof_id)
         create_profesional(self.prof_id)
-        self.route = '/exceptions'
+        self.route = '/exception'
     
     def tearDown(self):
         del_user(self.prof_id)

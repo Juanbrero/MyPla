@@ -20,6 +20,7 @@ class TestEndpointPOST(TestCase):
         self.prof_id = str(uuid())
         create_user(self.prof_id)
         create_profesional(self.prof_id)
+        self.route = '/recurrent'
 
         #U1 = self.client.post('/users', json={'user_id': self.prof_id})
         #self.assertEqual(U1.status_code, 200)
@@ -33,7 +34,7 @@ class TestEndpointPOST(TestCase):
 
     # POST
     def test_insert_valid(self):
-        print('Insert via /recurrent, correct')
+        print(f'Insert via {self.route}, correct')
         topic = create_topic('griego') 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -45,14 +46,14 @@ class TestEndpointPOST(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         del_topic(topic)
 
     def test_insert_invalid_week(self):
-        print('Insert via /recurrent, with invalid week value')
+        print(f'Insert via {self.route}, with invalid week value')
         topic = create_topic('ALPHA')
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
 
@@ -65,14 +66,14 @@ class TestEndpointPOST(TestCase):
             ]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_insert_invalid_start(self):
-        print('Insert via /recurrent, with invalid hour start')
+        print(f'Insert via {self.route}, with invalid hour start')
         topic = create_topic('BETA')
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         data = {
@@ -84,14 +85,14 @@ class TestEndpointPOST(TestCase):
             ]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 406)
         self.assertEqual(response.json()['error']['message'], 'Not accept value minute, minute valid 00 or 30')
         del_topic(topic)
 
     def test_insert_invalid_end(self):
-        print('Insert via /recurrent, with invalid hour end')
+        print(f'Insert via {self.route}, with invalid hour end')
         topic = create_topic('BETA')
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         data = {
@@ -103,14 +104,14 @@ class TestEndpointPOST(TestCase):
             ]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 406)
         self.assertEqual(response.json()['error']['message'], 'Not accept value minute, minute valid 00 or 30')
         del_topic(topic)
 
     def test_insert_week_hour(self):
-        print('Insert via /recurrent, with invalid week and hour')
+        print(f'Insert via {self.route}, with invalid week and hour')
         topic = create_topic('BETA')
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         data = {
@@ -122,14 +123,14 @@ class TestEndpointPOST(TestCase):
             ]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_insert_invalid_schedule(self):
-        print('Insert via /recurrent, with invalid schedule')
+        print(f'Insert via {self.route}, with invalid schedule')
         topic = create_topic('BETA')
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         data = {
@@ -141,14 +142,14 @@ class TestEndpointPOST(TestCase):
             ]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'The range hour is invalid')
         del_topic(topic)
 
     def test_insert_E_0(self):
-        print('Insert via /recurrent, with End= 0')
+        print(f'Insert via {self.route}, with End= 0')
         topic = create_topic('BETA')
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         data = {
@@ -160,14 +161,14 @@ class TestEndpointPOST(TestCase):
             ]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         del_topic(topic)
 
     def test_insert_topics(self):
-        print('Insert via /recurrent, with 5 topics')
+        print(f'Insert via {self.route}, with 5 topics')
         topics = []
         for i in range(5):
             topic = create_topic(str(uuid()))
@@ -180,7 +181,7 @@ class TestEndpointPOST(TestCase):
             'topics': topics
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -189,7 +190,7 @@ class TestEndpointPOST(TestCase):
             del_topic(topic)
 
     def test_insert_topic_not_exist(self):
-        print('Insert via /recurrent, with unknown')
+        print(f'Insert via {self.route}, with unknown')
     
         data = {
             'start': '10:00',
@@ -198,13 +199,13 @@ class TestEndpointPOST(TestCase):
             'topics': ['topic']
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], "You don't have a topic")
 
     def test_insert_topic_not_professional(self):
-        print('Insert via /recurrent, with unknown')
+        print(f'Insert via {self.route}, with unknown')
         topic = create_topic(str(uuid()))
         data = {
             'start': '10:00',
@@ -213,7 +214,7 @@ class TestEndpointPOST(TestCase):
             'topics': [topic]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], "You don't have a topic")
@@ -229,6 +230,7 @@ class TestEndpointGET(TestCase):
         self.prof_id = str(uuid())
         create_user(self.prof_id)
         create_profesional(self.prof_id)
+        self.route = '/recurrent'
 
         #U1 = self.client.post('/users', json={'user_id': self.prof_id})
         #self.assertEqual(U1.status_code, 200)
@@ -242,7 +244,7 @@ class TestEndpointGET(TestCase):
 
     # GET
     def test_get_valid(self):
-        print('Get /recurrent week hours')
+        print(f'Get {self.route} week hours')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -254,13 +256,13 @@ class TestEndpointGET(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         
 
-        response = self.client.get('/recurrent', params={'prof_id':self.prof_id, 'week_day': 2})
+        response = self.client.get(self.route, params={'prof_id':self.prof_id})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"recurrent": [{'end':'10:00:00',
                                              'start':'01:00:00',
@@ -268,56 +270,9 @@ class TestEndpointGET(TestCase):
                                                'topics':[topic]}]})
         del_topic(topic)
 
-    def test_get_valid_not_schedule(self):
-        print('Get /recurrent week, with not schedule')
-        topic = create_topic(str(uuid())) 
-        add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
-        
-        data = {
-            'start': '01:00',
-            'end': '10:00',
-            'week_day': 2,
-            'topics':[
-                topic
-            ]
-        }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
-        
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), 'Recurrent created')
-        
-
-        response = self.client.get('/recurrent', params={'prof_id':self.prof_id, 'week_day': 5})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"recurrent":[]})
-        del_topic(topic)
-
-    def test_get_invalid_week(self):
-        print('Get /recurrent week')
-        topic = create_topic(str(uuid())) 
-        add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
-        
-        data = {
-            'start': '01:00',
-            'end': '10:00',
-            'week_day': 2,
-            'topics':[
-                topic
-            ]
-        }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
-        
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), 'Recurrent created')
-        
-
-        response = self.client.get('/recurrent', params={'prof_id':self.prof_id, 'week_day': -10})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
-        del_topic(topic)
-
+       
     def test_get_valid_many_schedule(self):
-        print('Get /recurrent week, with two schedules')
+        print(f'Get {self.route} week, with two schedules')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -329,7 +284,7 @@ class TestEndpointGET(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -342,13 +297,13 @@ class TestEndpointGET(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data1)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data1)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         
 
-        response = self.client.get('/recurrent', params={'prof_id':self.prof_id, 'week_day': 2})
+        response = self.client.get(self.route, params={'prof_id':self.prof_id})
         
         self.assertEqual(response.status_code, 200)
         self.assertListEqual(response.json()['recurrent'],[{'start':'00:00:00',
@@ -369,7 +324,7 @@ class TestEndpointPUT(TestCase):
         self.prof_id = str(uuid())
         create_user(self.prof_id)
         create_profesional(self.prof_id)
-
+        self.route = '/recurrent'
         #U1 = self.client.post('/users', json={'user_id': self.prof_id})
         #self.assertEqual(U1.status_code, 200)
         #P1 = self.client.post('/professionals', json={'prof_id': self.prof_id})
@@ -382,7 +337,7 @@ class TestEndpointPUT(TestCase):
 
     #PUT
     def test_update_void(self):
-        print('Update /recurrent, without data to update')
+        print(f'Update {self.route}, without data to update')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -394,7 +349,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -404,14 +359,14 @@ class TestEndpointPUT(TestCase):
             'start': '1:00'
         }
        
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json().get('error')['message'], 'Not update information')
         del_topic(topic)
 
     def test_update_invalid_time_start(self):
-        print('Update via /recurrent, with invalid time start')
+        print('Update via self.route, with invalid time start')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -423,7 +378,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -434,14 +389,14 @@ class TestEndpointPUT(TestCase):
             'Nstart': '5:20'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 406)
         self.assertEqual(response.json()['error']['message'], 'Not accept value minute, minute valid 00 or 30')
         del_topic(topic)
 
     def test_update_invalid_time_end(self):
-        print('Update via /recurrent, with invalid time end')
+        print('Update via self.route, with invalid time end')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -453,7 +408,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -464,7 +419,7 @@ class TestEndpointPUT(TestCase):
             'Nend': '10:45'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 406)
         self.assertEqual(response.json()['error']['message'], 'Not accept value minute, minute valid 00 or 30')
@@ -472,7 +427,7 @@ class TestEndpointPUT(TestCase):
 
 
     def test_update_invalid_schedule(self):
-        print('Update via /recurrent, with invalid schedule')
+        print('Update via self.route, with invalid schedule')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -484,7 +439,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -496,7 +451,7 @@ class TestEndpointPUT(TestCase):
             'Nend': '12:00'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'The range hour is invalid')
@@ -504,7 +459,7 @@ class TestEndpointPUT(TestCase):
 
 
     def test_update_start(self):
-        print('Update start via /recurrent')
+        print('Update start via self.route')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -516,7 +471,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -527,14 +482,14 @@ class TestEndpointPUT(TestCase):
             'Nstart': '5:00'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent updated')
         del_topic(topic)
 
     def test_update_end(self):
-        print('Update end via /recurrent')
+        print('Update end via self.route')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -546,7 +501,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -557,21 +512,21 @@ class TestEndpointPUT(TestCase):
             'Nend': '5:00'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent updated')
         del_topic(topic)
 
     def test_update_not_time(self):
-        print('Update via /recurrent, not exist recurrent')
+        print('Update via self.route, not exist recurrent')
         json_data = {
             'week_day': 2,
             'start': '1:00',
             'Nstart': '5:00'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()['error']['message'], 'Recurrent not found')
@@ -589,7 +544,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -602,7 +557,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data1)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data1)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -614,7 +569,7 @@ class TestEndpointPUT(TestCase):
             'Nend': '22:00'
         }
 
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= update)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= update)
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'Time is include in Recurrents')
@@ -627,7 +582,7 @@ class TestEndpointPUT(TestCase):
 
 
     def test_update_equal_time(self):
-        print('Update via /recurrent, with equal time')
+        print('Update via self.route, with equal time')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -639,7 +594,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -651,14 +606,14 @@ class TestEndpointPUT(TestCase):
             'Nend':'10:00'
         }
         
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent updated')
         del_topic(topic)
 
     def test_update_invalid_week(self):
-        print('Update /recurrent, without week invalid')
+        print(f'Update {self.route}, without week invalid')
         topic = create_topic(str(uuid())) 
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 20)
         
@@ -670,7 +625,7 @@ class TestEndpointPUT(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -680,14 +635,14 @@ class TestEndpointPUT(TestCase):
             'start': '1:00'
         }
        
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= json_data)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= json_data)
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json().get('error')['message'], 'Week value is invalid')
         del_topic(topic)
 
     def test_update_topic_add(self):
-        print('Update add topic /recurrent')
+        print('Update add topic self.route')
         topic = create_topic(str(uuid()))
         add_prof_topic(prof_id= self.prof_id, topic_name= topic, price_class= 22)
 
@@ -698,7 +653,7 @@ class TestEndpointPUT(TestCase):
             'topics': [topic]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -711,7 +666,7 @@ class TestEndpointPUT(TestCase):
             'topics': [topic, 'API']
         } 
 
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json=topic_add)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json=topic_add)
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent updated')
@@ -730,7 +685,7 @@ class TestEndpointPUT(TestCase):
             'topics': [topic]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -741,7 +696,7 @@ class TestEndpointPUT(TestCase):
             'week_day': 2,
             'topics': ['API']
         } 
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json=topic_add)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json=topic_add)
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], "You don't have a topic")
@@ -762,7 +717,7 @@ class TestEndpointPUT(TestCase):
             'topics': topics
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -775,7 +730,7 @@ class TestEndpointPUT(TestCase):
             'week_day': 2,
             'topics': topics
         } 
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json=topic_del)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json=topic_del)
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent updated')
@@ -798,7 +753,7 @@ class TestEndpointPUT(TestCase):
             'topics': topics
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -817,7 +772,7 @@ class TestEndpointPUT(TestCase):
             'week_day': 2,
             'topics': topics
         } 
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json=topic_del)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json=topic_del)
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent updated')
@@ -838,7 +793,7 @@ class TestEndpointPUT(TestCase):
             'topics': [topic]
         }
 
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
@@ -849,7 +804,7 @@ class TestEndpointPUT(TestCase):
             'week_day': 2,
             'topics': []
         } 
-        response = self.client.put('/recurrent', params={'prof_id': self.prof_id}, json= topic_add)
+        response = self.client.put(self.route, params={'prof_id': self.prof_id}, json= topic_add)
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'Not update information')
@@ -865,16 +820,14 @@ class TestEndpointDELETE(TestCase):
         self.prof_id = str(uuid())
         create_user(self.prof_id)
         create_profesional(self.prof_id)
-
-        #U1 = self.client.post('/users', json={'user_id': self.prof_id})
-        #self.assertEqual(U1.status_code, 200)
-        #P1 = self.client.post('/professionals', json={'prof_id': self.prof_id})
+        self.route = '/recurrent'
+        
         
 
     def tearDown(self):
         
         del_user(self.prof_id)
-        #self.client.delete(f'/users/{self.prof_id}')
+        
 
     # DELETE
     def test_del(self):
@@ -889,12 +842,12 @@ class TestEndpointDELETE(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         
-        response = self.client.delete('/recurrent', params={'prof_id':self.prof_id, 'week_day': 2, 'start':'1:00'})
+        response = self.client.delete(self.route, params={'prof_id':self.prof_id, 'week_day': 2, 'start':'1:00'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Recurrent deleted')
         del_topic(topic)
@@ -911,12 +864,12 @@ class TestEndpointDELETE(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         
-        response = self.client.delete('/recurrent', params={'prof_id':self.prof_id, 'week_day': 6, 'start':'1:00'})
+        response = self.client.delete(self.route, params={'prof_id':self.prof_id, 'week_day': 6, 'start':'1:00'})
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()['error']['message'], 'Recurrent day not exist')
         del_topic(topic)
@@ -934,12 +887,12 @@ class TestEndpointDELETE(TestCase):
                 topic
             ]
         }
-        response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
+        response = self.client.post(self.route, params={'prof_id': self.prof_id}, json= data)
         
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Recurrent created')
         
-        response = self.client.delete('/recurrent', params={'prof_id':self.prof_id, 'week_day': 200, 'start':'1:00'})
+        response = self.client.delete(self.route, params={'prof_id':self.prof_id, 'week_day': 200, 'start':'1:00'})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error']['message'], 'Week value is invalid')
         del_topic(topic)
