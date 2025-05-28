@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException
 from alembic import command
 from alembic.config import Config
 
-app = FastAPI()
+router = FastAPI()
 
-@app.post("/reset_db")
+@router.post("/api/reset_db")
 def reset_db():
     try:
         alembic_cfg = Config("alembic.ini")
