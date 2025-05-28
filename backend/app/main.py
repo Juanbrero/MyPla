@@ -10,14 +10,25 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import importlib
 import sys
 import os
-from app.config.database import engine, Base, init_db
-#Scheme Table DB
-from app.models.Event import Event
-from app.models.User import User 
+from app.config.database import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
+#Alembic
+from alembic.config import Config
+from alembic import command
 
 
-app = FastAPI(openapi_url=None)
-init_db()
+from starlette.middleware.sessions import SessionMiddleware
+
+#Esta linea importa e install ic, para poder hacer debug
+from icecream import install
+
+#ic.disable()
+
+
+install()
+ic.configureOutput(contextAbsPath=False, includeContext=True)
+
+app = FastAPI()
 
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")
@@ -49,7 +60,10 @@ secure_headers = secure.Secure(
 @app.middleware("http")
 async def set_secure_headers(request, call_next):
     response = await call_next(request)
-    secure_headers.framework.fastapi(response)
+    # If que permite evitar las cabeceras seguras para los paths descriptos,
+    # Debe eliminarse el if cuando se pase a produccion
+    if not any(request.url.path.startswith(path) for path in ["/docs", "/redoc", "/openapi.json"]):
+        secure_headers.framework.fastapi(response)
     return response
 
 
@@ -59,6 +73,15 @@ async def http_exception_handler(request, exc):
 
     return JSONResponse({"message": message}, status_code=exc.status_code)
 
+
+
+def run_migrations():
+    """
+    Function read files of alembic and upgrade or create models
+    """
+    base_dir = os.path.dirname(__file__)
+    alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
+    command.upgrade(alembic_cfg, "head")
 
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
@@ -79,8 +102,16 @@ def addRoute(app, routes_path):
             else:
                 print(f"No router found in module {module_name}")
 
-addRoute(app, "/app/app/routes")
+#Como en local las variables de entorno no se instancias, salvo en VSCode,
+# y para no agregar la libreria dotenv, prueba tomar el variable $PORT
+# si no tiene el valor llama a dotenv
+if os.getenv('PORT') is None:
+    import dotenv
+    dotenv.load_dotenv('.env') 
+
+addRoute(app, "app/routes")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8002, reload=True)
+    run_migrations()
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8002, reload=True)
     
