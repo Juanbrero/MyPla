@@ -90,13 +90,13 @@ async def http_exception_handler(request, exc):
 
 
 
-def run_migrations():
-    """
-    Function read files of alembic and upgrade or create models
-    """
-    base_dir = os.path.dirname(__file__)
-    alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
-    command.upgrade(alembic_cfg, "head")
+# def run_migrations():
+#     """
+#     Function read files of alembic and upgrade or create models
+#     """
+#     base_dir = os.path.dirname(__file__)
+#     alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
+#     command.upgrade(alembic_cfg, "head")
 
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
@@ -127,6 +127,6 @@ if os.getenv('PORT') is None:
 addRoute(app, "app/routes")
 
 if __name__ == "__main__":
-    run_migrations()
+    # run_migrations()
     uvicorn.run("app.main:app", host="0.0.0.0", port=8002, reload=True)
     
