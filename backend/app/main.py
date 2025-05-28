@@ -42,7 +42,18 @@ app.add_middleware(
 )
 
 # seguridad
-csp = secure.ContentSecurityPolicy().default_src("'self'").frame_ancestors("'none'")
+
+#produccion
+# csp = secure.ContentSecurityPolicy().default_src("'self'").frame_ancestors("'none'")
+
+#dev
+csp = secure.ContentSecurityPolicy() \
+    .default_src("'self'") \
+    .style_src("'self'", "https://cdn.jsdelivr.net") \
+    .script_src("'self'", "https://cdn.jsdelivr.net") \
+    .img_src("'self'", "https://fastapi.tiangolo.com")
+
+#ambas
 hsts = secure.StrictTransportSecurity().max_age(31536000).include_subdomains()
 referrer = secure.ReferrerPolicy().no_referrer()
 cache_value = secure.CacheControl().no_cache().no_store().max_age(0).must_revalidate()
