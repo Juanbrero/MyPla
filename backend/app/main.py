@@ -50,7 +50,7 @@ app.add_middleware(
 csp = secure.ContentSecurityPolicy() \
     .default_src("'self'") \
     .style_src("'self'", "https://cdn.jsdelivr.net") \
-    .script_src("'self'", "https://cdn.jsdelivr.net") \
+    .script_src("'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'") \
     .img_src("'self'", "https://fastapi.tiangolo.com")
 
 #ambas
