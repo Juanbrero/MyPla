@@ -62,8 +62,8 @@ async def set_secure_headers(request, call_next):
     response = await call_next(request)
     # If que permite evitar las cabeceras seguras para los paths descriptos,
     # Debe eliminarse el if cuando se pase a produccion
-    if not any(request.url.path.startswith(path) for path in ["/docs", "/redoc", "/openapi.json"]):
-        secure_headers.framework.fastapi(response)
+    # if not any(request.url.path.startswith(path) for path in ["/docs", "/redoc", "/openapi.json"]):
+    secure_headers.framework.fastapi(response)
     return response
 
 
