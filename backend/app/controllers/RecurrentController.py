@@ -7,6 +7,7 @@ from ..services.recurrent_services.CreateRecurrent import CreateRecurrent
 from ..services.recurrent_services.GetRecurrentWeek import GetRecurrentWeek
 from ..services.recurrent_services.DelRecurrent import DelRecurrent
 from ..services.recurrent_services.UpRecurrent import UpRecurrent
+from ..services.recurrent_services.GetRecurrentProf import GetRecurrentProf
 
 from ..bd.schemas import schema_topic_recurrent
 
@@ -24,6 +25,13 @@ class RecurrentController:
             recurrentR = self.recurrentR,
             professional_topicR = self.professional_topicR,
             topic_recurrentR = self.topic_recurrentR        
+        )
+    
+    def getRecurrentProf(self, prof_id: str):
+        return GetRecurrentProf.run(
+            db = self.db,
+            recurrentR = self.recurrentR,
+            prof_id = prof_id
         )
     
     def getRecurrentWeek(self, recurrentS: schema_topic_recurrent.TopicRecurrentWeekGet):
