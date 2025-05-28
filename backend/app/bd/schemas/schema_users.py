@@ -3,20 +3,15 @@ from pydantic import BaseModel
 
 
 #Base esqueleto de datos minimos, sin datos generados por la BD o FK
-class UsersBase(BaseModel):
+class UsersCreate(BaseModel):
     """
         - auth0_id: str
     """
     auth0_id: str
-
-
-#Create esquema utilizado para generar los datos a insertar
-class UsersCreate(UsersBase):
-    """
-        - auth0_id: str
-        - name: str
-    """
-    name: str
+    email: str
+    username: str
+    role: str
+    
 
 #Respuesta get
 class Users(UsersCreate):

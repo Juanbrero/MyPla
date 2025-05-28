@@ -4,10 +4,10 @@ from app.config.database import get_db
 from sqlalchemy.orm import Session
 from ..bd.bd_utils import Errors, Info
 from typing import List, Union
-from ..controllers.ReservationController import ReservationController
+from ..controllers.UserController import UserController
 
 
-router = APIRouter(prefix="/user")
+router = APIRouter(prefix="/api/user")
 
 
 #Reserva una clase en un horario en base a la agenda del profesor

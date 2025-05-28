@@ -18,11 +18,8 @@ class User(Base):
         nullable=False, 
         index=True
     )
-    username: Mapped[str] = mapped_column(
-        String, 
-        nullable=False, 
-    )
-    name: Mapped[str] = mapped_column(nullable=False)
+    username: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
     #professional: Mapped['Professional'] = relationship(back_populates='user', cascade='all, delete-orphan')
     #student: Mapped['Student'] = relationship(back_populates='user', cascade='all, delete-orphan')
