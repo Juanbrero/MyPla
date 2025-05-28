@@ -25,13 +25,13 @@ class ExceptionScheduleRepository(Repository[SpecificSchedule]):
         )
         return self.session.execute(smt).scalars().all()
     
-    def getAllWithProfessional(self, prof_id:str):
+    def getAllWithProfessional(self, prof_id: str):
         stm = (
             select(SpecificSchedule)
             .where(SpecificSchedule.prof_id == prof_id,
                    SpecificSchedule.isCanceling == True)
         )
 
-        return self.session.execute(stm).all()    
+        return self.session.execute(stm).scalars().all()    
     
 

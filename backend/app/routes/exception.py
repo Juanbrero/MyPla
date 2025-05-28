@@ -15,7 +15,7 @@ from app.bd.bd_utils import Errors, Info
 router = APIRouter(prefix="/exceptions")
 
 
-@router.post('', tags=['Exception'])
+@router.post('', tags=['Exceptions'])
 def create_exception(prof_id: str, excep: schema_exception.ExceptionBase, db: Session = Depends(get_db)):
     exceptionS = schema_exception.ExceptionCreate(**excep.dict(), prof_id= prof_id)
     return ExceptionController(db= db).createException(exceptionS)

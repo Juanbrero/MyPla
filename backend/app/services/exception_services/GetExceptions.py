@@ -12,7 +12,7 @@ class GetExceptions:
         prof_id: str,
         exceptionR: Repository[SpecificSchedule]
     ):
-        all_exceptions = exceptionR.get_by({'prof_id':prof_id, 'isCanceling': True})
+        all_exceptions = exceptionR.getAllWithProfessional(prof_id)
         data = []
         for schedule in all_exceptions:
             item = {
