@@ -1,8 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from alembic import command
 from alembic.config import Config
 
-router = FastAPI()
+router = APIRouter()
 
 @router.post("/api/reset_db")
 def reset_db():
