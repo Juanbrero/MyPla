@@ -127,22 +127,8 @@ function Calendar() {
 
   const handleSaveEditTask = (event) => {
 
-    
     setEvents((prevEvents) => {
-      // if (event.extendedProps?.recurrent) {
-    // Si es recurrente y el groupId coincide, actualizamos
-    
-    // return ev.groupId === event.groupId
-    //   ? { ...event,
-    //     id            : ev.id,
-    //     start         : ev.start,
-    //     end           : ev.end,
-    //     extendedProps : {
-      //       ...event.extendedProps,
-      //       date        : ev.extendedProps.date,
-      //     },
-      //   }
-      //   : ev;
+
       const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
       const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
       const dayOffset = dayHasChanged
