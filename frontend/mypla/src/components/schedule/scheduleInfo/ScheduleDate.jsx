@@ -17,40 +17,46 @@ export default function ScheduleDate(props) {
   const [editDay, setEditDay] = React.useState(clickedEvent?.extendedProps?.day);
 
   useEffect(() => {
-    // if (taskData?.day && taskData.day !== day) {
-    //   setDay(taskData?.day);
-    // }
-    // if (taskData?.date) {
-    //   // const [year, month, dayStr] = taskData.date.split("-");
-    //   // const generateDate = new Date(year, month - 1, dayStr);
-    //   const generateDate = new Date(taskData.date);
-    //   if (generateDate.toDateString() !== selectedDate.toDateString()) {
-    //     setSelectedDate(generateDate);
-    //   }
-    // } else if (!taskData?.date && selectedDate.toDateString() !== new Date().toDateString()) {
-    //   setSelectedDate(new Date());
-    // }
+
+    // actualizaciones sobre taskData
     if (taskData?.day && taskData?.date) {
-      setDay(taskData?.day);
-      const generateDate = new Date(taskData.date);
+      let year, month, dayStr;
+      
+      // actualizo date
+      // formateo manual la date a yyyy-mm-dd
+      if (typeof taskData.date === "string") {
+        [year, month, dayStr] = taskData.date.split("-");
+      } else if (taskData.date instanceof Date) {
+        year = taskData.date.getFullYear();
+        month = String(taskData.date.getMonth() + 1).padStart(2, '0');
+        dayStr = String(taskData.date.getDate()).padStart(2, '0');
+      }
+      const generateDate = new Date(year, month - 1, dayStr);
+      
       if (generateDate.toDateString() !== selectedDate.toDateString()) {
         setSelectedDate(generateDate);
       }
-      else if (!taskData?.date && selectedDate.toDateString() !== new Date().toDateString()) {
-       setSelectedDate(new Date());
-     }
+      else if (!taskData?.date && selectedDate !== new Date()) {
+        setSelectedDate(new Date());
+      }
+      
+      // actualizo day
+      if (taskData.day !== day) {
+        setDay(taskData.day);
+      }
+      else {
+        setDay(clickedEvent?.extendedProps?.day);
+      }
+
     }
 
+    // actualizaciones sobre clickedEvent
     if(clickedEvent?.extendedProps?.date && clickedEvent?.extendedProps?.day) {
       const [eventYear, eventMonth, eventDay] = clickedEvent.extendedProps.date.split("-");
       const generateEventDate = new Date(eventYear, eventMonth - 1, eventDay);
       setEditDate(generateEventDate);
       setEditDay(clickedEvent.extendedProps.day);
     }
-    
-    // if(clickedEvent?.extendedProps?.day) {
-    //   setEditDay(clickedEvent.extendedProps.day);
-    // }
 
   }, [taskData?.day, taskData?.date, clickedEvent?.extendedProps?.date, clickedEvent?.extendedProps?.day]);
   

@@ -73,7 +73,7 @@ function Calendar() {
           eventTopics : arg.event.extendedProps.eventTopics,
       }
     };
-    
+
     setClickedEvent(evento);
     // console.log("arg.event.id: ", arg.event.id);
     // console.log("arg.event?.groupId: ", arg.event.groupId);
@@ -127,19 +127,50 @@ function Calendar() {
 
   const handleSaveEditTask = (event) => {
 
-    setEvents((prevEvents) =>
-      prevEvents.map((ev) => {
-        if (event.extendedProps?.recurrent) {
-          // Si es recurrente y el groupId coincide, actualizamos
-          return ev.groupId === event.groupId
-            ? { ...event, id: ev.id, start: ev.start, end: ev.end}
-            : ev;
+    setEvents((prevEvents) => {
+
+      const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
+      const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
+      const dayOffset = dayHasChanged
+      ? dias.indexOf(event.extendedProps.day) - dias.indexOf(firstMatch.extendedProps.day)
+      : 0;
+
+      return prevEvents.map((ev) => {
+        if (event.extendedProps?.recurrent && ev.groupId === event.groupId) {
+          // Ajustamos la fecha si el día cambió
+          const originalDate = new Date(ev.extendedProps.date);
+          const newDate = dayHasChanged
+            ? new Date(originalDate.setDate(originalDate.getDate() + dayOffset))
+            : originalDate;
+
+          // Obtener la hora original de start y end
+          const startTime = getTimeFromDate(ev.start); // e.g. "14:00:00"
+          const endTime = getTimeFromDate(ev.end);
+
+          // Generar nuevos start y end con la nueva fecha
+          const newDateStr = newDate.toISOString().split('T')[0];
+          const newStart = new Date(`${newDateStr}T${startTime}`);
+          const newEnd = new Date(`${newDateStr}T${endTime}`);  
+
+
+          return {
+              ...event,
+              id            : ev.id,
+              start         : newStart,
+              end           : newEnd,
+              extendedProps : {
+                ...event.extendedProps,
+                date        : newDateStr,
+              },
+            };
+            
         } else {
           // Si no es recurrente, actualizamos solo por id
           return ev.id === event.id ? event : ev;
         }
-      })
-    );
+        
+      });
+    });
 
     handleCloseModal();
   }
@@ -239,6 +270,11 @@ function Calendar() {
     return new Date(base);
   }
 
+  // Utilidad para extraer hora en formato "HH:MM:SS"
+  function getTimeFromDate(date) {
+    const d = new Date(date);
+    return d.toTimeString().split(' ')[0];
+  }
 
   return (
     <div>

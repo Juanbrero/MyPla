@@ -8,7 +8,7 @@ import app.models as models
 from app.bd.cruds import crud_prof
 from app.bd.bd_utils import Errors, Info
 
-router = APIRouter(prefix="/professionals",tags=["Professionals"])
+router = APIRouter(prefix="/api/professionals",tags=["Professionals"])
 
 
 @router.get("", 

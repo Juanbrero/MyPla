@@ -7,7 +7,7 @@ from app.bd.schemas import schema_topic_recurrent
 from datetime import time
 
 
-router = APIRouter(prefix="/recurrent")
+router = APIRouter(prefix="/api/recurrent")
 
 
 

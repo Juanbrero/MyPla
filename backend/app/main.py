@@ -28,7 +28,7 @@ from icecream import install
 install()
 ic.configureOutput(contextAbsPath=False, includeContext=True)
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs")
 
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")

@@ -7,7 +7,7 @@ from ..controllers.SpecificController import SpecificController
 from app.bd.schemas import schema_response, schema_topic_specific
 from app.bd.bd_utils import Errors, Info
 
-router = APIRouter(prefix="/specific")
+router = APIRouter(prefix="/api/specific")
 
 @router.post('',tags=["Specific"], response_model=Union[schema_topic_specific.TopicSpecificIn, Errors])
 def create_specific_day(prof_id:str, specific:schema_topic_specific.TopicSpecificCr1, db:Session = Depends(get_db)):
