@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import ScheduleEdit from '../components/ScheduleEdit';
 import ScheduleCreate from '../components/ScheduleCreate';
 import FullCalendar from "@fullcalendar/react";
@@ -12,33 +12,22 @@ function Calendar() {
 
   const [isCreated, setCreated] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  // const [selectedTask, setSelectedTask] = useState({
-  //    topics: ['Estrategia', 'Marketing'],
-  //    day: 'Lunes',
-  //    start: '14:00',
-  //    end: '15:00',
-  //    recurrent: true,
-  //    date: "2025-04-18",
-  // });
+  const [calendarRange, setCalendarRange] = useState({ start: null, end: null });
+
   const [selectedTask, setSelectedTask] = useState({
-     topics: [],
-     day: '',
-     start: '',
-     end: '',
-     recurrent: true,
-     date: "",
+      id: '',
+      groupId: '',
+      day: '',
+      date: "",
+      start: '',
+      end: '',
+      topics: [],
+      recurrent: true,
   });
 
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-  const [events, setEvents] = useState([
-    {
-      title: "Evento de prueba",
-      start: '2025-04-22T14:00:00',
-      end: '2025-04-22T15:30:00',
-      color: 'red'
-    },
-  ])
+  const [events, setEvents] = useState([]);
 
   const [clickedEvent, setClickedEvent] = useState(null);
 
@@ -50,16 +39,14 @@ function Calendar() {
     const end = DateTime.fromISO(info.endStr);
     
     setSelectedTask({
-      // topics: ['Estrategia', 'Marketing'],
       topics: [],
       day: dias[new Date(start).getDay()],
+      date: start.toFormat("yyyy-MM-dd"),
       start: start.toFormat("HH:mm"),
       end: end.toFormat("HH:mm"),
       recurrent: false,
-      date: start.toFormat("yyyy-MM-dd"),
     })
     setModalOpen(true);
-    // mostrar create
   };
 
   const handleCloseModal = () => {
@@ -73,76 +60,221 @@ function Calendar() {
   const handleEventClick = (arg) => {
     
     let evento = {
-      title: arg.event.title,
-      daysOfWeek: arg.event.extendedProps.daysOfWeek,
-      day: arg.event.extendedProps.day,
-      date: arg.event.extendedProps.date,
-      start: arg.event.start,
-      startTime: arg.event.extendedProps.startTime,
-      end: arg.event.end,
-      endTime: arg.event.extendedProps.endTime,
-      recurrent: arg.event.extendedProps.recurrent,
-      eventTopics: arg.event.extendedProps.eventTopics,
+      id        :   arg.event.id,
+      groupId   :   arg.event?.groupId,
+      title     :   arg.event.title,
+      color     :   arg.event.color,
+      start     :   arg.event.start,
+      end       :   arg.event.end,
+      extendedProps: {
+          day         : arg.event.extendedProps.day,
+          date        : arg.event.extendedProps.date,
+          recurrent   : arg.event.extendedProps.recurrent,
+          eventTopics : arg.event.extendedProps.eventTopics,
+      }
     };
-    
+
     setClickedEvent(evento);
-    console.log("evento clickeado: ", evento);
+    // console.log("arg.event.id: ", arg.event.id);
+    // console.log("arg.event?.groupId: ", arg.event.groupId);
+    // console.log("arg.event.title: ", arg.event.title);
+    // console.log("arg.event.color: ", arg.event.color);
+    // console.log("arg.event.extendedProps.day: ", arg.event.extendedProps.day);
+    // console.log("arg.event.extendedProps.date: ", arg.event.extendedProps.date);
+    // console.log("arg.event.start: ", arg.event.start);
+    // console.log("arg.event.end: ", arg.event.end);
+    // console.log("arg.event.extendedProps.recurrent: ", arg.event.extendedProps.recurrent);
+    // console.log("arg.event.extendedProps.eventTopics: ", arg.event.extendedProps.eventTopics);
+    console.log("evento: ", evento);
+
     setCreated(true);
     setModalOpen(true);
-    // alert(`Evento: ${arg.event.title}`);
-    // mostrar information
   };
 
   const handleSaveTask = (taskName) => {
     
-    const baseProps = {
-      recurrent: taskName.recurrent,
-      eventTopics: taskName.topics || [], // por si no está definido
-    };
+    const startToCheck = combinarFechaYHora(taskName?.date, taskName.start);
+    const endToCheck = combinarFechaYHora(taskName?.date, taskName.end);
 
-    const newEvent = {
-      title: '',
-      color: taskName.recurrent ? 'green' : 'orange',
-      extendedProps: baseProps,      
-    }
+    const haySolapamiento = events.some(ev => {
+      const evStart = new Date(ev.start);
+      const evEnd = new Date(ev.end);
 
-    if (taskName.recurrent) {
-      const dayIndex = dias.indexOf(taskName.day);
-      newEvent.daysOfWeek = [dayIndex];
-      newEvent.day = taskName.day;
-      newEvent.startTime = taskName.start;
-      newEvent.endTime = taskName.end;
-      newEvent.extendedProps = {
-        ...baseProps,
-        daysOfWeek : [dayIndex],
-        day : taskName.day,
-        startTime : taskName.start,
-        endTime : taskName.end,
-      };
-    } 
-    else {
-      const eventDate = taskName.date;
-      newEvent.start = `${eventDate}T${taskName.start}`;
-      newEvent.end = `${eventDate}T${taskName.end}`;
-      newEvent.extendedProps = {
-        ...baseProps,
-        date : eventDate,
+      return (
+        startToCheck.getTime() < evEnd.getTime() &&
+        endToCheck.getTime() > evStart.getTime()
+      );
+    });
+
+    if (!haySolapamiento) {
+ 
+      if (taskName.recurrent) {
+        createRecurrentEvent(taskName);
       }
+      else {
+        createEvent(taskName);
+      }
+
+      handleCloseModal();
+      // return true;
+    }
+    else {
+      alert("Error al crear evento, el rango horario ya contiene eventos.")
+      // return false;
     }
 
-    console.log("newEvent: ", newEvent);
+  };
+
+  const handleSaveEditTask = (event) => {
+
+    setEvents((prevEvents) => {
+
+      const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
+      const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
+      const dayOffset = dayHasChanged
+      ? dias.indexOf(event.extendedProps.day) - dias.indexOf(firstMatch.extendedProps.day)
+      : 0;
+
+      return prevEvents.map((ev) => {
+        if (event.extendedProps?.recurrent && ev.groupId === event.groupId) {
+          // Ajustamos la fecha si el día cambió
+          const originalDate = new Date(ev.extendedProps.date);
+          const newDate = dayHasChanged
+            ? new Date(originalDate.setDate(originalDate.getDate() + dayOffset))
+            : originalDate;
+
+          // Obtener la hora original de start y end
+          const startTime = getTimeFromDate(ev.start); // e.g. "14:00:00"
+          const endTime = getTimeFromDate(ev.end);
+
+          // Generar nuevos start y end con la nueva fecha
+          const newDateStr = newDate.toISOString().split('T')[0];
+          const newStart = new Date(`${newDateStr}T${startTime}`);
+          const newEnd = new Date(`${newDateStr}T${endTime}`);  
+
+
+          return {
+              ...event,
+              id            : ev.id,
+              start         : newStart,
+              end           : newEnd,
+              extendedProps : {
+                ...event.extendedProps,
+                date        : newDateStr,
+              },
+            };
+            
+        } else {
+          // Si no es recurrente, actualizamos solo por id
+          return ev.id === event.id ? event : ev;
+        }
+        
+      });
+    });
+
+    handleCloseModal();
+  }
+
+  const handleDeleteTask = (event) => {
+
+    const isEventRecurrent = event.extendedProps.recurrent;
+  
+    setEvents((prevEvents) => 
+      prevEvents.filter((ev) => {
+        // evento recurrente
+        if (isEventRecurrent) {
+          // Borrar todas las recurrencias con el mismo groupId
+          const evGroupId = ev.groupId;
+          return evGroupId !== event.groupId;
+        }
+        // evento no recurrente
+        return ev.id !== event.id;
+      })
+    );
+
+    handleCloseModal();
+  }
+
+  const handleCancelOneOccurrence = (event) => {
+
+    event.extendedProps.recurrent = false;
+
+    handleDeleteTask(event);
+
+  };
+
+  const createEvent = (taskName) => {
+    
+    const newEvent = {
+      id      :     `${crypto.randomUUID()}`,
+      title   :     '',
+      color   :     'orange',          
+      start   :     `${taskName.date}T${taskName.start}`,
+      end     :     `${taskName.date}T${taskName.end}`,
+ 
+      extendedProps : {
+        day         : taskName.day,
+        date        : taskName.date,
+        recurrent   : taskName.recurrent,
+        eventTopics : taskName.topics,
+      },
+    }
 
     setEvents([...events, 
       newEvent
-    ])
-    handleCloseModal()
-  };
-
-  const handleDeleteTask = (taskName) => {
-
-
+    ]);
+    
   }
 
+  const createRecurrentEvent = (taskName) => {
+
+    const current = new Date(calendarRange.start);
+    const originalStart = taskName.start;
+    const originalEnd = taskName.end;
+    const groupIdGen = crypto.randomUUID();
+    const newEvents = [];
+
+    while (current <= calendarRange.end) {
+      const currentDay = dias[current.getDay()];
+
+      if (currentDay === taskName.day) {
+        const dateStr = current.toISOString().split("T")[0];
+
+        const newEvent = {
+          id      :    `${crypto.randomUUID()}`,
+          groupId :    `${groupIdGen}`,
+          title   :    '',
+          color   :    'green',          
+          start   :    `${dateStr}T${originalStart}`,
+          end     :    `${dateStr}T${originalEnd}`,
+          extendedProps : {
+                      date: dateStr,
+                      day: currentDay,
+                      recurrent: taskName.recurrent,
+                      eventTopics: taskName.topics,
+          },
+        }
+
+        newEvents.push(newEvent);
+      };
+
+      current.setDate(current.getDate() + 1);
+    }
+
+    setEvents(prevEvents => [...prevEvents, ...newEvents]);
+
+  }
+  
+  function combinarFechaYHora(fecha, hora) {
+    const base = `${fecha}T${hora.length === 5 ? hora + ':00' : hora}`; // asegura formato con segundos
+    return new Date(base);
+  }
+
+  // Utilidad para extraer hora en formato "HH:MM:SS"
+  function getTimeFromDate(date) {
+    const d = new Date(date);
+    return d.toTimeString().split(' ')[0];
+  }
 
   return (
     <div>
@@ -159,6 +291,13 @@ function Calendar() {
         eventClick={handleEventClick}
         events={events}
         height={"90vh"}
+        datesSet={ (info) => {
+          setCalendarRange( {
+            start : new Date(info.startStr),
+            end : new Date(info.endStr),
+            });
+          }
+        }
       />
       <>
         {isCreated ? (
@@ -167,16 +306,16 @@ function Calendar() {
             clickedEvent={clickedEvent}
             onClose={handleCloseModal}
             taskData={selectedTask}
-            // onCancelSlot={handleCancelSlot}
+            onDeleteTask={handleDeleteTask}
+            onCancelOneOccurrence={handleCancelOneOccurrence}
             onCancelTask={handleCancelTask}
-            onSaveTask={handleSaveTask}
+            onSaveEditTask={handleSaveEditTask}
           />
         ) : (
           <ScheduleCreate
             open={modalOpen}
             onClose={handleCloseModal}
             taskData={selectedTask}
-            // onCancelSlot={handleCancelSlot}
             onCancelTask={handleCancelTask}
             onSaveTask={handleSaveTask}
           />

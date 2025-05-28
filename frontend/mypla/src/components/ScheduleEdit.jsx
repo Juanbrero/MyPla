@@ -32,12 +32,10 @@ export default function ScheduleEdit({
   onClose,
   taskData,
   onCancelTask,
-  onSaveTask,
+  onSaveEditTask,
   onDeleteTask,
   onCancelOneOccurrence,
 }) {
-
-  console.log("render edit");
 
   const [isEditable, setIsEditable] = React.useState(false); // Controla si el formulario es editable
   const [localTaskData, setLocalTaskData] = React.useState(taskData);
@@ -47,41 +45,71 @@ export default function ScheduleEdit({
   }, [open, taskData]);
   
   const handleTaskDataChange = (partialUpdate) => {
+       
     setLocalTaskData((prev) => ({
       ...prev,
       ...partialUpdate,
     }));
   };
   
-
   const handleCancelOneOccurrence = () => {
-    onCancelOneOccurrence?.(taskData);
+
+    onCancelOneOccurrence?.(clickedEvent);
   };
 
   const handleDeleteTask = () => {
-    onDeleteTask?.(taskData);
+    onDeleteTask?.(clickedEvent);
+    setIsEditable(false);
   };
 
-
-  const handleSaveTask = () => {
+  const handleSaveEditTask = () => {
 
     const { topics, start, end } = localTaskData;
-
+    
     if (!topics?.length || !start || !end) {
       alert('Por favor complete todos los campos');
       return;
     }
-  
+    
     if (start >= end) {
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
       return;
     }
-  
 
-    onSaveTask?.(localTaskData);
+    let dateStr;
+
+    if (typeof localTaskData.date === "string") {
+      dateStr = localTaskData.date;
+    } else if (localTaskData.date instanceof Date) {
+      const y = localTaskData.date.getFullYear();
+      const m = String(localTaskData.date.getMonth() + 1).padStart(2, '0');
+      const d = String(localTaskData.date.getDate()).padStart(2, '0');
+      dateStr = `${y}-${m}-${d}`;
+    }
+
+    console.log(dateStr);
+    console.log(localTaskData.day);
+
+    const editEvent = {
+      ...clickedEvent,
+      color     :     localTaskData.recurrent ? 'green' : 'orange', 
+      start     :     `${dateStr}T${localTaskData.start}`,
+      end       :     `${dateStr}T${localTaskData.end}`,
+      extendedProps : {
+        day         : localTaskData.day,
+        date        : dateStr,
+        recurrent   : localTaskData.recurrent,
+        eventTopics : localTaskData.topics,
+      },
+    }
+    
+    console.log("clickedEvent: ", clickedEvent);
+    console.log("editEvent: ", editEvent);
+
     setIsEditable(false); // Regresar al modo de solo lectura después de guardar
+    onSaveEditTask?.(editEvent);
+    
   };
-
 
   const handleCancelChanges = () => {
     setIsEditable(false); // Regresar al modo de solo lectura
@@ -98,13 +126,13 @@ export default function ScheduleEdit({
         <Box sx={style}>
           <Typography variant="h6" mb={2}>Información del Horario</Typography>
           <Topics 
-            taskData={taskData}
+            taskData={localTaskData}
             clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
           />
           <ScheduleDate 
-            taskData={taskData}
+            taskData={localTaskData}
             clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
@@ -116,7 +144,7 @@ export default function ScheduleEdit({
             onChangeData={handleTaskDataChange}
           />
           <Recurrent
-            taskData={taskData}
+            taskData={localTaskData}
             clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
@@ -126,7 +154,7 @@ export default function ScheduleEdit({
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             {!isEditable ? (
               <>
-                {clickedEvent?.recurrent && (
+                {clickedEvent.extendedProps.recurrent && (
                   <Button color="error" variant="outlined" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
                     Cancelar solo esta vez
                   </Button>
@@ -143,7 +171,7 @@ export default function ScheduleEdit({
                 <Button color="secondary" variant="outlined" onClick={handleCancelChanges} fullWidth sx={{ p: 2 }}>
                   Cancelar cambios
                 </Button>
-                <Button color="primary" variant="contained" onClick={handleSaveTask} fullWidth sx={{ p: 2 }}>
+                <Button color="primary" variant="contained" onClick={handleSaveEditTask} fullWidth sx={{ p: 2 }}>
                   Guardar cambios
                 </Button>
               </>

@@ -12,39 +12,55 @@ export default function ScheduleDate(props) {
   const { taskData, clickedEvent, isEditable, onChangeData} = props;
 
   const [day, setDay] = React.useState(taskData?.day || 'Lunes');
-  const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
   const [selectedDate, setSelectedDate] = React.useState(taskData?.date ? new Date(taskData.date) : new Date());
-  const [editDate, setEditDate] = React.useState(new Date(clickedEvent?.date));
-  const [editDay, setEditDay] = React.useState(clickedEvent?.day);
+  const [editDate, setEditDate] = React.useState(new Date(clickedEvent?.extendedProps?.date));
+  const [editDay, setEditDay] = React.useState(clickedEvent?.extendedProps?.day);
 
   useEffect(() => {
-    if (taskData?.day && taskData.day !== day) {
-      setDay(taskData?.day || 'Lunes');
-    }
-    if (taskData?.date) {
-      const [year, month, dayStr] = taskData.date.split("-");
+
+    // actualizaciones sobre taskData
+    if (taskData?.day && taskData?.date) {
+      let year, month, dayStr;
+      
+      // actualizo date
+      // formateo manual la date a yyyy-mm-dd
+      if (typeof taskData.date === "string") {
+        [year, month, dayStr] = taskData.date.split("-");
+      } else if (taskData.date instanceof Date) {
+        year = taskData.date.getFullYear();
+        month = String(taskData.date.getMonth() + 1).padStart(2, '0');
+        dayStr = String(taskData.date.getDate()).padStart(2, '0');
+      }
       const generateDate = new Date(year, month - 1, dayStr);
+      
       if (generateDate.toDateString() !== selectedDate.toDateString()) {
         setSelectedDate(generateDate);
       }
-    } else if (!taskData?.date && selectedDate.toDateString() !== new Date().toDateString()) {
-      setSelectedDate(new Date());
+      else if (!taskData?.date && selectedDate !== new Date()) {
+        setSelectedDate(new Date());
+      }
+      
+      // actualizo day
+      if (taskData.day !== day) {
+        setDay(taskData.day);
+      }
+      else {
+        setDay(clickedEvent?.extendedProps?.day);
+      }
+
     }
 
-    if(clickedEvent?.date) {
-      const [eventYear, eventMonth, eventDay] = clickedEvent.date.split("-");
+    // actualizaciones sobre clickedEvent
+    if(clickedEvent?.extendedProps?.date && clickedEvent?.extendedProps?.day) {
+      const [eventYear, eventMonth, eventDay] = clickedEvent.extendedProps.date.split("-");
       const generateEventDate = new Date(eventYear, eventMonth - 1, eventDay);
       setEditDate(generateEventDate);
-    }
-    
-    if(clickedEvent?.day) {
-      setEditDay(clickedEvent.day);
+      setEditDay(clickedEvent.extendedProps.day);
     }
 
-    }, [taskData?.day, taskData?.date, clickedEvent?.date, clickedEvent?.day]);
+  }, [taskData?.day, taskData?.date, clickedEvent?.extendedProps?.date, clickedEvent?.extendedProps?.day]);
   
-  console.log("render date");
-  
+
   const handleDayChange = (event) => {
     const { target: {value} } = event;
     setDay(value);
@@ -62,12 +78,12 @@ export default function ScheduleDate(props) {
       {!isEditable ? (
         <Box>
           <Typography variant="subtitle1">
-            <strong>{clickedEvent?.recurrent ? 'Día' : 'Fecha'}: </strong> 
-            {clickedEvent?.recurrent ? editDay : editDate.toLocaleDateString()}
+            <strong>{clickedEvent?.extendedProps?.recurrent ? 'Día' : 'Fecha'}: </strong> 
+            {clickedEvent?.extendedProps?.recurrent ? editDay : editDate.toLocaleDateString()}
           </Typography>
         </Box>  
         ) : (
-          clickedEvent?.recurrent ? (
+          clickedEvent?.extendedProps?.recurrent ? (
             <FormControl fullWidth margin="normal">
               <InputLabel>Día</InputLabel>
               <Select

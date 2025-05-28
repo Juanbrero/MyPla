@@ -4,6 +4,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+# importa los modelos de  model, todos
+# como existe el models/__init__.py, toma esos
 from app.models import *
 from app.config.database import Base, DATABASE_URL
 

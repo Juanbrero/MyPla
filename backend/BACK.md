@@ -1,89 +1,219 @@
-## Alembic (si se usa desde afuera, es decir, no se ejecuta desde el contenedor)
-Para que se pueda utilizar el Alembic, y genere el codigo de migración, se debe utilizar con variables de entorno, ya que como se toma la URL de la BD desde database.py, y la url usa como ip **postgres** la cual no puede resolver el alembic, yo utilizo las varibles de entorno para que cuando para que cuando no esta el back encuentre None, y use la direccion de localhost.
+# Backend
 
-- [Implementado](#implementado)
-- [Falta](#falta)
-- [Archivos](#armado-de-archivos-y-ejecución)
-- [Alembic](#ejecutar-alembic)
+   | LINK | Descripcion|
+   | --- | ---| 
+   | [Ejecutar main](#ejecutar-mainpy-desde-afuera) | Cambios para que se pueda utilizar Alembic sin ingresar a Docker |
+   | [RECORDAR](#recordar) | Importante Cambios que se deben hacer para salir a producción |
+   | [Preparación OMITIR](#preparación-recordatorios-de-lo-que-se-hizo) | Metodo utilizado para crear los archivos iniciales, usar si se empieza desde 0|
+   | [Archivos](#armado-de-archivos-y-ejecución) | Archivos que deben crearse y modificarse |
+   | [Alembic](#ejecutar-alembic) | Ejecución de Alembic, comandos a ejecutar si se utiliza con Docker o con venv | 
+   | [Implementado](#implementado) | Tablas y funciones implementadas |
+   | [Falta](#falta) | Funciones, controles y trabajos que faltan implementar |
+   | [Test](#test) | Test |
+---
+## [JSON](#json)
+
+| Link |  |
+| ---   |---|
+| [Query](#query)|  |
+|  |[Users](#query-users)|
+|  |[Professional](#query-professional)|
+|  |[Topics](#query-topics)|
+|  |[Professional Topic](#query-professional-topic)|
+|  |[Recurrent](#query-recurrent)|
+|  |[Specific](#query-specific)|
+|  |[Exception](#query-exception)|
+|[Response](#response)|  |
+|  |[Users](#response-users)|
+|  |[Professional](#response-professional)|
+|  |[Topics](#response-topics)|
+|  |[Professional Topic](#response-professional-topic)|
+|  |[Recurrent](#response-recurrent)|
+|  |[Specific](#response-specific)|
+|  |[Exception](#response-exception)|
+||[Response Front](#response-to-front)|
 
 
-# Metodo usado
-Yo realice parte de la interaccóon desde fuera del contenedor, por lo que algunas de las instrucciones y cambios se basan en eso. Los cambios que hice son:
-- database.py parametrizar URL, ya que no interactuaba desde el Docker
-- if en env.py, como esto se realiza ahora desde el contenedor podria dejarse la instruccion **config.set_main_option("sqlalchemy.url", DATABASE_URL)**
-
-A partir de levantar como esta hoy en dia, la interaccion debe hacerse desde el contenedor **backend**, esta configurado para que cuando inicie, como espera al postgres, cargue los archivos y arme las tablas, si se modifican seguir las instrucciones de [Alembic](#ejecutar-alembic) 
-
-# YO
-por lo que en database.py
-se debe utilizar la linea 
+# Organización
+ Cual es la mejor manera de organizar el código?
+- Directorios separadas con archivos particulares para cada modelo
 ~~~
-DATABASE_URL = f"postgresql://{getenv('POSTGRES_USER')}:{getenv('POSTGRES_PASSWORD')}@postgres:5432/{getenv('POSTGRES_DB')}"
+|app/
+   |- models/
+      |- __ini__.py 
+      |- Users.py
+      |- Professonal.py
+      |- ....
+   |- bd/
+      |- schemas/
+         |- schema_Professional.py
+         |- schema_Users.py
+         |- ...
+      |- cruds/
+         |- crud_Professional.py
+         |- crud_Users.py
+         |- ....
+      |- bd_utils.pu
+      |- bd_exceptions.py
+   |- routes/
+----------------   
+- Modelos en directorios particulares con sus esquemas y cruds juntos   
+|app/
+   |- models/
+      |- __ini__.py
+      |- Users/ 
+         |- Users.py
+         |- schema_Users.py
+         |- crud_Users.py
+      |- Professional/
+         |- Professonal.py
+         |- schema_Professional.py
+         |- crud_Professional.py
+      |- ....
+   |- routes/
+----------------
+- Modelos, con archivos de esquema y cruds unificado, es decir, todo el codigo en un mismo archivo
+|app/
+   |- models/
+      |- __ini__.py 
+      |- Users.py
+      |- Professonal.py
+      |- ....
+   |- bd/
+      |- schema.py
+      |- cruds.py
+      |- bd_utils.pu
+      |- bd_exceptions.py
+   |- routes/
 ~~~
-asi no genera problemas, se puede hacer pero habria que comentar y descomentar la url en el env.py
+
+---
+# Icecream
+Modulo para evitar usar print( ) y olvidar donde estan.
+Con este modulo podremos colocar salidas, y dar un poco de contexto, sabiendo donde paso y con la posibilidad de desactivarlo para no tener que buscar todos las ocurrencias.
+
+Se puede importar de dos maneras: 
+- importarlo individualmente en cada modulo
+~~~
+from icecream import ic
+~~~
+- O hacer un import e instalación en el modulo padre "main", lo que lo deja disponible en todos lo modulos sin necesidad de importar en cada uno
+~~~
+from icecream import install
+install()
+#esto no permitira conocer en que archivo esta el ic
+# contextAbsPath=True => path absoluto del archivo 
+## ic| /home/esteban/SIP/MyPla/backend/app/routes/topic.py:24 in get_topic()
+##    f'GET TOPIC': 'GET TOPIC'
+ic.configureOutput(contextAbsPath=False, includeContext=True)
+~~~
+sabremos en que modulo ocurre cada evento
+~~~
+ic| topic.py:24 in get_topic()- f'GET TOPIC': 'GET TOPIC'
+~~~
+Para ejecutarlo se llama
+~~~
+ic(VAR) # VAR => puede ser una variable, un f-string, funciones, etc. 
+ic(os.env('RELOAD'))
+ic('TOPIC')
+ic(f'Valor B {Bvalues}')
+~~~
+
+Desactivar, esto lo desactiva para todos los modulos, por lo que es recomendable habilitar y deshabilitar desde Main
+~~~
+ic.disable()
+~~~
+---
+
+
+# Ejecutar main.py Desde afuera
+## Cambios en main
+- if para habilitar /docs, /redoc y /openapi.json, ya que se exige https, y no lo poseen
+- Agregado de funcion run_migration, ejecuta el Alembic para crear las  tablas
+- if para dotenv, para poder ejecutarlo desde consola, no Visual Studio, agregue un if que verifica si esta cargada una variable, sino llama al dotenv
+- cambio de ruta de la funcion addRoute de "/app/app/routes" a "app/routes"
+- cambio de llamada de uvicorn de app a "app.main:app"
+
+## Ejecución
+Levantamos la BD
+~~~
+$ docker compose up -d --build --remove-orphans postgres
+~~~
+Agregamos el host **postgres** a los hosts conocidos, para que pueda encontrarlo desde fuera
+~~~
+sudo nano /etc/hosts
+127.0.0.1 postgres
+~~~
+Ahora podremos interactuar con la BD, desde fuera de Docker
+
+En /backend y en el **entorno virtual**
+~~~
+$ cd ~/backend
+# usar el metodo de activacion, de venvs, que uses regularmente
+$ source ./vevn/bin/activate
+venv$ pip install -r requirements.txt
+venv$ python -m app.main
+~~~
+Aclaración: Cuando intente ejecutarlo desde la terminal, genero un problema por las variables de entorno. Si lo ejecuto desde VS Code si las instancia, pero para hacerlo desde la terminal directamente, se debe importar con **dotenv**, yo cree un link simbolico desde el .env de MyPla a backend/.env
+~~~
+en backend/
+ln ../.env .env
+~~~
 
 # RECORDAR
-Descomentar en main el **@app.middleware("http")**, ya que esto permite usar el /docs y /redoc
+PARA PRODUCCION, quitar el if, que admite el /docs
 
-# Preparacion (Recordatorios de lo que se hizo)
+# Preparación (Recordatorios de lo que se hizo)
+Ya implementado, es a manera de memorias de como se hizo el proceso, [continuar](#armado-de-archivos-y-ejecución)
 crear el alembic
 ~~~
-cd backend
+cd MyPla/backend
 ~~~
 ## Desde afuera de Docker
-intalar dentro de un entorno virtual
+instalar dentro de un entorno virtual
 ~~~
 pip install alembic
 ~~~
-Inicar el Alembic
+Crear el Alembic
 ~~~
 alembic init alembic
 ~~~
-
-Se tiene que agregar la libreria **alembic** a **backend/requirements.txt** 
-
+Esto genera backend/alembic.ini, /backend/alembic/
 
 ## Modificar archivos
 alembic/env.py
-agregar 
-~~~
-#Version con parametrizada
-from app.models import *
-from app.config.database import Base, DATABASE_URL
 
-target_metadata = Base.metadata
-#Se comprueba si dentro del DATABASE_URL esta el None
-#como esta parametrizada y no esta levantado el back es True
-#pero necesita estar el postgres
-if 'None' in DATABASE_URL:
-    config.set_main_option("sqlalchemy.url", 'postgresql://myuser:mypassword@localhost:5432/mydatabase')
-else:
-#esta linea funciona si levanta con el back
-    config.set_main_option("sqlalchemy.url", DATABASE_URL)
+Agregar 
 ~~~
-env.py
-~~~
-#version sin parametrizar, levanta con el back
+# importa los modelos de app/models
+# si no esta el archivo __init__.py, importa todos
+# si esta solo los que importados en ese archivo
 from app.models import *
+
 from app.config.database import Base, DATABASE_URL
 target_metadata = Base.metadata
-
+# Esta linea toma la definición de la URL de config/database.py
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 ~~~
 
-se debe agregar a alembic.ini
+se debe agregar a alembic.ini, esta linea es sobre escrita por la definición en env.py, pero si 
 ~~~
-#Esta linea es ignorada porque se utiliza la info del env.py
 sqlalchemy.url = postgresql://myuser:mypassword@localhost:5432/mydatabase
 ~~~
 
+### Modificación para que levante las tablas cuando se inicia el backend desde Docker Compose
+- docker-compose
+  -  remplazar en backend command 
+     - command: ["sh","-c","**alembic upgrade head** && uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload"]
+
+# Fin preparación
 
 # Armado de archivos y ejecución
 ## Archivos
 
 - models/MODELO.py
-    -  crear modelo
-- models/__init__.py
+    -  crear modelo de la tabla
+- models/_\_init__.py
    - agregar import del modelo
    ~~~
     from .Profesional import Profesional
@@ -92,73 +222,62 @@ sqlalchemy.url = postgresql://myuser:mypassword@localhost:5432/mydatabase
    ~~~
 
 ### Para interacción
-- app/bd/schemas/scheme_MODEL.py
+- app/bd/schemas/schema_MODEL.py
    - esquema de respuestas
 - app/bd/cruds/crud_MODEL.py
-  -  Consultas
+  -  Consultas validas
 
 ### API
 - routes/ROUTE.py
    - endpoint que lo llamara
 
-### Modificación para que levante las tablas cuando se levanta el backend
-- docker-compose
-  -  remplazar en backend command 
-     - command: ["sh","-c","**alembic upgrade head** && uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload"]
 
 ### Ejecutar Alembic
-- Docker
-~~~
-docker compose up -d --build --remove-orphans postgres backend 
-docker exec -it backend bash
-~~~
-Para generar el archivo para la migracion se debe ejecutar, si no se coloca MENSAJE se usara el hash que genera alembic
+- Siempre con Postgres corriendo
+   - Con Docker
+   ~~~
+   docker compose up -d --build --remove-orphans postgres backend 
+   docker exec -it backend bash
+   ~~~
+
+   - Con venv
+   ~~~
+   venv$ cd backend
+   ~~~
+
+Para generar el archivo para la migración se debe ejecutar 
 ~~~
 $ alembic revision --autogenerate [-m "MENSAJE/COMENTARIO"]
 ~~~
+Si no se coloca MENSAJE, util para orientar que acción realizara el codigo, se usara el hash que genera alembic. RECOMENDACIÓN: Revisar el archivo autogenerado para confirmar que se creo lo esperado.
 
 Para ejecutarlo, esta linea toma los archivos de alembic/version, compara el hash almacendao en la BD y ejecuta para llegar hasta el ultimo
 ~~~
 $ alembic upgrade head
 ~~~
+> [!Note]
+> El ciclo de trabajo es generar el archivo de migración y ejecutar el upgrade, es decir, se debe ejecutar 
+> ~~~
+> alembic revision ..
+> alembic upgrade ..
+> ~~~
+> Antes de poder generar un nuevo archivo de migración
 
 
 
-
-## Relaciones 
+# Armado de modelos
+## Relaciones (https://chatgpt.com/share/680bed6f-c854-8009-8ca7-22d350f08eb2)
 ~~~
 #Relacion entre Objetos
-#Si se utiliza como creador de columna Column no se utiliza esta funcion
 from sqlalchemy.orm import relationship 
 
 #Relacion en BD(Crea columnas en BD)
 from sqlalchemy import ForeignKey, ForeignKeyConstrait 
 ~~~
-### UNO A UNO
-   - Usuario(usuario)
-   ~~~
-      id: Mapped[int] = mapped_column(primary_key=True)
-      admin: relationship("Admin", back_populates="ususario")
-   ~~~
-   - Admin(admin)
-   ~~~
-      id: Mapped[int] = mapped_column(ForeignKey("usuario.id"), primary_key=True)
-   ~~~
-### UNO A MUCHOS
-- UNO:
-   - MAPPED[list[MUCHOS]] = relationship
-   ~~~
-   Usuario.py
-   id: Mapped[int] = mapped_column(primary_key=True)
-   clases: Mapped[List["Clase"]] = relationship(back_populates="usuario")
-   ~~~
-- MUCHOS 
-   - ForeignKey (si solo es un atributo FK de otra tabla)
-      ~~~
-      Clase.py
-      user_id: Mapped[int] = mapped_column(ForeignKey("usuario.id",on...))
-      usuario: Mapped["Usuario"] = relationship(back_populates="clase")
-      ~~~
+- ForeignKey (si solo es un atributo FK de otra tabla)
+~~~
+ atr : Maped[TYPE] = mapped_column(ForeignKey('__table__name', ...), ...) 
+~~~
    - ForeignKeyCostraint (si son mas de un atributo)
       ~~~
       __table_args__=(
@@ -168,22 +287,75 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
             on...)
       )
       ~~~
+### UNO A UNO
+   - User (users)
+   ~~~
+      user_id: Mapped[int] = mapped_column(primary_key=True)
+      professional: Mapped['Professional'] relationship(back_populates="user", cascade='all, delete-orphan')
+   ~~~
+   - Professional (profesional)
+   ~~~
+      prof_id: Mapped[int] = mapped_column(ForeignKey("users.user_id",ondelete='CASCADE'), primary_key=True)
+      user: Maped['User'] = relationship(back_populates='professional')
+   ~~~
+### UNO A MUCHOS
+- UNO:
+   - MAPPED[List[MUCHOS]] = relationship
+   - Professional (profesional)
+   ~~~
+   from typing import List
+
+   prof_id: Mapped[int] = mapped_column(ForeignKey("usuer.user_id",ondelete='CASCADE'), primary_key=True)
+   user: Maped['User'] = relationship(back_populates='professional')
+
+   recurrent: Mapped[List["RecurrentSchedule"]] = relationship(back_populates="professional", cascade="all, delete-orphan")
+   ~~~
+
+- MUCHOS 
+   
+   - RecurrentSchedule (recurrentschedule) Un solo atributo
+
+         ~~~
+         week_day: Mapped[int] = mapped_column(primary_key= True)
+         prof_id: Mapped[str] = mapped_column(ForeignKey("professional.prof_id", ondelete="CASCADE"), primary_key= True)
+
+         professional: Mapped["Professional"] = relationship(back_populates= "recurrent")
+         ~~~ 
+
+      - TopicSpecific (topicspecific) Varios atributos
+      ~~~
+      prof_id: Mapped[str] = mapped_column(primary_key=True) #FK -> ProfessinalTopic
+      topic_name: Mapped[str] = mapped_column(primary_key=True) #FK -> ProfessionalTopic
+      topic: Mapped['ProfessionalTopic'] = relationship(back_populates='specific_topic')
+
+      __table_args__= (
+        ForeignKeyConstraint(
+        ['prof_id', 'topic_name'], 
+        ['professionaltopic.prof_id', 'professionaltopic.topic_name'],
+        ondelete='CASCADE',
+        onupdate='CASCADE'
+      ),
+      )
+      ~~~
 
 
 # Implementado
-- Profesional
-   - Crear un Profesional con ID autogenerado, por BD, y score en default 0 (llamado desde el back, no quedo en la BD) Revisar si la define cuando se recrea
+- Usuario (prueba.py)
+   - Crear un usuario (id, name) donde name=id
+   - eliminar un usuario
+- Profesional (profesional.py)
+   - Crear un Profesional con score en default 0
    - Recuperar un Profesional por su ID
    - Recuperar todos lo Profesionales
    - Actualizar el score SOLO TEST
    - Eliminar un Profesional
-- Topic
+- Topic (topic.py)
    - Crear un topico
    - Recuperar todos los topicos
-   - Recuperar un topico (lo considero innecesario por si mismo)
-- ProfesionalTopic
+- ProfesionalTopic (topic.pu)
    - Agregar un topico a un profesional
    - Recuperar los topicos de un profesional por su ID
+   - Eliminar un topico de un profesional
 - Schedule (Agenda)
    - Controles que se realizan (CON)
       1. Valida que el tiempo de inicio y fin no sea el mismo y que inicio no sea menor a fin, en formato 24Hs ( inicio >= fin )
@@ -191,45 +363,759 @@ from sqlalchemy import ForeignKey, ForeignKeyConstrait
          - **Modificar para que considere la 30, ya que si se tiene 8:00-10:00 y se intenta ingresara 8:30-11:30 esta verificación admitiria ese horario**
       3. Solo almacena la hora y minutos (10:30:40) -> 10:30
       4. Control de que solo admita 00 o 30
-   - Recurrent (CON 1, 2, 3, 4)
-      1. Control de nombre de dia en español, **FALTA que sea todo en mayuscula o minuscula para evitar problemas**, por BD, Falta hacerlo en el back
-      - Crear un evento recurrente, recibe un dia de la semana (Texto), un horario de inicio y fin, y un ID
+   - Recurrent (CON 1, 2, 3, 4) (agenda.py, TopicRecurrent)
+      - **El calendario lo crea TopicRecurrent, el recibe la peticion y realiza las inserciones**
+      1. Control por DB y Back que el valor este entre 1-7
+      - Crear un evento recurrente, recibe un dia de la semana (int), un horario de inicio y fin, un  prof_ID y una lista de topicos. Ver esquema [Query](#query-recurrent)
       - Recuperar todos los evento recurrentes de un Profesional
-      - Recuperar todos los eventos de un dia de un profesional
-   - Specific (CON 1, 2, 3, 4)
-      - Crear un dia especifico (date) para un profesional
+   - Specific (CON 1, 2, 3, 4) (agenda.py, por TopicSpecific)
+      - Crear un dia especifico (date) para un profesional en base a [Query](#query-specific)
       - recuperar los TODOS los dias especificos de todos los profesionales
-      - Recuperar los dias de un profesional especifico
-      - Conocer el estado de un dia especifico de un profesional, cancelado o no
-      - Cancelar un dia especifico de un profesional
+   - Excepciones (CON 1, 2, 3, 4) (isCanceling= True, agenda.py, por crud_specific)
+      - Crea un dia especifico no disponible [Query](#query-exception)
+      - Recupera TODOS los dias excepcionales
+
+# Prioridad
+   1. Recurrente
+   2. Especifico 
+   3. Excepción
+   4. Clases
+   5. Evento
+
 
 # Falta
-- Delete de datos
-- Que los datos **str** esten en mayuscula o miniscula
+- Definir como sera la interaccion con Profesional y Alumno, como y que se pide y devuelve
+- Agregar peticion de dia especifico por mes
+- Bloquear exceptions si no hay un recurrente asociado
+- Armado de excepciones, leer excepciones -> day.isweekend() -> recurrent.week_day - day-hours
+   - Horario 8-16 -> Lunes
+   - Proximo lunes 2025-04-21 dara 10-18
+      - Especifico:
+         - 2025-04-21
+         - S 10
+         - E 18
+         - isCanceling: False
+      - Exception:
+         - 2025-04-21
+         - S 8
+         - E 16
+         - isCanceling: True
+      Convertir dia a semana, recuperar horarios de esa semana
+      -  8-10 -> E(10-16) S (8-10)  
+
+
+
+- Delete de datos 
 - Tablas faltantes (DER)
-- Hacer que ID Profesional sea clave Foranea a User
-- Agregar a las tablas cuando se creador, **Modificar para que lo haga**
-- Superposiciones, entre specific y recurret
-- Ver relacion con topicos
-- TZ y ver si usamos AM y PM
-- Testear si con la nueva definicion de Profesional, se tomo el default 0 en score (NO lo hace)
-- Error que admite la duplicacion de horas al estar fuera de el rango, 8-10 e ingreas 6-11, permite ingresarlo
+- Agregar a las tablas cuando se creador, **Modificar para que lo haga** Cuales
+- TZ y ver si usamos AM y PM ??
+- Ver como le agregamos atributo a topic como propuesto o algo asi, para que se almacene el topico y se deba aprobar
 
-## Planteo de ideas
-Para cambiar horarios se debera hacer updates de start, end y fecha de creacion/modificacion
-- Para ampliar un horario existente recuperar horarios, si horario ingresado es mayor al horario guardo
-   - En BD 8-10
-   - Ingresa 6-10
-   
-   Se debera actualiza la PK(start) con el valor ingresado
-- Para reducir
- - 6-10
- - 7-9
 
-En BD
- - 7-9
- - 10 - 13
- - 15 - 20
-Ingresa
-   - 6-13
-      - Eliminar la fila 10-13 y actualizar el end a las 13
+# JSON
+
+## Query
+### Query Users 
+ - Create 
+ POST /users
+ ~~~
+   {'user_id': str}
+ ~~~
+ - Get  
+ GET /users
+ - Delete 
+ DELETE /users
+ ~~~
+   {'user_id': str}
+ ~~~
+---
+### Query Professional
+ - Create solo para pruebas, se realiza por back directamente 
+  POST /professionals
+  ~~~
+  {'prof_id': ID}
+  ~~~
+ - Get one
+ GET /professionals/{prof_id}
+ - Get all
+ GET /professionals
+ - Update (score) Se realizaria por back
+ PUT /professional/{prof_id}
+ ~~~
+ {
+  "score": float
+   }
+ ~~~
+ - Delete 
+ DELETE /professionals/{prof_id}
+---
+### Query Topics
+ - Create (Se convierte en mayuscula el string al almacenarlo)
+ POST /topics
+ ~~~
+ {
+  "topic_name": "string"
+   }
+ ~~~
+ - Get all
+ GET /topics
+ - Delete
+ DELETE /topics
+ ~~~
+ {
+  "topic_name": "string"
+   }
+ ~~~
+---
+### Query Professional Topic
+- Create
+POST /topics/professionals/{prof_id}
+~~~
+{
+  "topic_name": "string",
+  "price_class": float
+}
+~~~
+- Get
+GET /topics/professionals/{prof_id}
+- Delete
+DELETE /topics/professionals/{prof_id}
+~~~
+{
+  "topic_name": "string"
+}
+~~~
+- Update price
+PUT /topics/professionals/{prof_id}
+~~~
+{topic_name: "string",
+price_class: float}
+~~~
+---
+### Query Recurrent
+   - Create: formato de hora 24Hs 
+   POST /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   { "week_day": int,
+        "start": time,
+        "end": time,
+        "topics": [
+            {
+            "topic_name": "str"
+            },
+            {
+            "topic_name": "str"
+            }
+            ]
+        }
+   ~~~
+   - Get
+   GET /professionals/{prof_id}/agenda/recurrent
+   - Delete
+   DELETE /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {"week_day": int,
+      "start": time}
+   ~~~
+   - Update hour
+   PUT /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {"week_day": int,
+        "start": time,
+        Nstart: time | None,
+        Nend: time | None
+        }
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {"week_day": int,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {"week_day": int,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
+---
+### Query Specific
+   - Create dia particular (isCanceling= False)
+   POST /professionals/{prof_id}/agenda/spec
+   ~~~
+   {
+            "day": date,
+            "start": time,
+            "end": time,
+            "topics": [
+                {
+                "topic_name": str
+                }
+            ]
+        }
+   ~~~
+   - Get dias especificos **funcion que trae todos los especifcos**
+   GET /professionals/{prof_id}/agenda/specific
+   - Get mes, funcion mas cercana a la implementacion real, **Falta año**
+   GET /professionals/{prof_id}/agenda/specific/{month}
+   - Update hour
+   PUT /professionals/{prof_id}/agenda/specific
+   ~~~
+   {"day": date,
+        "start": time,
+        Nstart: time | None,
+        Nend: time | None
+        }
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {"day": date,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {"day": date,
+        "start": time,
+        topic_name: str
+        }
+   ~~~
+
+### Query Exception
+   - Create
+      POST /professionals/{prof_id}/agenda/exception
+      ~~~
+      {
+      "start": time,
+      "end": time,
+      "day": date
+      }
+      ~~~
+   - Get
+      GET /professionals/{prof_id}/agenda/exception
+   - Delete
+   DELETE /professionals/{prof_id}/agenda/exception
+   ~~~
+     {
+      "start": time,
+      "day": date
+      }
+   ~~~
+   - Update
+   PUT /professionals/{prof_id}/agenda/exception
+   ~~~
+   {"day": date,
+        "start": time,
+        Nstart: time | None,
+        Nend: time | None
+        }
+   ~~~
+### Query Available
+   - Get
+   GET /professional/{prof_id}/available
+## Response
+
+### Response Users
+ - Create 
+ POST /users
+ ~~~
+ {'user_id': ,
+  'name': }
+  {'error': }
+ ~~~
+ - Get  
+ GET /users
+ ~~~
+ [
+   {'user_id': ,
+  'name': }
+  ]
+ ~~~
+ - Delete 
+ DELETE /users
+ ~~~
+ {'info': 'OK'}
+ {'error': }
+ ~~~
+---
+### Response Professional
+ - Create solo para pruebas, se realiza por back directamente 
+  POST /professionals
+  ~~~
+  {'info': str}
+  {'error': str}
+  ~~~
+ - Get one
+ GET /professionals/{prof_id}
+ ~~~
+ {'prof_id': str, 
+ 'score': float}
+ {'error': str}
+ ~~~
+ - Get all
+ GET /professionals
+ ~~~
+ [
+   {'prof_id': str, 
+ 'score': float},
+ {'prof_id': str, 
+ 'score': float}
+ ]
+ ~~~
+ - Update (score) Se realizaria por back
+ PUT /professionals/{prof_id}
+ ~~~
+ {
+  "score": float
+}
+ ~~~
+ - Delete 
+ DELETE /professionals/{prof_id}
+ ~~~
+ {'info': str}
+ {'error': str}
+ ~~~
+---
+### Response Topics
+ - Create
+ POST /topics
+ ~~~
+ {
+  "topic_name": "string"
+   }
+ ~~~
+ - Get all
+ GET /topics
+ ~~~
+ [
+    {
+  "topic_name": "string"
+   },
+    {
+  "topic_name": "string"
+   }
+   ]
+ ~~~
+ - Delete
+ DELTE /topics
+ ~~~
+ {'info': str}
+ {'error': str}
+ ~~~
+---
+### Response Professional Topic
+- Create
+POST /topics/professionals/{prof_id}
+~~~
+{
+  "prof_id": str,
+  "topic_name": "string",
+  "price_class": float
+}
+~~~
+- Get
+GET /topics/professonals/{prof_id}
+~~~
+[
+   {
+  "prof_id": str,
+  "topic_name": "string",
+  "price_class": float
+},
+{
+  "prof_id": str,
+  "topic_name": "string",
+  "price_class": float
+}
+]
+~~~
+- Delete
+DELETE /topics/professionals/{prof_id}
+~~~
+{'info': str}
+ {'error': str}
+~~~
+- Update price
+PUT /topics/professionals/{prof_id}
+~~~
+{'info': str}
+ {'error': str}
+~~~
+---
+### Response Recurrent
+   - Create: formato de hora 24Hs 
+   POST /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   { "week_day": int,
+        "start": time,
+        "end": time,
+        "topics": [
+            {
+            "topic_name": str
+            },
+            {
+            "topic_name": str
+            }
+            ],
+         "prof_id": str
+        }
+   ~~~
+   - Get
+   GET /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {
+   "recurrent": [
+      {
+         "week_day": int,
+         "start": time,
+         "end": time,
+         "topics": [
+         {
+            "topic_name": "string"
+         }
+         ]
+      }
+   ]
+      }
+   ~~~
+   - Delete
+   DELETE /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+   - Update hour
+   PUT /professionals/{prof_id}/agenda/recurrent
+   ~~~
+   {'info': str}
+   {'error':}
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {"week_day": int,
+        "start": time,
+        topic_name: str,
+        prof_id: str
+        }
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/recurrent/topic
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+---   
+### Response Specific
+   - Create dia particular (isCanceling= False)
+   POST /professionals/{prof_id}/agenda/spec
+   ~~~
+   {
+  "day": date,
+  "start": time,
+  "end": time,
+  "topics": [
+    {
+      "topic_name": "string"
+    }
+  ],
+  "prof_id": "string",
+  "isCanceling": bool
+   }
+   ~~~
+   - Get dias especificos
+   GET /professionals/{prof_id}/agenda/specific
+   ~~~
+   {
+  "specific": [
+    {
+      "day": date,
+      "start": time,
+      "end": time,
+      "topics": [
+        {
+          "topic_name": "string"
+        }
+      ]
+    }
+   ]}
+   ~~~
+   - Get mes, funcion mas cercana a la implementacion real, **Falta año**
+   GET /professionals/{prof_id}/agenda/specific/{month}
+   ~~~
+   {
+  "specific": [
+    {
+      "day": date,
+      "start": time,
+      "end": time,
+      "topics": [
+        {
+          "topic_name": "string"
+        }
+      ]
+    }
+   ]}
+   ~~~
+   -Update hour
+   PUT /professionals/{prof_id}/agenda/specific
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+   - Update topic
+   PUT /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {"day": date,
+        "start": time,
+        topic_name: str,
+        prof_id: str
+        }
+   {'error': str}
+   ~~~
+   - Delete topic
+   DELETE /professionals/{prof_id}/agenda/specific/topic
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+
+### Response Exception
+   - Create
+      POST /professionals/{prof_id}/agenda/exception
+      ~~~
+      {
+         "start": time,
+         "end": time,
+         "day": date
+      }
+      ~~~
+   - Get
+      GET /professionals/{prof_id}/agenda/exception
+      ~~~
+      {
+         "exception": [
+            {
+                  "start": time,
+                  "end": time,
+                  "day": date
+               }
+         ]
+      }
+      ~~~
+   - Delete 
+   DELETE /professional/{prof_id}/agenda/exception
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+   -Update hour
+   PUT /professionals/{prof_id}/agenda/exception
+   ~~~
+   {'info': str}
+   {'error': str}
+   ~~~
+
+
+### Response to Front
+- Mostrar horario:
+   - Profesional
+    GET /professional/{prof_id}/available
+   ~~~
+      {recurret: [{
+         start:time,
+         end: time,
+         week_day: integer o enum (1-7),
+         topics: string[]
+      }],
+       specific:[{
+         day: date,
+         start: time,
+         end: time,
+         topics: string[]
+       }],
+       exception:[{
+         day: date,
+         start: time,
+         end: time         
+       }],
+       class:[{
+         day: date,
+         start: time,
+         topic: string
+       }],
+       event:[{
+         day: date,
+         start: time,
+         end: time,
+         id_event: string
+       }]
+      }
+   ~~~
+   - Alumno
+   ~~~
+      {recurret: [{
+         start:time,
+         end: time,
+         week_day: integer o enum (1-7),
+         topics: string[]
+      }],
+       specific:[{
+         day: date,
+         start: time,
+         end: time,
+         topics: string[]
+       }],
+       exception:[{
+         day: date,
+         start: time,
+         end: time         
+       }],
+       event:[{
+         day: date,
+         start: time,
+         end: time,
+         id_event: string
+       }]
+      }   
+   ~~~
+ 
+
+# Test
+En backend/test/, se encuentra el archivo test_EP_bd.py, donde se insertan datos en la BD.
+
+Luego de la ejecución las tablas quedaran asi:
+
+
+-  users
+   - user_id: a
+      - name: a
+   - user_id: b
+      - name: b 
+   - user_id: z
+      - name: z
+
+- professional
+   - prof_id: a
+      - score: 0
+   - prof_id: b
+      - score: 0
+   - prof_id: z
+      - score: 0
+
+- topic
+   - topic_name: INGLES
+   - topic_name: FRANCES
+   - topic_name: FISICA
+   - topic_name: FILOSOFIA
+
+- professionaltopic
+   - topic_name: INGLES
+      - prof_id: a
+      - price_class: 1
+   - topic_name: FRANCES
+      - prof_id: a
+      - price_class: 1
+   - topic_name: FILOSOFIA
+      - prof_id: z
+      - price_class: 1
+   - topic_name: INGLES
+      - prof_id: z
+      - price_class: 2
+   - topic_name: FISICA 
+      - prof_id: b
+      - price_class: 3
+
+- recurrentschedule
+   - week_day: 2
+      - start: 00:30
+      - prof_id: a
+      - end: 02:30
+   - week_day: 1
+      - start: 00:30
+      - prof_id: a
+      - end: 02:30
+   - week_day: 1
+      - start: 17:30
+      - prof_id: z
+      - end: 18:30
+   - week_day: 1
+      - start: 15:30
+      - prof_id: z
+      - end: 23:30
+
+- topicrecurrent
+   - prof_id: a
+      - topic_name: INGLES 
+      - start: 00:30
+      - week_day: 2
+   - prof_id: a
+      - topic_name: FRANCES
+      - start: 00:30
+      - week_day: 2
+   - prof_id: a
+      - topic_name: INGLES 
+      - start: 00:30
+      - week_day: 1
+   - prof_id: a
+      - topic_name: FRANCES 
+      - start: 00:30
+      - week_day: 1
+   - prof_id: z
+      - topic_name: FILOSOFIA 
+      - start: 17:30
+      - week_day: 1
+   - prof_id: z
+      - topic_name: FILOSOFIA 
+      - start: 15:30
+      - week_day: 2
+   - prof_id: z
+      - topic_name: INGLES 
+      - start: 15:30
+      - week_day: 2
+
+- specificschedule
+   - day: 2025-04-30
+      - start: 20:30
+      - prof_id: b
+      - end: 22:30
+      - isCanceling: False 
+   - day: 2025-05-01
+      - start: 18:30
+      - prof_id: a
+      - end: 19:30
+      - isCanceling: True
+
+- topicspecific
+   - prof_id: b
+      - topic_name: FISICA
+      - start: 20:30
+      - day: 2025-04-30   
+
+# Decision
+- Inserción de horarios:
+   - Tabla vacia  OK inserta
+   - Tabla con datos, se verifica si el horario ingresado no esta incluido o se superpone (10-18)
+      - se intenta insertar 11-15 => horario incluido no se inserta ni modifica
+      - se intenta insertar 12-19 => horario que esta incluido en su inicio pero no en su final, no se inserta
+      - se intenta insertar 8-10 => horario con inicio no incluido final si, no se inserta
+      - se intenta insertar 19-23 => horario no incluido o superpuesto se admite la insersion
+      - se intenta insertar 18-20 => horario no incluido o superpuesto se admite la insersion
+- Actualización de horarios
+   - Se admite la actualización de horario de inicio y/o fin
+   - Se admite el agregado o eliminación de topicos, (INDIVIDUAL)
+
+              
+
+## Datos necesarios del front
+Crear un usuario -> ID + info front(rol)
+
+
+
