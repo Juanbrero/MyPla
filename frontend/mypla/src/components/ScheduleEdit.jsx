@@ -76,26 +76,35 @@ export default function ScheduleEdit({
       return;
     }
 
+    let dateStr;
 
-    console.log("localTaskData.date: ", localTaskData.date);
-    console.log("localTaskData.date.toLocaleDateString(): ", localTaskData.date.toLocaleDateString());
+    if (typeof localTaskData.date === "string") {
+      dateStr = localTaskData.date;
+    } else if (localTaskData.date instanceof Date) {
+      const y = localTaskData.date.getFullYear();
+      const m = String(localTaskData.date.getMonth() + 1).padStart(2, '0');
+      const d = String(localTaskData.date.getDate()).padStart(2, '0');
+      dateStr = `${y}-${m}-${d}`;
+    }
+
+    console.log(dateStr);
+    console.log(localTaskData.day);
 
     const editEvent = {
       ...clickedEvent,
       color     :     localTaskData.recurrent ? 'green' : 'orange', 
-      start     :     `${localTaskData.date}T${localTaskData.start}`,
-      end       :     `${localTaskData.date}T${localTaskData.end}`,
+      start     :     `${dateStr}T${localTaskData.start}`,
+      end       :     `${dateStr}T${localTaskData.end}`,
       extendedProps : {
         day         : localTaskData.day,
-        date        : localTaskData.date,
+        date        : dateStr,
         recurrent   : localTaskData.recurrent,
         eventTopics : localTaskData.topics,
       },
     }
     
-    // console.log("clickedEvent: ", clickedEvent);
-    // console.log("localTaskData: ", localTaskData);
-    // console.log("editEvent: ", editEvent);
+    console.log("clickedEvent: ", clickedEvent);
+    console.log("editEvent: ", editEvent);
 
     setIsEditable(false); // Regresar al modo de solo lectura después de guardar
     onSaveEditTask?.(editEvent);
