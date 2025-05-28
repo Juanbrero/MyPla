@@ -87,7 +87,7 @@ class TestEndpointPOST(TestCase):
         response = self.client.post('/recurrent', params={'prof_id': self.prof_id}, json= data)
 
         self.assertEqual(response.status_code, 406)
-        self.assertEqual(response.json()['error']['message'], 'Not accept i n minute, minute valid 00 or 30')
+        self.assertEqual(response.json()['error']['message'], 'Not accept value minute, minute valid 00 or 30')
         del_topic(topic)
 
     def test_insert_invalid_end(self):
