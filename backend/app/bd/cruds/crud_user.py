@@ -38,7 +38,7 @@ def get_users(db:Session):
     return db.query(User).all()
 
 
-def del_user(db:Session, user:schema_users.UsersBase):
+def del_user(db:Session, user:schema_users.UsersCreate):
     """
     Elimina un usuario
     Args:

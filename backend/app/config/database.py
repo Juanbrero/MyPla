@@ -8,7 +8,7 @@ from os import getenv
 
 # 📌 Configura la conexión a PostgreSQL
 
-DATABASE_URL = getenv("DATABASE_URL")
+DATABASE_URL = "postgresql://myuser:mypassword@postgres:5432/mydatabase"
 
 # 📌 Crea el motor de la base de datos
 engine = create_engine(DATABASE_URL)
