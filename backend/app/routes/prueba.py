@@ -33,7 +33,7 @@ async def test(res:schema_response.Response):
 
 ###
 @router.post('/api/users',tags=["USER"])
-async def create_user(user: schema_users.UsersBase, db: Session = Depends(get_db)):
+async def create_user(user: schema_users.UsersCreate, db: Session = Depends(get_db)):
     """
     Insercion de un usuario
     - Falta ampliar información a recibir
