@@ -13,12 +13,12 @@ router = APIRouter(prefix="/api/topics")
 
 @router.post("", response_model= str,
               tags=["Topics"])
-def create_topic( topic: str, db:Session = Depends(get_db)):
+def create_topic( topic_name: str, db:Session = Depends(get_db)):
     """
     Crea un topico
     - topic_name: str (not case sensitive)
     """
-    return TopicController(db= db).createTopic(topic)
+    return TopicController(db= db).createTopic(topic_name)
 
 @router.get("",
             response_model=List[str], tags=["Topics"])
