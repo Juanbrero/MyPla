@@ -8,7 +8,7 @@ from app.bd.schemas import  schema_topic
 from app.bd.bd_utils import Errors, Info
 from app.controllers.TopicController import TopicController
 
-router = APIRouter(prefix="/topics")
+router = APIRouter(prefix="/api/topics")
 
 
 @router.post("", response_model= str,

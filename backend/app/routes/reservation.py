@@ -7,7 +7,7 @@ from typing import List, Union
 from ..controllers.ReservationController import ReservationController
 
 
-router = APIRouter(prefix="/reservation")
+router = APIRouter(prefix="/api/reservation")
 
 
 #Reserva una clase en un horario en base a la agenda del profesor

@@ -12,7 +12,7 @@ from app.bd.schemas import schema_response, schema_prof
 
 from app.bd.bd_utils import Errors, Info
 
-router = APIRouter(prefix="/exception")
+router = APIRouter(prefix="/api/exception")
 
 
 @router.post('', tags=['Exceptions'])

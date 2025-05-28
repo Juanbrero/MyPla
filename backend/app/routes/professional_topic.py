@@ -5,7 +5,7 @@ from typing import List, Union
 from app.bd.schemas import schema_prof_topic
 from app.controllers.ProfessionalTopicController import ProfessionalTopicController
 
-router = APIRouter(prefix='/professionals/topic')
+router = APIRouter(prefix='/api/professionals/topic')
 
 
 #PROFESSIONAL TOPIC  

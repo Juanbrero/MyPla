@@ -7,7 +7,7 @@ from app.bd.schemas import schema_response
 from json import loads
 
 
-router = APIRouter(prefix='/available')
+router = APIRouter(prefix='/api/available')
 
 @router.get('/professionals', tags=['Available'], response_model= schema_response.ResponseProfessional )
 def get_available_prof(prof_id: str, db:Session = Depends(get_db)):
