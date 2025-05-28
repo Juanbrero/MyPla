@@ -31,5 +31,5 @@ backend/*/*/*/__pycache__
 .env
 venv
 
-# YAML secrets
+# Secrets
 *secret.yaml

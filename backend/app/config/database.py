@@ -4,8 +4,10 @@ from sqlalchemy.orm import sessionmaker
 import importlib
 from os import listdir
 
+from os import getenv
 
 # 📌 Configura la conexión a PostgreSQL
+
 DATABASE_URL = "postgresql://myuser:mypassword@postgres:5432/mydatabase"
 
 # 📌 Crea el motor de la base de datos
