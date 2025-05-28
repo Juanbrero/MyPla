@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 
-// public key
-initMercadoPago('APP_USR-979783cf-8636-4eb2-a1d7-aa47e7134fcc');
+const pkey = import.meta.env.VITE_MP_TOKEN;
+const preferenceResponse = import.meta.env.VITE_MP_PREFERENCE;
+
+initMercadoPago(pkey);
 
 const MPButton = () => {
   const [preferenceId, setPreferenceId] = useState(null);
@@ -12,7 +14,7 @@ const MPButton = () => {
     // Hacer una solicitud al backend para obtener el preference_id
     const getPreferenceId = async () => {
       try {
-        const response = await axios.post("http://localhost:8002/create_preference");
+        const response = await axios.post(preferenceResponse);
         setPreferenceId(response.data.id); // Guardar el preference_id
       } catch (error) {
         console.error("Error al obtener el preference_id:", error);

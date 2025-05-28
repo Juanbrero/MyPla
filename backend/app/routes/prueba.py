@@ -1,48 +1,72 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.models.Event import Event
-from app.models.User import User 
-
 from app.config.database import get_db
-#Imports to insert in BD
-from sqlalchemy import insert
+
+from typing import List, Union
+from app.bd.cruds import crud_user
+from app.bd.bd_utils import Errors, Info
 
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("/api/")
 def read_root():
     return {"message": "¡Hola, FastAPI está funcionando!"}
 
-@router.get("/event")
-def get_events(db: Session = Depends(get_db)):
-    return db.query(Event).all()
+#MUESTRA DE SCHEMA RESPONSE
+#En el body esta la respuesta al alumno
+#En el response esta la respuesta al Professional
+from ..bd.schemas import schema_response, schema_users
+@router.post("/api/RESPONSE", 
+             response_model=schema_response.ResponseProfessional, 
+             tags=['TEST'], summary=" Endpoint para ver esquema de respuesta")
+async def test(res:schema_response.Response):
+    """
+    On prueba
+    Modelo de respuesta desde el back al Front:
 
-@router.get("/add-user1")
-def set_table(db: Session = Depends(get_db)):
-    db.scalars(
-        insert(User).values(name="PEPE")
-    )
+     - Body: esquema para respuesta alumno 
+     - Response: esquema para professional
+    """
+    return None
+
+###
+@router.post('/api/users',tags=["USER"])
+async def create_user(user: schema_users.UsersBase, db: Session = Depends(get_db)):
+    """
+    Insercion de un usuario
+    - Falta ampliar información a recibir
+    """
+    user_insert = schema_users.UsersCreate(**user.dict(), name= user.user_id)
+    return crud_user.add_user(db, user_insert)
+        
+
+@router.get('/api/users', tags=["USER"], response_model=List[schema_users.Users])
+async def get_all(db:Session = Depends(get_db)):
+    """
+    Recuperación de todos los usuarios
+    """
+    return crud_user.get_users(db)
+
+@router.delete('/api/users/{user}',tags=["USER"], response_model=Union[Info, Errors])
+async def delete_user(user:str, db:Session = Depends(get_db)):
+    """
+    Eliminacion de un usuarios
+    """
+    user = schema_users.UsersBase(user_id= user)
+    return crud_user.del_user(db, user)
+    
+from app.models.Student import Student
+@router.post('/api/students/{user}', tags=['Student'])
+def create_student(user:str, db: Session = Depends(get_db)):
+    student = Student(student_id= user)
+    db.add(student)
     db.commit()
-    return db.query(User).all()
+    db.refresh(student)
+    return student
+###
 
 
-@router.get("/add-user2")
-def set_table(db: Session = Depends(get_db)):
-    db.scalars(
-        insert(User).values({"name":"Luis"})
-    )
-    db.commit()
-    return db.query(User).all()
 
-@router.get("/add-users")
-def set_table(db: Session = Depends(get_db)):
-    db.execute(
-        insert(User),[
-            {"name":"USER1"},
-            {"name":"USER2"}
-            ]
-    )
-    db.commit()
-    return db.query(User).all()
+

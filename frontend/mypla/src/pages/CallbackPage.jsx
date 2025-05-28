@@ -7,6 +7,8 @@ const CallbackHandler = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
+  const backendUrl = import.meta.env.VITE_API_SERVER_URL;
+
   // console.log("user.tipo usuario: " + user.user_metadata.tipo_usuario);
   // console.log("tipo usuario: " + tipoUsuario);
   // console.log("isAuth: " + isAuthenticated);
@@ -16,7 +18,7 @@ const CallbackHandler = () => {
     if (isAuthenticated && tipoUsuario) {
       const sendUserType = async () => {
         const token = await getAccessTokenSilently();
-        await axios.post("http://localhost:8002/api/user/type", {
+        await axios.post(`${backendUrl}/api/user/type`, {
           user_id: user.sub,
           tipo_usuario: tipoUsuario,
         });
