@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
-from . import schema_specific, schema_topic_recurrent, schema_topic_specific
+from . import schema_exception, schema_topic_recurrent, schema_topic_specific, schema_specific
 
 
 class ResponseRecurrent(BaseModel):
@@ -20,9 +20,9 @@ class ResponseSpecific(BaseModel):
 class ResponseException(BaseModel):
     """
     Esquema de dias excepcionales
-      - exception: list[schema_specific.ExceptionGet]
+      - exception: list[schema_exception.ExceptionGet]
     """
-    exception: list[schema_specific.ExceptionGet]
+    exception: list[schema_exception.ExceptionGetResponse]
 
 class ResponseEvent(BaseModel):
     """
