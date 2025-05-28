@@ -9,7 +9,7 @@ router = APIRouter()
 def reset_db():
     try:
         base_dir = os.path.dirname(__file__)
-        alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
+        alembic_cfg = Config(os.path.join(base_dir, '../..', 'alembic.ini'))
         command.downgrade(alembic_cfg, "base")
         command.upgrade(alembic_cfg, "head")
         return {"status": "Base de datos reseteada correctamente"}
