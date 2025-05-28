@@ -1,7 +1,7 @@
 from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
 from app.bd.schemas import schema_exception
 from sqlalchemy.orm import Session
-from app.models import Meeting, SpecificSchedule
+from app.models import Meeting, SpecificSchedule, RecurrentSchedule
 from app.bd.repositories.Repository import Repository
 from app.bd.bd_utils import strip_time_hour_minute
 from fastapi.responses import JSONResponse
@@ -14,7 +14,8 @@ class CreateException:
             db : Session, 
             exceptionS : schema_exception.ExceptionCreate, 
             exceptionR : Repository[SpecificSchedule],
-            meetingR : Repository[Meeting]
+            meetingR : Repository[Meeting],
+            recurrentR: Repository[RecurrentSchedule]
     ):
         exceptionS.start = strip_time_hour_minute(exceptionS.start)
         exceptionS.end = strip_time_hour_minute(exceptionS.end)
@@ -33,6 +34,16 @@ class CreateException:
         if len(exceptions) > 0:
             raise ValidationError("In hour you have hour specific to disponibility or exception")
         
+        recurrent = recurrentR.getException(
+            {
+                'prof_id': exceptionS.prof_id,
+                'week': exceptionS.day.isoweekday(),
+                'start': exceptionS.start,
+                'end': exceptionS.end
+            }
+        )
+        
+
         meetings = meetingR.getMeetingToRange(exceptionS.prof_id, exceptionS.day, exceptionS.start, exceptionS.end)
         if len(meetings) > 0:
             raise ValidationError("In hour you have a meeting")

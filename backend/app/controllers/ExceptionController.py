@@ -2,6 +2,7 @@ from ..bd.repositories.MeetingRepository import MeetingRepository
 from ..bd.repositories.ProfessionalTopicRepository import ProfessionalTopicRepository
 from ..bd.repositories.ExceptionScheduleRepository import ExceptionScheduleRepository
 from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleRepository
+from ..bd.repositories.RecurrentScheduleRepository import RecurrentScheduleRepository
 from ..services.exception_services.CreateException import CreateException
 from ..services.exception_services.GetExceptions import GetExceptions
 from ..services.exception_services.UpdateException import UpdateExceptions
@@ -16,6 +17,7 @@ class ExceptionController():
         self.db = db
         self.exceptionR = ExceptionScheduleRepository(db)
         self.meetingR = MeetingRepository(db)
+        self.recurrentR = RecurrentScheduleRepository(db)
 
 
     def createException(self, exceptionS: schema_exception.ExceptionCreate):
@@ -23,7 +25,8 @@ class ExceptionController():
             db = self.db, 
             exceptionS = exceptionS, 
             exceptionR = self.exceptionR, 
-            meetingR = self.meetingR
+            meetingR = self.meetingR,
+            recurrentR = self.recurrentR
         )
     
     def getException(self, prof_id: str):

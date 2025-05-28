@@ -29,17 +29,10 @@ class TestEndpointPOST(TestCase):
     def test_valid_insertion(self):
         print(f'Insert via {self.route}')
 
-        topic = create_topic('Natacion')
-        add_prof_topic(self.prof_id, topic, 25)
-
-
         data = {
             'start': '01:00',
             'end': '10:00',
-            'day': '2025-03-03',
-            'topics':[
-                topic
-            ]
+            'day': '2025-03-03'
         }
 
         response =  self.client.post(self.route,params= {'prof_id':self.prof_id}, json= data)
@@ -47,4 +40,4 @@ class TestEndpointPOST(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), 'Exception created')
         
-        del_topic(topic)
+    
