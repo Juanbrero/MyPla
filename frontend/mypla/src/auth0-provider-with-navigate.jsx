@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 export const Auth0ProviderWithNavigate = ({ children }) => {
   const navigate = useNavigate();
-  console.log("ESTAS ACA")
 
   const domain = /*process.env.VITE_AUTH0_DOMAIN ??*/ 'dev-znigqrdhldkrdh61.us.auth0.com';
   const clientId = /*process.env.VITE_AUTH0_CLIENT_ID ??*/ '69BHYcnc7PNDu17qMhf2jOxa2zflKy99';

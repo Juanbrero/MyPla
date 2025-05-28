@@ -9,15 +9,15 @@ export default function ScheduleTime(props) {
     const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
     const [isRecurring, setIsRecurring] = React.useState(taskData?.recurrent || false);
-    const [editRecurrent, setEditRecurrent] = React.useState(clickedEvent?.recurrent);
+    const [editRecurrent, setEditRecurrent] = React.useState(clickedEvent?.extendedProps?.recurrent);
     
 
     useEffect(() => {
     
         setIsRecurring(taskData?.recurrent || false);
-        setEditRecurrent(clickedEvent?.recurrent);
+        setEditRecurrent(clickedEvent?.extendedProps?.recurrent);
     
-    }, [taskData?.recurrent, clickedEvent?.recurrent]);
+    }, [taskData?.recurrent, clickedEvent?.extendedProps?.recurrent]);
     
 
     const handleRecurrentChange = (event) => {

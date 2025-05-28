@@ -10,17 +10,16 @@ export default function Topics(props) {
   const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = React.useState(taskData?.topics || []);
-  const [editTopics, setEditTopics] = React.useState(clickedEvent?.eventTopics || []);
-  console.log("creando componentes");
+  const [editTopics, setEditTopics] = React.useState(clickedEvent?.extendedProps?.eventTopics || []);
   
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {
       setSelectedTopicsState(taskData.topics);
     }
-    if (clickedEvent?.eventTopics) {
-      setEditTopics(clickedEvent.eventTopics);
+    if (clickedEvent?.extendedProps?.eventTopics) {
+      setEditTopics(clickedEvent.extendedProps.eventTopics);
     }
-  }, [taskData?.topics, clickedEvent?.eventTopics]);
+  }, [taskData?.topics, clickedEvent?.extendedProps?.eventTopics]);
 
 
   const handleTopicChange = (event) => {

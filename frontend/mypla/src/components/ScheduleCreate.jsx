@@ -36,7 +36,6 @@ export default function ScheduleCreate({
 
   const [localTaskData, setLocalTaskData] = React.useState(taskData);
   
-  console.log("render create");
 
   React.useEffect(() => {
     if (open) setLocalTaskData(taskData);
@@ -53,7 +52,6 @@ export default function ScheduleCreate({
     onCancelTask?.(localTaskData);
   };
 
-
   const handleSaveTask = () => {
     const { topics, start, end } = localTaskData;
 
@@ -66,9 +64,8 @@ export default function ScheduleCreate({
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
       return;
     }
-    console.log(" en create");
-    onSaveTask?.(localTaskData);
 
+    onSaveTask?.(localTaskData);
   };
 
   return (
