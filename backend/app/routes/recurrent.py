@@ -11,7 +11,7 @@ router = APIRouter(prefix="/recurrent")
 
 
 
-@router.post('/', tags=['Recurrent'])
+@router.post('', tags=['Recurrent'])
 def create_recurrent(prof_id: str, recurrent:schema_topic_recurrent.TopicRecurrentCr1, db: Session = Depends(get_db)):
     """
     Creacion de un dia recurrente
@@ -19,18 +19,18 @@ def create_recurrent(prof_id: str, recurrent:schema_topic_recurrent.TopicRecurre
     recurrentS = schema_topic_recurrent.TopicRecurrentIn(**recurrent.dict(), prof_id= prof_id)
     return RecurrentController(db= db).createRecurrent(recurrentS)
 
-@router.get('/', tags=['Recurrent'])
+@router.get('', tags=['Recurrent'])
 def get_week(prof_id:str, week_day: int, db: Session = Depends(get_db)):
     recurrentS = schema_topic_recurrent.TopicRecurrentWeekGet(prof_id= prof_id, week_day= week_day)
     return RecurrentController(db= db).getRecurrentWeek(recurrentS)
 
-@router.delete('/', tags=['Recurrent'])
+@router.delete('', tags=['Recurrent'])
 def del_recurrent(prof_id:str, week_day:int, start:time ,db: Session = Depends(get_db)):
     recurrentS = schema_topic_recurrent.TopicRecurrentSchema(prof_id= prof_id, week_day= week_day, start= start)
     return RecurrentController(db= db).delRecurrent(recurrentS)
 
 
-@router.put('/', tags=['Recurrent'])
+@router.put('', tags=['Recurrent'])
 def update_recurrent(prof_id:str, update:schema_topic_recurrent.TopicRecurrentUp, db: Session = Depends(get_db)):
     rescurrentS = schema_topic_recurrent.TopicRecurrentUpdate(**update.dict(), prof_id= prof_id)
     return RecurrentController(db= db).updateRecurrent(rescurrentS)
