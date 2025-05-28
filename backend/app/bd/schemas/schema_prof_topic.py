@@ -46,3 +46,13 @@ class ProfessionalTopicDel(ProfessionalID):
         - topic_name: str
     """
     topic_name: str
+
+
+class ProfessionalTopicCr1(ProfessionalID):
+    """
+        - prof_id
+        - topics: list
+            - topic_name
+            - price_class
+    """
+    topics: list[ProfessionalTopicBase]
