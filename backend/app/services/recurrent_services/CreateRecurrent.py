@@ -1,10 +1,10 @@
-from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
+from app.utils.errors import handle_errors, ValidationError
 from app.models import ProfessionalTopic, RecurrentSchedule, TopicRecurrent
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_topic_recurrent
 
-from app.bd.bd_utils import Schedule, include_time, valid_time, strip_time_hour_minute
+from app.bd.bd_utils import Schedule, strip_time_hour_minute
 from app.bd.schemas import schema_topic_recurrent
 
 from fastapi.responses import JSONResponse

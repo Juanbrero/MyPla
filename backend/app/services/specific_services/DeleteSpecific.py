@@ -1,9 +1,8 @@
-from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
+from app.utils.errors import handle_errors, NotFound
 from app.bd.schemas import schema_topic_specific
 from sqlalchemy.orm import Session
-from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific
+from app.models import SpecificSchedule, TopicSpecific
 from app.bd.repositories.Repository import Repository
-from app.bd.bd_utils import strip_time_hour_minute
 from fastapi.responses import JSONResponse
 from fastapi import status
 

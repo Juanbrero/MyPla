@@ -1,8 +1,7 @@
-from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
+from app.utils.errors import handle_errors
 from app.models import RecurrentSchedule
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
-from app.bd.schemas import schema_topic_recurrent
 
 from fastapi.responses import JSONResponse
 from fastapi import status

@@ -2,12 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.config.database import get_db
 from typing import List, Union
-from pydantic import BaseModel
-from datetime import date, time
 from ..controllers.SpecificController import SpecificController
 
-from app.bd.schemas import schema_topic_recurrent,  schema_response, schema_topic_specific, schema_specific , schema_prof
-from app.bd.cruds import crud_topic_recurrent, crud_topic_specific, crud_specific
+from app.bd.schemas import schema_response, schema_topic_specific
 from app.bd.bd_utils import Errors, Info
 
 router = APIRouter(prefix="/specific")

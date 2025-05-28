@@ -1,12 +1,10 @@
-from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
+from app.utils.errors import handle_errors, ValidationError, NotFound
 from app.models import Reservation, Meeting, ProfessionalTopic, Class, RecurrentSchedule, SpecificSchedule
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_reservation 
-from datetime import timedelta, datetime
-from app.bd.bd_utils import error_hand, Schedule, include_time, include_time1, valid_time
-from app.bd.schemas import schema_prof
-from app.bd.cruds import crud_topic_recurrent, crud_topic_specific, crud_specific
+from datetime import timedelta
+from app.bd.bd_utils import Schedule, valid_time
 from fastapi.responses import JSONResponse
 from fastapi import status
 

@@ -1,4 +1,4 @@
-from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
+from app.utils.errors import handle_errors
 from app.models import SpecificSchedule, Class , RecurrentSchedule
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session

@@ -17,7 +17,7 @@ class ProductRequest(BaseModel):
 class CaptureRequest(BaseModel):
     orderID: str
 
-@router.post("/create-order")
+@router.post("/api/paypal/create-order")
 def api_create_order(data: ProductRequest):
     producto = PRODUCTOS.get(data.product_id)
     if not producto:
@@ -25,6 +25,6 @@ def api_create_order(data: ProductRequest):
 
     return create_order(amount=producto["precio"])
 
-@router.post("/capture-order")
+@router.post("/api/paypal/capture-order")
 def api_capture_order(data: CaptureRequest):
     return capture_order(order_id=data.orderID)

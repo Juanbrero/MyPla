@@ -1,4 +1,4 @@
-from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
+from app.utils.errors import handle_errors, ValidationError
 from app.bd.schemas import schema_topic_specific
 from sqlalchemy.orm import Session
 from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific
