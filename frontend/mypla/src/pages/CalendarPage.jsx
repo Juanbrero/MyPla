@@ -8,6 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getPublicResource } from "../services/message.service";
+import { postSpecific}  from "../services/specific.service";
 
 
 function Calendar() {
@@ -57,11 +58,6 @@ function Calendar() {
   
       getMessage();
   
-      fetch("https://miplasip.publicvm.com/api/")
-        .then(res => res.json())
-        .then(json => console.log("Test fetch directa:", json))
-        .catch(err => console.error("Error de fetch:", err));
-
 
       return () => {
         isMounted = false;
@@ -262,6 +258,7 @@ function Calendar() {
       newEvent
     ]);
     
+    postSpecific("d8061f1e-c1a3-4518-b3ca-7fa4cade7f8b", "token", newEvent);
   }
 
   const createRecurrentEvent = (taskName) => {
