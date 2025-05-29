@@ -16,9 +16,7 @@ class GetProfTopic:
     ):
         
         all_topic = professional_topicR.get_by({'prof_id': prof_id})
-
-        if len(all_topic)== 0:
-            raise NotFound('Professional topics not found')
+        
         
         result = [schema_prof_topic.ProfessionalTopic.from_orm(prof_topic).dict() for prof_topic in all_topic]
 
