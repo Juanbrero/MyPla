@@ -33,24 +33,52 @@ export const postSpecific = async (prof_id, token, specific) => {
     };
 };
 
-// export const getSpecific = async (prof_id, token, specific) => {
+export const getSpecific = async (prof_id, token) => {
 
-//     const startISO = dateFormater(specific.start);
-//     const endISO = dateFormater(specific.end);
+    const config = {
+    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "GET",
+    headers: {
+        "content-type": "application/json",
+        // "Authorization": `Bearer ${token}`,
+    }
+    };
 
-//     const config = {
-//     url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
-//     method: "GET",
-//     headers: {
-//         "content-type": "application/json",
-//         // "Authorization": `Bearer ${token}`,
-//     }
-//     };
+    const { data, error } = await callExternalApi({ config });
 
-//     const { data, error } = await callExternalApi({ config });
+    return {
+        data: data,
+        error,
+    };
+};
 
-//     return {
-//         data: data,
-//         error,
-//     };
-// };
+export const putSpecific = async (prof_id, token, newSpecific, oldSpecific) => {
+
+    const oldStartISO = dateFormater(oldSpecific.start);
+    const newStartISO = newSpecific.start ? dateFormater(newSpecific.start) : "";
+    const newEndISO = newSpecific.end ? dateFormater(newSpecific.end) : "";
+
+    const config = {
+    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "PUT",
+    headers: {
+        "content-type": "application/json",
+        // "Authorization": `Bearer ${token}`,
+    },
+    data: {
+        day     : oldSpecific.extendedProps.date,
+        start   : oldStartISO,
+        Nday    : newSpecific.extendedProps.day ? newSpecific.extendedProps.day : "",
+        Nstart  : newStartISO,
+        Nend    : newEndISO,
+        topics  : newSpecific.extendedProps.eventTopics ? newSpecific.extendedProps.eventTopics : [],
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
