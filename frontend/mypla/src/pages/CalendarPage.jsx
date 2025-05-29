@@ -7,8 +7,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getPublicResource } from "../services/message.service";
 import { postSpecific }  from "../services/specific/specific.service";
+import { getAvailableProfessional } from "../services/available/available-professional.service";
 
 
 
@@ -29,11 +29,30 @@ function Calendar() {
   });
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const [events, setEvents] = useState([]);
+
+  const [specifics, setSpecifics] = useState([]);
+
   const [clickedEvent, setClickedEvent] = useState(null);
 
   const [message, setMessage] = useState("");
   const { getAccessTokenSilently } = useAuth0();
   
+  useEffect(() => {
+    const fetchProfessional = async () => {
+      const prof_id = "d8061f1e-c1a3-4518-b3ca-7fa4cade7f8b";
+
+      const { data, error } = await getAvailableProfessional(prof_id);
+
+      if (error) {
+        setError(error);
+      } else {
+        setSpecifics(data.specific);
+      }
+    };
+
+    fetchProfessional();
+  }, []);
+
 
   const handleSelect = (info) => {
  
@@ -62,18 +81,33 @@ function Calendar() {
 
   const handleEventClick = (arg) => {
     
+    const event = arg.event;
+    const horaFormateada = new Date("Thu May 29 2025 08:00:00 GMT-0300").toTimeString().slice(0, 8);
+
+    let speFound = {};
+
+    if ( !event.recurrent ) {
+      speFound = specifics.find(spe => (spe.day === event.day) && (spe.start === horaFormateada));
+      console.log(horaFormateada);
+      console.log(specifics);
+    }
+
     let evento = {
       id        :   arg.event.id,
       groupId   :   arg.event?.groupId,
       title     :   arg.event.title,
       color     :   arg.event.color,
-      start     :   arg.event.start,
-      end       :   arg.event.end,
+      start     :   speFound.start,
+      // start     :   arg.event.start,
+      // end       :   arg.event.end,
+      end       :   speFound.end,
       extendedProps: {
           day         : arg.event.extendedProps.day,
-          date        : arg.event.extendedProps.date,
+          date        : speFound.day,
+          // date        : arg.event.extendedProps.date,
           recurrent   : arg.event.extendedProps.recurrent,
-          eventTopics : arg.event.extendedProps.eventTopics,
+          eventTopics : speFound.topics,
+          // eventTopics : arg.event.extendedProps.eventTopics,
       }
     };
 
@@ -88,7 +122,6 @@ function Calendar() {
     // console.log("arg.event.end: ", arg.event.end);
     // console.log("arg.event.extendedProps.recurrent: ", arg.event.extendedProps.recurrent);
     // console.log("arg.event.extendedProps.eventTopics: ", arg.event.extendedProps.eventTopics);
-    console.log("evento: ", evento);
 
     setCreated(true);
     setModalOpen(true);
@@ -253,7 +286,7 @@ function Calendar() {
           end     :    `${dateStr}T${originalEnd}`,
           extendedProps : {
                       date: dateStr,
-                      day: dias.indexOf(currentDay),
+                      day: currentDay,
                       recurrent: taskName.recurrent,
                       eventTopics: taskName.topics,
           },
