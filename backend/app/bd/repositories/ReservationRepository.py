@@ -17,7 +17,8 @@ class ReservationRepository(Repository[Reservation]):
             select(Reservation)
             .where(
                 Reservation.prof_id == prof_id,
-                extract('month', Reservation.day_hour) == day.month,
+                extract('month', Reservation.day_hour) >= day.month,
+                extract('month', Reservation.day_hour) <= day.month + 1,
                 extract('year', Reservation.day_hour) == day.year,
                 Reservation.cancel == False
             )
