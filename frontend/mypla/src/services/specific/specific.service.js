@@ -19,7 +19,7 @@ export const postSpecific = async (prof_id, token, specific) => {
         day     : specific.extendedProps.date,
         start   : startISO,
         end     : endISO,
-        topics  : ["ESTRATEGIA"], 
+        topics  : specific.extendedProps.eventTopics,
     }
     };
 
