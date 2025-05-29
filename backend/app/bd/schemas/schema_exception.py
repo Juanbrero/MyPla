@@ -57,6 +57,9 @@ class ExceptionUpInfo(BaseModel):
     """
     day: date
     start: time
+    Nday: Optional[date]
+    Nstart: Optional[time]
+    Nend: Optional[time]
 
 class ExceptionUpdate(ExceptionUpInfo, ProfessionalID):
     """
@@ -66,7 +69,5 @@ class ExceptionUpdate(ExceptionUpInfo, ProfessionalID):
         - Nend
         - Nstart
     """
-    Nday: Optional[date]
-    Nstart: Optional[time]
-    Nend: Optional[time]
+    pass
 

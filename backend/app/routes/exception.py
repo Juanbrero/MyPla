@@ -25,7 +25,7 @@ def get_exception(prof_id: str, db: Session = Depends(get_db)):
     return ExceptionController(db= db).getException(prof_id)
 
 @router.put('', tags=['Exceptions'])
-def update_exception(prof_id:str, update:schema_exception.ExceptionUpdate, db: Session = Depends(get_db)):
+def update_exception(prof_id:str, update:schema_exception.ExceptionUpInfo, db: Session = Depends(get_db)):
     exceptionS = schema_exception.ExceptionUpdate(**update.dict(), prof_id= prof_id)
     return ExceptionController(db= db).updateException(exceptionS)
 
