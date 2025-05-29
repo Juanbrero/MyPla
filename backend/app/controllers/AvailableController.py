@@ -1,6 +1,7 @@
 from ..bd.repositories.RecurrentScheduleRepository import RecurrentScheduleRepository
 from ..bd.repositories.ExceptionScheduleRepository import ExceptionScheduleRepository
 from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleRepository
+from ..bd.repositories.ReservationRepository import ReservationRepository
 from ..bd.repositories.ClassRepository import ClassRepository
 
 from ..services.available_services.GetProfessionalAvailable import GetProfessionalAvailable
@@ -9,6 +10,7 @@ from ..services.available_services.GetStudentAvailable import GetStudentAvailabl
 from sqlalchemy.orm import Session
 
 from ..bd.schemas import schema_response
+from datetime import date
 
 
 class AvailableController:
@@ -18,8 +20,8 @@ class AvailableController:
         self.recurrentR = RecurrentScheduleRepository(db)
         self.exceptionR = ExceptionScheduleRepository(db)
         self.specificR = SpecificScheduleRepository(db)
+        self.reservationR = ReservationRepository(db)
         self.classR = ClassRepository(db)
-
 
     def getProfessionalAvailable(self, prof_id: str):
         return GetProfessionalAvailable.run(
@@ -31,12 +33,13 @@ class AvailableController:
             classR= self.classR
         )
 
-    def getStudentAvailable(self, student_id: str):
+    def getStudentAvailable(self, prof_id: str, day:date):
         return GetStudentAvailable.run(
             db = self.db,
-            student_id= student_id,
+            prof_id= prof_id,
+            day = day,
             recurrentR= self.recurrentR,
             exceptionR= self.exceptionR,
             specificR= self.specificR,
-            classR= self.classR
+            reservationR= self.reservationR
         )

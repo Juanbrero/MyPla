@@ -1,6 +1,6 @@
 from app.models import SpecificSchedule, RecurrentSchedule, TopicSpecific
 from sqlalchemy.orm import Session, selectinload
-from sqlalchemy import select, text, cast, Time, func
+from sqlalchemy import select, text, cast, Time, func, extract
 from .Repository import Repository
 from datetime import datetime, date, time
 
@@ -32,6 +32,20 @@ class ExceptionScheduleRepository(Repository[SpecificSchedule]):
                    SpecificSchedule.isCanceling == True)
         )
 
-        return self.session.execute(stm).scalars().all()    
+        return self.session.execute(stm).scalars().all()   
+
+    def getHourDay(self, prof_id:str, day: date):
+        stm = (
+            select(SpecificSchedule)
+            .where(
+                SpecificSchedule.prof_id == prof_id,
+                extract('month', SpecificSchedule.day) == day.month,
+                extract('year', SpecificSchedule.day) == day.year,
+                SpecificSchedule.isCanceling == True
+            )
+            .distinct()
+        )
+
+        return self.session.execute(stm).scalars().all() 
     
 
