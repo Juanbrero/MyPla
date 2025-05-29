@@ -2,7 +2,7 @@ import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getAvailable = async (prof_id, token) => {
+export const getAvailableProfessional = async (prof_id, token) => {
 
     const config = {
     url: `${apiServerUrl}/available/professionals?prof_id=${encodeURIComponent(prof_id)}`,

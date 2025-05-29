@@ -31,7 +31,7 @@ function Home() {
       
       <PayPalButton></PayPalButton>
       <MPButton></MPButton>
-      <ButtonLoginGoogle />
+      {/* <ButtonLoginGoogle /> */}
       <LoginButton />
       <SignupButton />
 
