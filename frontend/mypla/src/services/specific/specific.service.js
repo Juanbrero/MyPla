@@ -1,5 +1,5 @@
-import { callExternalApi } from "./external-api.service";
-import { dateFormater } from "../utils/dateFormater"
+import { callExternalApi } from "../external-api.service";
+import { dateFormater } from "../../utils/dateFormater"
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
@@ -21,7 +21,7 @@ export const postSpecific = async (prof_id, token, specific) => {
         day     : specific.extendedProps.date,
         start   : startISO,
         end     : endISO,
-        topics  : ["ESTRATEGIA"], 
+        topics  : specific.extendedProps.eventTopics,
     }
     };
 

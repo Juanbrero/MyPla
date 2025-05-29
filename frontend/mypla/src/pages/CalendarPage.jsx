@@ -8,7 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getPublicResource } from "../services/message.service";
-import { postSpecific}  from "../services/specific.service";
+import { postSpecific} from "../services/specific/specific.service";
 
 
 function Calendar() {
