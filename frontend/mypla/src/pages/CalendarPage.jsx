@@ -253,7 +253,7 @@ function Calendar() {
           end     :    `${dateStr}T${originalEnd}`,
           extendedProps : {
                       date: dateStr,
-                      day: dias.indexOf(currentDay),
+                      day: currentDay,
                       recurrent: taskName.recurrent,
                       eventTopics: taskName.topics,
           },

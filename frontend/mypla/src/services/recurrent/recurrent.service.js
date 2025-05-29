@@ -2,6 +2,7 @@ import { callExternalApi } from "../external-api.service";
 import { dateFormater } from "../../utils/dateFormater"
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
+const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 export const getRecurrent = async (prof_id, token) => {
 
@@ -27,7 +28,8 @@ export const putRecurrent = async (prof_id, token, newRecurrent, oldRecurrent) =
     const oldStartISO = dateFormater(oldRecurrent.start);
     const newStartISO = newRecurrent.start ? dateFormater(newRecurrent.start) : "";
     const newEndISO = newRecurrent.end ? dateFormater(newRecurrent.end) : "";
-    const week_day_index = oldRecurrent.extendedProps.day == 0 ? 7 : oldRecurrent.extendedProps.day
+    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
+    const week_day_index = indice == 0 ? 7 : indice
 
     const config = {
     url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
@@ -58,7 +60,8 @@ export const postRecurrent = async (prof_id, token, recurrent) => {
     const startISO = dateFormater(recurrent.start);
     const endISO = dateFormater(recurrent.end);
 
-    const week_day_index = recurrent.extendedProps.day == 0 ? 7 : recurrent.extendedProps.day
+    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
+    const week_day_index = indice == 0 ? 7 : indice
 
     const config = {
     url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
@@ -87,7 +90,8 @@ export const deleteRecurrent = async (prof_id, token, recurrent) => {
   
     const startISO = dateFormater(recurrent.start);
 
-    const week_day = recurrent.extendedProps.day == 0 ? 7 : recurrent.extendedProps.day
+    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
+    const week_day_index = indice == 0 ? 7 : indice
 
     const url = `${apiServerUrl}/recurrent`
                 + `?prof_id=${encodeURIComponent(prof_id)}`
