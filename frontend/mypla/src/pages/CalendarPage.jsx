@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import ScheduleEdit from '../components/ScheduleEdit';
 import ScheduleCreate from '../components/ScheduleCreate';
 import FullCalendar from "@fullcalendar/react";
@@ -6,6 +6,8 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
+import { useAuth0 } from "@auth0/auth0-react";
+import { getPublicResource } from "../services/message.service";
 
 
 function Calendar() {
@@ -13,7 +15,6 @@ function Calendar() {
   const [isCreated, setCreated] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [calendarRange, setCalendarRange] = useState({ start: null, end: null });
-
   const [selectedTask, setSelectedTask] = useState({
       id: '',
       groupId: '',
@@ -24,16 +25,53 @@ function Calendar() {
       topics: [],
       recurrent: true,
   });
-
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
   const [events, setEvents] = useState([]);
-
   const [clickedEvent, setClickedEvent] = useState(null);
 
+  const [message, setMessage] = useState("");
+  const { getAccessTokenSilently } = useAuth0();
+  
+  useEffect(() => {
+      let isMounted = true;
+  
+      const getMessage = async () => {
+        // const accessToken = await getAccessTokenSilently();
+        // const { data, error } = await getProtectedResource(accessToken);
+        const { data, error } = await getPublicResource();
+  
+        if (!isMounted) {
+          return;
+        }
+  
+        if (data) {
+          console.log("DATA: ", data);
+          setMessage(JSON.stringify(data, null, 2));
+        }
+        
+        if (error) {
+          console.log("ERROR: ", error);
+          setMessage(JSON.stringify(error, null, 2));
+        }
+      };
+  
+      getMessage();
+  
+      fetch("https://miplasip.publicvm.com/api/")
+        .then(res => res.json())
+        .then(json => console.log("Test fetch directa:", json))
+        .catch(err => console.error("Error de fetch:", err));
+
+
+      return () => {
+        isMounted = false;
+      };
+    }, [getAccessTokenSilently]);
+    
 
   const handleSelect = (info) => {
  
+    console.log(message);
     setCreated(false);
     const start = DateTime.fromISO(info.startStr);
     const end = DateTime.fromISO(info.endStr);
