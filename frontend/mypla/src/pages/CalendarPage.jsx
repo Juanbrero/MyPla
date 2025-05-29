@@ -8,7 +8,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getPublicResource } from "../services/message.service";
-import { postSpecific}  from "../services/specific.service";
+import { postSpecific }  from "../services/specific/specific.service";
+import { getAvailable }  from "../services/available/available.service";
 
 
 function Calendar() {
@@ -33,41 +34,9 @@ function Calendar() {
   const [message, setMessage] = useState("");
   const { getAccessTokenSilently } = useAuth0();
   
-  useEffect(() => {
-      let isMounted = true;
-  
-      const getMessage = async () => {
-        // const accessToken = await getAccessTokenSilently();
-        // const { data, error } = await getProtectedResource(accessToken);
-        const { data, error } = await getPublicResource();
-  
-        if (!isMounted) {
-          return;
-        }
-  
-        if (data) {
-          console.log("DATA: ", data);
-          setMessage(JSON.stringify(data, null, 2));
-        }
-        
-        if (error) {
-          console.log("ERROR: ", error);
-          setMessage(JSON.stringify(error, null, 2));
-        }
-      };
-  
-      getMessage();
-  
-
-      return () => {
-        isMounted = false;
-      };
-    }, [getAccessTokenSilently]);
-    
 
   const handleSelect = (info) => {
  
-    console.log(message);
     setCreated(false);
     const start = DateTime.fromISO(info.startStr);
     const end = DateTime.fromISO(info.endStr);
