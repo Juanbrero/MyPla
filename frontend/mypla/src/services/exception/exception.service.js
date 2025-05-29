@@ -3,10 +3,10 @@ import { dateFormater } from "../../utils/dateFormater"
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getSpecific = async (prof_id, token) => {
+export const getException = async (prof_id, token) => {
 
     const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
     method: "GET",
     headers: {
         "content-type": "application/json",
@@ -22,26 +22,25 @@ export const getSpecific = async (prof_id, token) => {
     };
 };
 
-export const putSpecific = async (prof_id, token, newSpecific, oldSpecific) => {
+export const putException = async (prof_id, token, newException, oldException) => {
 
-    const oldStartISO = dateFormater(oldSpecific.start);
-    const newStartISO = newSpecific.start ? dateFormater(newSpecific.start) : "";
-    const newEndISO = newSpecific.end ? dateFormater(newSpecific.end) : "";
+    const oldStartISO = dateFormater(oldException.start);
+    const newStartISO = newException.start ? dateFormater(newException.start) : "";
+    const newEndISO = newException.end ? dateFormater(newException.end) : "";
 
     const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
     method: "PUT",
     headers: {
         "content-type": "application/json",
         // "Authorization": `Bearer ${token}`,
     },
     data: {
-        day     : oldSpecific.extendedProps.date,
+        day     : oldException.extendedProps.date,
         start   : oldStartISO,
-        Nday    : newSpecific.extendedProps.day ? newSpecific.extendedProps.day : "",
+        Nday    : newException.extendedProps.day ? newException.extendedProps.day : "",
         Nstart  : newStartISO,
         Nend    : newEndISO,
-        topics  : newSpecific.extendedProps.eventTopics ? newSpecific.extendedProps.eventTopics : [],
     }
     };
 
@@ -53,23 +52,22 @@ export const putSpecific = async (prof_id, token, newSpecific, oldSpecific) => {
     };
 };
 
-export const postSpecific = async (prof_id, token, specific) => {
+export const postException = async (prof_id, token, exception) => {
 
-    const startISO = dateFormater(specific.start);
-    const endISO = dateFormater(specific.end);
+    const startISO = dateFormater(exception.start);
+    const endISO = dateFormater(exception.end);
 
     const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
     method: "POST",
     headers: {
         "content-type": "application/json",
         // "Authorization": `Bearer ${token}`,
     },
     data: {
-        day     : specific.extendedProps.date,
+        day     : exception.extendedProps.date,
         start   : startISO,
         end     : endISO,
-        topics  : specific.extendedProps.eventTopics,
     }
     };
 
@@ -81,19 +79,19 @@ export const postSpecific = async (prof_id, token, specific) => {
     };
 };
 
-export const deleteSpecific = async (prof_id, token, specific) => {
+export const deleteException = async (prof_id, token, exception) => {
   
-    const startISO = dateFormater(specific.start);
+    const startISO = dateFormater(exception.start);
 
     const config = {
-        url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+        url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
         method: "DELETE",
         headers: {
         "content-type": "application/json",
         // "Authorization": `Bearer ${token}`,
         },
         data: {
-        day: specific.extendedProps.date,
+        day: exception.extendedProps.date,
         start: startISO,
         },
     };

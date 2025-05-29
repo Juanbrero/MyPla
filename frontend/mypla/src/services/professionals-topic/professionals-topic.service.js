@@ -24,7 +24,7 @@ export const getProfessionalsTopic = async (prof_id, token) => {
 
 
     return {
-        data: topics, // 🔥 Aquí devolvemos solo el array de strings
+        data: topics,
         error: null,
     };
 };

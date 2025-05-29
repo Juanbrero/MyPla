@@ -3,7 +3,7 @@ import {
   Box, Typography, Checkbox, MenuItem, Select, ListItemText, FormControl, InputLabel, Chip
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getProfessionalsTopic } from '../../../services/professionals-topic/professionals-topic';
+import { getProfessionalsTopic } from '../../../services/professionals-topic/professionals-topic.service';
 
 export default function Topics(props) {
   const { taskData, clickedEvent, isEditable, onChangeData, profId } = props;
@@ -12,7 +12,6 @@ export default function Topics(props) {
   const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
   const [topicsList, setTopicsList] = useState([]);
 
-  // 🔥 Cargar los tópicos dinámicos
   useEffect(() => {
     const fetchTopics = async () => {
       try {
