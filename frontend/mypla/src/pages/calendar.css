@@ -1,0 +1,45 @@
+/* calendar.css */
+
+.fc-timeGridWeek-view {
+  height: 100%;
+  overflow: hidden;
+}
+
+.fc .fc-scroller {
+  overflow-y: auto !important;
+}
+
+.fc-timegrid-slot {
+  height: auto !important;
+}
+
+.fc a {
+    color: rgb(255, 255, 255);
+}
+
+.fc-col-header-cell {
+  background-color: #383838;
+  font-weight: bold;
+  padding: 8px;
+}
+
+.fc-event {
+  /* background-color: #4caf50; */
+  color: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+}
+
+.fc-event:hover {
+  /* background-color: #388e3c; */
+}
+
+.fc-timegrid-slot-label {
+  color: #666;
+  font-size: 0.75rem;
+}
+
+.fc-header-toolbar {
+    gap: 1rem;
+}

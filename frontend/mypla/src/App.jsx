@@ -8,6 +8,8 @@ import { useAuth0 } from "@auth0/auth0-react"
 import CalendarPage from "./pages/CalendarPage"
 import ScheduleManager from './components/ScheduleManager';
 import Home from "./pages/Home"
+import TutorialGuide from "./components/TutorialGuide"
+import { TutorialProvider } from "./components/TutorialContext"
 
 
 const App = () => {
@@ -22,6 +24,10 @@ const App = () => {
     }
 
     return (
+      <>
+        <TutorialProvider>
+          <TutorialGuide />
+        </TutorialProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/calendar" element={<CalendarPage />} />
@@ -41,6 +47,7 @@ const App = () => {
           <Route path="/test" element={<ScheduleManager />} />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
+      </>
     )
 }
 

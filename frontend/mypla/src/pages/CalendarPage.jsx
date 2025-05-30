@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { postSpecific }  from "../services/specific/specific.service";
 import { getAvailableProfessional } from "../services/available/available-professional.service";
 import { dateObjToLocalTime } from "../utils/dateFormater";
+import './calendar.css';
 
 
 function Calendar() {
@@ -334,18 +335,21 @@ function Calendar() {
     <div>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
+        initialView="timeGridWeek"
         headerToolbar={{
           start: "today prev,next",
           center: "title",
-          end: "dayGridMonth,timeGridWeek,timeGridDay",
+          end: "dayGridMonth,timeGridWeek",
         }}
+        slotDuration="01:00:00"
+        allDaySlot={false}
         selectable={true}
         select={handleSelect}
         eventClick={handleEventClick}
         events={Object.values(dbEvents).flat()}
         // events={specifics}
         height={"90vh"}
+        expandRows={true}
         datesSet={ (info) => {
           setCalendarRange( {
             start : new Date(info.startStr),

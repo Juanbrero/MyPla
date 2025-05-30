@@ -4,6 +4,13 @@ import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 const dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const colores = {
+    'recurrent': 'blue',
+    'specific': 'light_blue',
+    'exception': 'red',
+    // 'event': 'orange',
+    'class_': 'gray',
+}
 
 export const getAvailableProfessional = async (token) => {
 
@@ -28,7 +35,7 @@ export const getAvailableProfessional = async (token) => {
                         // id        :   arg.event.id,
                         // groupId   :   arg.event?.groupId,
                         // title     :   arg.event.title,
-                        // color     :   arg.event.color,
+                        color     :   colores[category],
                         start     :   dateFormaterReverse(item.day, item.start),
                         end       :   dateFormaterReverse(item.day, item.end),
                         extendedProps: {
@@ -43,6 +50,8 @@ export const getAvailableProfessional = async (token) => {
             }
         }
     }
+
+    console.log(data)
         
     return {
         data: data,
