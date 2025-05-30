@@ -30,17 +30,23 @@ export const getProfessionalsTopic = async (token) => {
     };
 };
 
-export const postProfessionalsTopic = async (token, topic) => {
+export const postProfessionalsTopic = async (topic) => {
 
     const config = {
-    url: `${apiServerUrl}/professionals-topic?topic_name=${encodeURIComponent(topic)}`,
+    url: `${apiServerUrl}/professionals-topic?prof_id=${encodeURIComponent(prof_id)}`,
     method: "POST",
     headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${token}`,
-    }
+        // "Authorization": `Bearer ${token}`,
+    },
+    data: {
+        topic_name: topic,
+        price_class: 1.1,
+    },
     };
 
+    console.log(config)
+    
     const { data, error } = await callExternalApi({ config });
 
     return {

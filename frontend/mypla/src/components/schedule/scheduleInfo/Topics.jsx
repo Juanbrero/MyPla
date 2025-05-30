@@ -6,28 +6,30 @@ import { useEffect, useState } from 'react';
 import { getProfessionalsTopic } from '../../../services/professionals-topic/professionals-topic.service';
 
 export default function Topics(props) {
-  const { taskData, clickedEvent, isEditable, onChangeData } = props;
+  const { taskData, clickedEvent, isEditable, onChangeData, topicsListFromParent } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
   const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
-  const [topicsList, setTopicsList] = useState([]);
+  const [topicsList, setTopicsList] = useState(topicsListFromParent || []);
 
   useEffect(() => {
-    const fetchTopics = async () => {
-      try {
-        const { data, error } = await getProfessionalsTopic(); // usa el profId
-        if (error) {
-          console.error('Error al obtener los tópicos:', error);
-          return;
+    // Solo hacemos fetch si no recibimos lista desde el padre
+    if (!topicsListFromParent || topicsListFromParent.length === 0) {
+      const fetchTopics = async () => {
+        try {
+          const { data, error } = await getProfessionalsTopic(); // usa el profId si hace falta
+          if (error) {
+            console.error('Error al obtener los tópicos:', error);
+            return;
+          }
+          setTopicsList(data || []);
+        } catch (err) {
+          console.error('Error inesperado:', err);
         }
-        setTopicsList(data || []); // asume que la API devuelve { topics: [...] }
-      } catch (err) {
-        console.error('Error inesperado:', err);
-      }
-    };
-
-    fetchTopics();
-  }, []);
+      };
+      fetchTopics();
+    }
+  }, [topicsListFromParent]);
 
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {
@@ -37,6 +39,12 @@ export default function Topics(props) {
       setEditTopics(clickedEvent.extendedProps.eventTopics);
     }
   }, [taskData?.topics, clickedEvent?.extendedProps?.eventTopics]);
+
+  useEffect(() => {
+    if (topicsListFromParent && topicsListFromParent.length > 0) {
+      setTopicsList(topicsListFromParent);
+    }
+  }, [topicsListFromParent]);
 
   const handleTopicChange = (event) => {
     const { target: { value } } = event;
