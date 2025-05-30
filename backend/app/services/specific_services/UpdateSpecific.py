@@ -17,6 +17,8 @@ class UpdateSpecific:
         topic_specificR: Repository[TopicSpecific],
         meetingR: Repository[Meeting]
     ):
+        specificS.start = strip_time_hour_minute(specificS.start)
+        
         old_specific = specificR.get_by({
             "day": specificS.day,
             "start": specificS.start
