@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { UserTypeSelector } from "../components/UserTypeSelector";
+
 
 const CallbackHandler = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -33,7 +33,7 @@ const CallbackHandler = () => {
       {isAuthenticated ? (
         <>
           <h3>Bienvenido, {user.name}</h3>
-          <UserTypeSelector onUserTypeSelected={setTipoUsuario} />
+          
         </>
       ) : (
         <p>Iniciando sesión...</p>
