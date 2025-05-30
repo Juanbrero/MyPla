@@ -32,8 +32,10 @@ function Home() {
       <PayPalButton></PayPalButton>
       <MPButton></MPButton>
       {/* <ButtonLoginGoogle /> */}
-      <LoginButton />
-      <SignupButton />
+      <div className='loginButtons'>
+        <LoginButton />
+        <SignupButton />
+      </div>
 
     </>
   )
