@@ -33,7 +33,8 @@ export const getAvailableProfessional = async (prof_id, token) => {
                         extendedProps: {
                             day         : item.week_day ? dias[item.week_day] : dias[diaSemana],
                             date        : item.day ? item.day : '',
-                            recurrent: category == 'recurrent',
+                            // recurrent   : category == 'recurrent',
+                            category    : category,
                             eventTopics : item.topics ? item.topics : [],
                         }
                     };

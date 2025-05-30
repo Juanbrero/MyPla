@@ -9,6 +9,7 @@ import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
 import { postSpecific }  from "../services/specific/specific.service";
 import { getAvailableProfessional } from "../services/available/available-professional.service";
+import { dateObjToLocalTime } from "../utils/dateFormater";
 
 
 
@@ -31,6 +32,7 @@ function Calendar() {
   const [events, setEvents] = useState([]);
 
   const [specifics, setSpecifics] = useState([]);
+  const [dbEvents, setDbEvents] = useState([]);
 
   const [clickedEvent, setClickedEvent] = useState(null);
 
@@ -46,7 +48,16 @@ function Calendar() {
       if (error) {
         setError(error);
       } else {
-        setSpecifics(data.specific);
+
+        const specific = data.specific;
+        const recurrent = data.recurrent;
+        const exception = data.exception;
+        const event = data.event;
+        // const clase = data.clase;
+        // setDbEvents([...specific, ...recurrent, ...exception, ...event, ...clase]);
+
+        setDbEvents([...specific, ...recurrent, ...exception, ...event]);
+
       }
     };
 
@@ -56,6 +67,8 @@ function Calendar() {
 
   const handleSelect = (info) => {
  
+    console.log("dbEvents: ", dbEvents);
+
     setCreated(false);
     const start = DateTime.fromISO(info.startStr);
     const end = DateTime.fromISO(info.endStr);
@@ -82,14 +95,17 @@ function Calendar() {
   const handleEventClick = (arg) => {
     
     const event = arg.event;
-    const horaFormateada = new Date("Thu May 29 2025 08:00:00 GMT-0300").toTimeString().slice(0, 8);
+    const startFormateado = dateObjToLocalTime(event.start);
 
-    let speFound = {};
+    let evFound = {};
 
-    if ( !event.recurrent ) {
-      speFound = specifics.find(spe => (spe.day === event.day) && (spe.start === horaFormateada));
-      console.log(horaFormateada);
-      console.log(specifics);
+    if (event.extendedProps.category !== "recurrent") {
+      evFound = dbEvents.find(ev => {
+        return (ev.extendedProps.day === event.extendedProps.day) && (ev.start === startFormateado);
+      });
+
+      // console.log("specifics: ", specifics);
+      // console.log("speFound: ", evFound);
     }
 
     let evento = {
@@ -97,20 +113,22 @@ function Calendar() {
       groupId   :   arg.event?.groupId,
       title     :   arg.event.title,
       color     :   arg.event.color,
-      start     :   speFound.start,
+      start     :   evFound.start,
       // start     :   arg.event.start,
       // end       :   arg.event.end,
-      end       :   speFound.end,
+      end       :   evFound.end,
       extendedProps: {
-          day         : arg.event.extendedProps.day,
-          date        : speFound.day,
+          day         : evFound.extendedProps.day,
+          date        : evFound.extendedProps.date,
           // date        : arg.event.extendedProps.date,
-          recurrent   : arg.event.extendedProps.recurrent,
-          eventTopics : speFound.topics,
+          // recurrent   : speFound.extendedProps.recurrent,
+          category    : evFound.extendedProps.category,
+          eventTopics : evFound.extendedProps.eventTopics,
           // eventTopics : arg.event.extendedProps.eventTopics,
       }
     };
 
+    console.log("evento: ", evento);
     setClickedEvent(evento);
     // console.log("arg.event.id: ", arg.event.id);
     // console.log("arg.event?.groupId: ", arg.event.groupId);
@@ -326,7 +344,8 @@ function Calendar() {
         selectable={true}
         select={handleSelect}
         eventClick={handleEventClick}
-        events={events}
+        events={Object.values(dbEvents).flat()}
+        // events={specifics}
         height={"90vh"}
         datesSet={ (info) => {
           setCalendarRange( {
