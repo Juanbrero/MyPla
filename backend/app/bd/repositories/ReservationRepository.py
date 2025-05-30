@@ -22,7 +22,7 @@ class ReservationRepository(Repository[Reservation]):
                 extract('year', Reservation.day_hour) == day.year,
                 Reservation.cancel == False
             )
-            .distinct()
+            .distinct().order_by(Reservation.day_hour.asc())
         )
 
         return self.session.execute(stm).scalars().all()

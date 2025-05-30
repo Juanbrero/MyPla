@@ -47,7 +47,7 @@ class ExceptionScheduleRepository(Repository[SpecificSchedule]):
                 extract('year', SpecificSchedule.day) == day.year,
                 SpecificSchedule.isCanceling == True
             )
-            .distinct()
+            .distinct().order_by(SpecificSchedule.day.asc(), SpecificSchedule.start.asc())
         )
 
         return self.session.execute(stm).scalars().all() 

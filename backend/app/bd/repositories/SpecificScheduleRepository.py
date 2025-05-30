@@ -108,7 +108,7 @@ class SpecificScheduleRepository(Repository[SpecificSchedule]):
                 SpecificSchedule.isCanceling == False
             )
             .options(selectinload(SpecificSchedule.topic_specifics))
-            .distinct()
+            .distinct().order_by(SpecificSchedule.day.asc(), SpecificSchedule.start.asc())
         )
 
         return self.session.execute(stm).scalars().all()
