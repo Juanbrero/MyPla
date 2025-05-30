@@ -16,7 +16,7 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
             select(RecurrentSchedule)
             .where(RecurrentSchedule.prof_id == prof_id)
             .options(selectinload(RecurrentSchedule.topic_recurrents))
-        )
+        ).order_by(RecurrentSchedule.week_day, RecurrentSchedule.start)
         return self.session.execute(smt).scalars().all()
     
     def getRecurrentsSpecificTopic (self, prof_id: str, topic: str):
