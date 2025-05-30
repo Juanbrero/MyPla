@@ -90,17 +90,19 @@ export const deleteSpecific = async (token, specific) => {
         url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
         method: "DELETE",
         headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+            "content-type": "application/json",
+            // "Authorization": `Bearer ${token}`,
         },
         data: {
-        day: specific.extendedProps.date,
-        start: startISO,
+            day: specific.extendedProps.date,
+            start: startISO,
         },
     };
+    console.log("config: ", config);
 
     const { data, error } = await callExternalApi({ config });
 
+    console.log("data: ", data);
     return {
         data: data,
         error,

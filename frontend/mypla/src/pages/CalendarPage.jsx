@@ -7,7 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
-import { postSpecific }  from "../services/specific/specific.service";
+import { deleteSpecific, postSpecific }  from "../services/specific/specific.service";
 import { getAvailableProfessional } from "../services/available/available-professional.service";
 import { dateObjToLocalTime } from "../utils/dateFormater";
 import './calendar.css';
@@ -34,13 +34,14 @@ function Calendar() {
 
   const [events, setEvents] = useState([]);
 
-  // const [specifics, setSpecifics] = useState([]);
   const [dbEvents, setDbEvents] = useState([]);
+  
+  const [specifics, setSpecifics] = useState([]);
+  const [recurrents, setRecurrents] = useState([]);
+  const [exceptions, setExceptions] = useState([]);
 
   const [clickedEvent, setClickedEvent] = useState(null);
 
-  // const [message, setMessage] = useState("");
-  // const { getAccessTokenSilently } = useAuth0();
   
   useEffect(() => {
     const fetchProfessional = async () => {
@@ -52,8 +53,13 @@ function Calendar() {
       } else {
 
         const specific = data.specific;
+        setSpecifics(specific);
+        
         const recurrent = data.recurrent;
+        setRecurrents(recurrent);
+
         const exception = data.exception;
+        setExceptions(exception);
 
         // const clase = data.class_;
         // setDbEvents([...specific, ...recurrent, ...exception, ...class_]);
@@ -228,24 +234,28 @@ function Calendar() {
     handleCloseModal();
   }
 
-  const handleDeleteTask = (event) => {
+  const handleDeleteTask = async (event) => {
 
-    const isEventRecurrent = event.extendedProps.recurrent;
-  
-    setEvents((prevEvents) => 
-      prevEvents.filter((ev) => {
-        // evento recurrente
-        if (isEventRecurrent) {
-          // Borrar todas las recurrencias con el mismo groupId
-          const evGroupId = ev.groupId;
-          return evGroupId !== event.groupId;
-        }
-        // evento no recurrente
-        return ev.id !== event.id;
-      })
-    );
+    const foundEv = searchEvent(event);
+
+    if (foundEv) {
+      switch (foundEv.extendedProps.category) {
+        case "specific":
+          console.log("borrando foundEv: ", foundEv);
+          await deleteSpecific("token", foundEv);
+          break;
+        case "recurrent":
+          break;
+        case "exception":
+          break;
+        case "class_":
+          break;
+      }
+    }
 
     handleCloseModal();
+    setRefreshTrigger(prev => prev + 1);
+
   }
 
   const handleCancelOneOccurrence = (event) => {
@@ -320,6 +330,29 @@ function Calendar() {
 
   }
   
+  const searchEvent = (event) => {
+
+    const evCategory = event.extendedProps.category;
+    let foundEv = {};
+
+    switch (evCategory) {
+      case "specific":
+        foundEv = specifics.find(ev => ((ev.start === event.start) &&
+                                  (ev.extendedProps.day === event.extendedProps.day)));
+        break;
+      case "recurrent":
+        break;
+      case "exception":
+        break;
+      case "class_":
+        break;
+    }
+
+    return foundEv;
+
+  }
+
+
   function combinarFechaYHora(fecha, hora) {
     const base = `${fecha}T${hora.length === 5 ? hora + ':00' : hora}`; // asegura formato con segundos
     return new Date(base);
