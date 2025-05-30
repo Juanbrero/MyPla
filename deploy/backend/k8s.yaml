@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: matiasherrneder/mipla-backend:cced8ed
+          image: matiasherrneder/mipla-backend:496c602
           ports:
             - containerPort: 8002
           envFrom:
