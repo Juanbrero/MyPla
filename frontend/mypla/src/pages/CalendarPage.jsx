@@ -29,6 +29,8 @@ function Calendar() {
       category: "",
   });
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   const [events, setEvents] = useState([]);
 
   // const [specifics, setSpecifics] = useState([]);
@@ -51,17 +53,17 @@ function Calendar() {
         const specific = data.specific;
         const recurrent = data.recurrent;
         const exception = data.exception;
-        const event = data.event;
-        // const clase = data.clase;
-        // setDbEvents([...specific, ...recurrent, ...exception, ...event, ...clase]);
 
-        setDbEvents([...specific, ...recurrent, ...exception, ...event]);
+        // const clase = data.class_;
+        // setDbEvents([...specific, ...recurrent, ...exception, ...class_]);
+
+        setDbEvents([...specific, ...recurrent, ...exception]);
 
       }
     };
 
     fetchProfessional();
-  }, []);
+  }, [refreshTrigger]);
 
 
   const handleSelect = (info) => {
@@ -140,7 +142,7 @@ function Calendar() {
     setModalOpen(true);
   };
 
-  const handleSaveTask = (taskName) => {
+  const handleSaveTask = async (taskName) => {
     
     const startToCheck = combinarFechaYHora(taskName?.date, taskName.start);
     const endToCheck = combinarFechaYHora(taskName?.date, taskName.end);
@@ -157,15 +159,16 @@ function Calendar() {
 
     if (!haySolapamiento) {
  
-      if (taskName.recurrent) {
-        createRecurrentEvent(taskName);
+      if (taskName.category === "recurrent") {
+        await createRecurrentEvent(taskName);
       }
       else {
-        createEvent(taskName);
+        await createEvent(taskName);
       }
 
       handleCloseModal();
       // return true;
+      setRefreshTrigger(prev => prev + 1);
     }
     else {
       alert("Error al crear evento, el rango horario ya contiene eventos.")
@@ -252,7 +255,7 @@ function Calendar() {
 
   };
 
-  const createEvent = (taskName) => {
+  const createEvent = async (taskName) => {
     
     const newEvent = {
       id      :     `${crypto.randomUUID()}`,
@@ -270,14 +273,14 @@ function Calendar() {
       },
     }
 
-    setEvents([...events, 
-      newEvent
-    ]);
+    // setEvents([...events, 
+    //   newEvent
+    // ]);
     
-    postSpecific("d8061f1e-c1a3-4518-b3ca-7fa4cade7f8b", "token", newEvent);
+    await postSpecific("token", newEvent);
   }
 
-  const createRecurrentEvent = (taskName) => {
+  const createRecurrentEvent =  async (taskName) => {
 
     const current = new Date(calendarRange.start);
     const originalStart = taskName.start;
