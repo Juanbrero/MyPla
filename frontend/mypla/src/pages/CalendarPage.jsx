@@ -12,7 +12,6 @@ import { getAvailableProfessional } from "../services/available/available-profes
 import { dateObjToLocalTime } from "../utils/dateFormater";
 
 
-
 function Calendar() {
 
   const [isCreated, setCreated] = useState(false);
@@ -26,7 +25,8 @@ function Calendar() {
       start: '',
       end: '',
       topics: [],
-      recurrent: true,
+      // recurrent: true,
+      category: "",
   });
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const [events, setEvents] = useState([]);
@@ -78,7 +78,8 @@ function Calendar() {
       date: start.toFormat("yyyy-MM-dd"),
       start: start.toFormat("HH:mm"),
       end: end.toFormat("HH:mm"),
-      recurrent: false,
+      category: 'specific',
+      // recurrent: false,
     })
     setModalOpen(true);
   };
@@ -113,17 +114,12 @@ function Calendar() {
       title     :   arg.event.title,
       color     :   arg.event.color,
       start     :   evFound.start,
-      // start     :   arg.event.start,
-      // end       :   arg.event.end,
       end       :   evFound.end,
       extendedProps: {
           day         : evFound.extendedProps.day,
           date        : evFound.extendedProps.date,
-          // date        : arg.event.extendedProps.date,
-          // recurrent   : speFound.extendedProps.recurrent,
           category    : evFound.extendedProps.category,
           eventTopics : evFound.extendedProps.eventTopics,
-          // eventTopics : arg.event.extendedProps.eventTopics,
       }
     };
 
@@ -268,7 +264,8 @@ function Calendar() {
       extendedProps : {
         day         : taskName.day,
         date        : taskName.date,
-        recurrent   : taskName.recurrent,
+        // recurrent   : taskName.recurrent,
+        category    : taskName.category,
         eventTopics : taskName.topics,
       },
     }

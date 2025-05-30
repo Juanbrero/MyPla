@@ -98,8 +98,9 @@ export default function ScheduleEdit({
       extendedProps : {
         day         : localTaskData.day,
         date        : dateStr,
-        recurrent   : localTaskData.recurrent,
+        category    : localTaskData.category,
         eventTopics : localTaskData.topics,
+        // recurrent   : localTaskData.recurrent,
       },
     }
     
@@ -154,7 +155,7 @@ export default function ScheduleEdit({
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             {!isEditable ? (
               <>
-                {clickedEvent.extendedProps.recurrent && (
+                {clickedEvent.extendedProps.category == "recurrent" && (
                   <Button color="error" variant="outlined" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
                     Cancelar solo esta vez
                   </Button>
