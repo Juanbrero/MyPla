@@ -29,19 +29,9 @@ class GetStudentAvailable():
         day_recurrent= date(year= day.year, month= day.month, day= 1)
         month = day.month
 
-        """days = {'1':[],
-                '2':[],
-                '3':[],
-                '4':[],
-                '5':[],
-                '6':[],
-                '7':[]}"""
-        
+             
         # Recorre desde el mes ingresado hasta el siguiente
         while day_recurrent.month <= (month + 1):
-            # Agrega al diccionario los dias especificos en base al dia de la semana 
-
-            """days[ str( day_recurrent.isoweekday() ) ].append( day_recurrent ) """
             
             # Recorre el recurrent y genera los horarios
             # 
@@ -59,29 +49,24 @@ class GetStudentAvailable():
                     break
             day_recurrent += timedelta( days= 1 )    
 
-        """for schedule in all_recurrents:
-            # Toma todos los dias de un dia de la semana
-            # lunes[2025-..., 2025-..., ..]
-            dias = days[str(schedule.week_day)]
-            for dia in dias:
-                item = {
-                    "prof_id": schedule.prof_id,
-                    "day": dia.isoformat(),
-                    "start": schedule.start.isoformat(),
-                    "end": schedule.end.isoformat(),
-                    "topics": [topic.topic_name for topic in schedule.topic_recurrents]
-                }
-                data_recurrent.append(item)"""
-
-
         
+
+        # Hasta aca -> lista con los dias recurrentes ordenados
+        # Specific -> Exception -> cancela recurrente y define horario especifo
+        #          -> Amplia el horario de un profesional
+        # R 12 - 18
+        # S 12 - 15 E 15 - 18 <-
+        # S 8 - 12
+        # S 8 - 18
+
 
         #SPECIFIC
         all_specifics = specificR.getHourDay(prof_id, day)
 
         data_specific = []
-        
+        index_r = 0
         for schedule in all_specifics:
+
             item = {
                 "prof_id": schedule.prof_id,
                 "day": schedule.day.isoformat(),
@@ -131,7 +116,7 @@ class GetStudentAvailable():
             E: 10 s:12 e: 15
             Res: 10 s: 8:30 e: 9:30
         """
-        # IDEA DE excetion
+        # IDEA DE exception
         for exception in data_exception:
             break
             for recurrent in data_recurrent:
