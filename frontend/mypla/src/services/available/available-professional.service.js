@@ -1,10 +1,11 @@
 import { dateFormaterReverse } from "../../utils/dateFormater";
+import { prof_id } from "../../utils/testData";
 import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 const dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-export const getAvailableProfessional = async (prof_id, token) => {
+export const getAvailableProfessional = async (token) => {
 
     const config = {
     url: `${apiServerUrl}/available/professionals?prof_id=${encodeURIComponent(prof_id)}`,

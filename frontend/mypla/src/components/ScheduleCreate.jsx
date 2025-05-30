@@ -11,11 +11,6 @@ import ScheduleTime from './schedule/scheduleInfo/ScheduleTime';
 import Recurrent from './schedule/scheduleInfo/Recurrent';
 
 
-
-const profId = 'd8061f1e-c1a3-4518-b3ca-7fa4cade7f8b'
-
-
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -83,7 +78,6 @@ export default function ScheduleCreate({
             taskData={taskData}
             isEditable={true}
             onChangeData={handleTaskDataChange}
-            profId={profId}
           />
           <ScheduleDate 
             taskData={taskData}

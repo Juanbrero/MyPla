@@ -1,9 +1,10 @@
 import { callExternalApi } from "../external-api.service";
 import { dateFormater } from "../../utils/dateFormater"
+import { prof_id } from "../../utils/testData";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getException = async (prof_id, token) => {
+export const getException = async (token) => {
 
     const config = {
     url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
@@ -22,7 +23,7 @@ export const getException = async (prof_id, token) => {
     };
 };
 
-export const putException = async (prof_id, token, newException, oldException) => {
+export const putException = async (token, newException, oldException) => {
 
     const oldStartISO = dateFormater(oldException.start);
     const newStartISO = newException.start ? dateFormater(newException.start) : "";
@@ -52,7 +53,7 @@ export const putException = async (prof_id, token, newException, oldException) =
     };
 };
 
-export const postException = async (prof_id, token, exception) => {
+export const postException = async (token, exception) => {
 
     const startISO = dateFormater(exception.start);
     const endISO = dateFormater(exception.end);
@@ -79,7 +80,7 @@ export const postException = async (prof_id, token, exception) => {
     };
 };
 
-export const deleteException = async (prof_id, token, exception) => {
+export const deleteException = async (token, exception) => {
   
     const startISO = dateFormater(exception.start);
 

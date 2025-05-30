@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { getProfessionalsTopic } from '../../../services/professionals-topic/professionals-topic.service';
 
 export default function Topics(props) {
-  const { taskData, clickedEvent, isEditable, onChangeData, profId } = props;
+  const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
   const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
@@ -15,7 +15,7 @@ export default function Topics(props) {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const { data, error } = await getProfessionalsTopic(profId); // usa el profId
+        const { data, error } = await getProfessionalsTopic(); // usa el profId
         if (error) {
           console.error('Error al obtener los tópicos:', error);
           return;
@@ -27,7 +27,7 @@ export default function Topics(props) {
     };
 
     fetchTopics();
-  }, [profId]);
+  }, []);
 
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {

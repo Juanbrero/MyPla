@@ -31,22 +31,21 @@ function Calendar() {
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const [events, setEvents] = useState([]);
 
-  const [specifics, setSpecifics] = useState([]);
+  // const [specifics, setSpecifics] = useState([]);
   const [dbEvents, setDbEvents] = useState([]);
 
   const [clickedEvent, setClickedEvent] = useState(null);
 
-  const [message, setMessage] = useState("");
-  const { getAccessTokenSilently } = useAuth0();
+  // const [message, setMessage] = useState("");
+  // const { getAccessTokenSilently } = useAuth0();
   
   useEffect(() => {
     const fetchProfessional = async () => {
-      const prof_id = "d8061f1e-c1a3-4518-b3ca-7fa4cade7f8b";
 
-      const { data, error } = await getAvailableProfessional(prof_id);
+      const { data, error } = await getAvailableProfessional();
 
       if (error) {
-        setError(error);
+        console.log(error);
       } else {
 
         const specific = data.specific;

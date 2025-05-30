@@ -1,10 +1,11 @@
 import { callExternalApi } from "../external-api.service";
 import { dateFormater } from "../../utils/dateFormater"
+import { prof_id } from "../../utils/testData";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-export const getRecurrent = async (prof_id, token) => {
+export const getRecurrent = async (token) => {
 
     const config = {
     url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
@@ -23,7 +24,7 @@ export const getRecurrent = async (prof_id, token) => {
     };
 };
 
-export const putRecurrent = async (prof_id, token, newRecurrent, oldRecurrent) => {
+export const putRecurrent = async (token, newRecurrent, oldRecurrent) => {
 
     const oldStartISO = dateFormater(oldRecurrent.start);
     const newStartISO = newRecurrent.start ? dateFormater(newRecurrent.start) : "";
@@ -55,7 +56,7 @@ export const putRecurrent = async (prof_id, token, newRecurrent, oldRecurrent) =
     };
 };
 
-export const postRecurrent = async (prof_id, token, recurrent) => {
+export const postRecurrent = async (token, recurrent) => {
 
     const startISO = dateFormater(recurrent.start);
     const endISO = dateFormater(recurrent.end);
@@ -86,7 +87,7 @@ export const postRecurrent = async (prof_id, token, recurrent) => {
     };
 };
 
-export const deleteRecurrent = async (prof_id, token, recurrent) => {
+export const deleteRecurrent = async (token, recurrent) => {
   
     const startISO = dateFormater(recurrent.start);
 

@@ -1,9 +1,10 @@
 import { callExternalApi } from "../external-api.service";
 import { dateFormater } from "../../utils/dateFormater"
+import { prof_id } from "../../utils/testData";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getSpecific = async (prof_id, token) => {
+export const getSpecific = async (token) => {
 
     const config = {
     url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
@@ -22,7 +23,7 @@ export const getSpecific = async (prof_id, token) => {
     };
 };
 
-export const putSpecific = async (prof_id, token, newSpecific, oldSpecific) => {
+export const putSpecific = async (token, newSpecific, oldSpecific) => {
 
     const oldStartISO = dateFormater(oldSpecific.start);
     const newStartISO = newSpecific.start ? dateFormater(newSpecific.start) : "";
@@ -53,7 +54,7 @@ export const putSpecific = async (prof_id, token, newSpecific, oldSpecific) => {
     };
 };
 
-export const postSpecific = async (prof_id, token, specific) => {
+export const postSpecific = async (token, specific) => {
 
     const startISO = dateFormater(specific.start);
     const endISO = dateFormater(specific.end);
@@ -81,7 +82,7 @@ export const postSpecific = async (prof_id, token, specific) => {
     };
 };
 
-export const deleteSpecific = async (prof_id, token, specific) => {
+export const deleteSpecific = async (token, specific) => {
   
     const startISO = dateFormater(specific.start);
 
