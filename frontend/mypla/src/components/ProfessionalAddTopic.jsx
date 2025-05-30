@@ -3,31 +3,21 @@ import {
   Box, Typography, Checkbox, MenuItem, Select, ListItemText, FormControl, InputLabel, Chip
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getProfessionalsTopic } from '../../../services/professionals-topic/professionals-topic.service';
+import { getTopics } from '../services/topics/topics.service';
+import { getProfessionalsTopic } from '../services/professionals-topic/professionals-topic.service'
+
+
+// Supongamos que tienes esta función:
+    // const topics = getTopics()
+    // const ownTopics = getProfessionalsTopic(token)
 
 export default function Topics(props) {
   const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
   const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
-  const [topicsList, setTopicsList] = useState([]);
 
-  useEffect(() => {
-    const fetchTopics = async () => {
-      try {
-        const { data, error } = await getProfessionalsTopic(); // usa el profId
-        if (error) {
-          console.error('Error al obtener los tópicos:', error);
-          return;
-        }
-        setTopicsList(data || []); // asume que la API devuelve { topics: [...] }
-      } catch (err) {
-        console.error('Error inesperado:', err);
-      }
-    };
-
-    fetchTopics();
-  }, []);
+  const topicsList = getTopics(); // Obtiene los temas
 
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {
@@ -60,13 +50,13 @@ export default function Topics(props) {
         </Box>
       ) : (
         <FormControl fullWidth margin="normal">
-          <InputLabel>Posibles topicos</InputLabel>
+          <InputLabel>Posibles tópicos</InputLabel>
           <Select
             multiple
             value={selectedTopicsState}
             onChange={handleTopicChange}
             renderValue={(selected) => selected.join(', ')}
-            label="Posibles topicos"
+            label="Posibles tópicos"
           >
             {topicsList.map((topic) => (
               <MenuItem key={topic} value={topic}>

@@ -54,6 +54,21 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.highlight-tutorial {
+  position: relative;
+  z-index: 8;
+  box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  transition: box-shadow 0.3s ease;
+}
+
+.loginButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
