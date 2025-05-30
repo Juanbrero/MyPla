@@ -1,8 +1,8 @@
-"""Migración completa desde modelos corregidos
+"""Cambiar datos de usuario
 
-Revision ID: b04c527b43cd
+Revision ID: 6d9bc9d71e54
 Revises: 
-Create Date: 2025-05-14 01:17:40.731012
+Create Date: 2025-05-28 17:31:59.065891
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b04c527b43cd'
+revision: str = '6d9bc9d71e54'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,13 +26,17 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('topic_name')
     )
     op.create_table('users',
-    sa.Column('user_id', sa.String(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('user_id')
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('auth0_id', sa.String(), nullable=False),
+    sa.Column('username', sa.String(), nullable=False),
+    sa.Column('email', sa.String(), nullable=False),
+    sa.PrimaryKeyConstraint('user_id'),
+    sa.UniqueConstraint('email')
     )
+    op.create_index(op.f('ix_users_auth0_id'), 'users', ['auth0_id'], unique=True)
     op.create_index(op.f('ix_users_user_id'), 'users', ['user_id'], unique=False)
     op.create_table('professional',
-    sa.Column('prof_id', sa.String(), nullable=False),
+    sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('score', sa.Float(), server_default=sa.text('0'), nullable=False),
     sa.CheckConstraint('score BETWEEN 0 AND 5', name='check_score_valid'),
     sa.ForeignKeyConstraint(['prof_id'], ['users.user_id'], ondelete='CASCADE'),
@@ -40,21 +44,23 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_professional_prof_id'), 'professional', ['prof_id'], unique=False)
     op.create_table('student',
-    sa.Column('student_id', sa.String(), nullable=False),
+    sa.Column('student_id', sa.String(length=36), nullable=False),
     sa.Column('score', sa.Float(), server_default=sa.text('0'), nullable=False),
     sa.ForeignKeyConstraint(['student_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('student_id')
     )
     op.create_index(op.f('ix_student_student_id'), 'student', ['student_id'], unique=False)
     op.create_table('meeting',
-    sa.Column('day_hour', sa.TIMESTAMP(), nullable=False),
-    sa.Column('prof_id', sa.String(), nullable=False),
+    sa.Column('day_hour', sa.DateTime(), nullable=False),
+    sa.Column('prof_id', sa.String(length=36), nullable=False),
+    sa.Column('topic_name', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['topic_name'], ['topic.topic_name'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('day_hour', 'prof_id', name='pk_meeting')
     )
     op.create_table('professionaltopic',
     sa.Column('topic_name', sa.String(), nullable=False),
-    sa.Column('prof_id', sa.String(), nullable=False),
+    sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('price_class', sa.Float(), nullable=False),
     sa.CheckConstraint('price_class > 0 ', name='check_price_valid'),
     sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], ondelete='CASCADE'),
@@ -64,7 +70,7 @@ def upgrade() -> None:
     op.create_table('recurrentschedule',
     sa.Column('week_day', sa.Integer(), nullable=False),
     sa.Column('start', sa.Time(), nullable=False),
-    sa.Column('prof_id', sa.String(), nullable=False),
+    sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('end', sa.Time(), nullable=False),
     sa.CheckConstraint('week_day BETWEEN 1 AND 7 ', name='check_week_valid'),
     sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], ondelete='CASCADE'),
@@ -73,7 +79,7 @@ def upgrade() -> None:
     op.create_table('specificschedule',
     sa.Column('day', sa.Date(), nullable=False),
     sa.Column('start', sa.Time(), nullable=False),
-    sa.Column('prof_id', sa.String(), nullable=False),
+    sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('end', sa.Time(), nullable=False),
     sa.Column('isCanceling', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], ondelete='CASCADE'),
@@ -93,7 +99,7 @@ def upgrade() -> None:
     op.create_table('reservation',
     sa.Column('day_hour', sa.TIMESTAMP(), nullable=False),
     sa.Column('prof_id', sa.String(), nullable=False),
-    sa.Column('student_id', sa.String(), nullable=False),
+    sa.Column('student_id', sa.String(length=36), nullable=False),
     sa.Column('cancel', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.ForeignKeyConstraint(['day_hour', 'prof_id'], ['meeting.day_hour', 'meeting.prof_id'], name='fk_class_meeting', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['student_id'], ['student.student_id'], ondelete='CASCADE'),
@@ -136,6 +142,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_professional_prof_id'), table_name='professional')
     op.drop_table('professional')
     op.drop_index(op.f('ix_users_user_id'), table_name='users')
+    op.drop_index(op.f('ix_users_auth0_id'), table_name='users')
     op.drop_table('users')
     op.drop_table('topic')
     # ### end Alembic commands ###
