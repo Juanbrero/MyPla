@@ -29,3 +29,22 @@ export const getProfessionalsTopic = async (token) => {
         error: null,
     };
 };
+
+export const postProfessionalsTopic = async (token, topic) => {
+
+    const config = {
+    url: `${apiServerUrl}/professionals-topic?topic_name=${encodeURIComponent(topic)}`,
+    method: "POST",
+    headers: {
+        "content-type": "application/json",
+        "Authorization": `Bearer ${token}`,
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
