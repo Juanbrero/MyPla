@@ -1,14 +1,14 @@
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 import { callExternalApi } from "../external-api.service";
 
-export const getProfessionalsTopic = async (token) => {
+export const getProfessionalsTopic = async (prof_id, token) => {
 
     const config = {
-    url: `${apiServerUrl}/professionals-topic`,
+    url: `${apiServerUrl}/professionals-topic?prof_id=${encodeURIComponent(prof_id)}`,
     method: "GET",
     headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        // "Authorization": `Bearer ${token}`,
     }
     };
 
