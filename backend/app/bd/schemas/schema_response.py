@@ -59,15 +59,14 @@ class ResponseProfessional(ResponseClass, Response):
     pass
     
 
-class ResponseAlumno(Response):
+class ResponseStudent(BaseModel):
     """
     Esquema de respuesta a alumno
-      - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
-      - specific: list[schema_topic_specific.TopicSpecificCr1]
-      - exception: list[schema_specific.ExceptionGet]
-      - event: list[schema_specific.SpecificCreate]
+      - avaible:  list[schema_topic_specific.TopicSpecificCr1]
+      - exception: list[schema_specific.ExceptionCreate]
     """
-    pass
+    avaible: list[schema_topic_specific.TopicSpecificCr1]
+    exception: list[schema_exception.ExceptionCreate]
     
 
    

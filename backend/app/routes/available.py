@@ -17,7 +17,7 @@ def get_available_prof(prof_id: str, db:Session = Depends(get_db)):#, user_info 
     return AvailableController(db= db).getProfessionalAvailable(prof_id)#user_info["user_id"])
 
 
-@router.get('/student', tags=['Available'], response_model= schema_response.ResponseAlumno)
+@router.get('/student', tags=['Available'], response_model= schema_response.ResponseStudent)
 def get_available_student(prof_id:str, day: date | None = None, db: Session= Depends(get_db)):#, user_info = Depends(RolesValidator(["Alumno"]))):
     
     return AvailableController(db= db).getStudentAvailable(prof_id,day)

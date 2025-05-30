@@ -127,15 +127,22 @@ class GetStudentAvailable():
                         # 12 >= 10 and 15 <= 15
                         # 12 >= 8 and 15 <= 12
                         pass
+                    
+        data_available = data_recurrent.copy()
+        data_available.extend(data_specific)
 
 
+        response = {
+            'available': data_available,
+            'exception': data_exception
+        }
 
         
-        response = {
+        """response = {
             'specific': data_specific,
             'recurrent': data_recurrent,
             'exception': data_exception
-        }
+        }"""
 
         
         return JSONResponse(status_code= status.HTTP_200_OK, content= response)
