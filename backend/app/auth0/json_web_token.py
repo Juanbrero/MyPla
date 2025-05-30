@@ -21,6 +21,11 @@ class JsonWebToken:
             jwt_signing_key = jwks_client.get_signing_key_from_jwt(
                 self.jwt_access_token
             ).key
+            print("jwt_access_token: ", self.jwt_access_token)
+            print("jwt_signing_key: ", jwt_signing_key)
+            print("algorithms: ", self.algorithm)
+            print("audience: ", self.auth0_audience)
+            print("issuer: ", self.auth0_issuer_url)
             payload = jwt.decode(
                 self.jwt_access_token,
                 jwt_signing_key,
@@ -28,6 +33,7 @@ class JsonWebToken:
                 audience=self.auth0_audience,
                 issuer=self.auth0_issuer_url,
             )
+            print("FALLO LA VAINA DE TOKEN")
         except jwt.exceptions.PyJWKClientError:
             raise UnableCredentialsException
         except jwt.exceptions.InvalidTokenError:

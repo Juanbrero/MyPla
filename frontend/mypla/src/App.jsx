@@ -10,6 +10,7 @@ import ScheduleManager from './components/ScheduleManager';
 import Home from "./pages/Home"
 import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
+import { TestAuth } from "./pages/TestAuth"
 
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
           />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
           <Route path="/test" element={<ScheduleManager />} />
+          <Route path="/test-auth" element={<TestAuth />} />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
       </>
