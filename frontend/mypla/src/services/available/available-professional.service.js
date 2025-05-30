@@ -4,14 +4,14 @@ import { callExternalApi } from "../external-api.service";
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 const dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-export const getAvailableProfessional = async (prof_id, token) => {
+export const getAvailableProfessional = async (token) => {
 
     const config = {
-    url: `${apiServerUrl}/available/professionals?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/available/professionals`,
     method: "GET",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`,
     }
     };
 
@@ -33,7 +33,6 @@ export const getAvailableProfessional = async (prof_id, token) => {
                         extendedProps: {
                             day         : item.week_day ? dias[item.week_day] : dias[diaSemana],
                             date        : item.day ? item.day : '',
-                            // recurrent   : category == 'recurrent',
                             category    : category,
                             eventTopics : item.topics ? item.topics : [],
                         }

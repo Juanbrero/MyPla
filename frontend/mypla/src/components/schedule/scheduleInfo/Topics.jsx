@@ -4,30 +4,40 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getProfessionalsTopic } from '../../../services/professionals-topic/professionals-topic.service';
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Topics(props) {
-  const { taskData, clickedEvent, isEditable, onChangeData, profId } = props;
+  const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
   const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
   const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
   const [topicsList, setTopicsList] = useState([]);
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const { data, error } = await getProfessionalsTopic(profId); // usa el profId
-        if (error) {
-          console.error('Error al obtener los tópicos:', error);
-          return;
+        if (isAuthenticated) {
+
+          const accessToken = await getAccessTokenSilently({audience: import.meta.env.VITE_AUTH0_AUDIENCE});
+          const { data, error } = await getProfessionalsTopic(accessToken);
+          if (error) {
+            console.error('Error al obtener los tópicos:', error);
+            return;
+          }
+          setTopicsList(data.length !== 0 ? data : ["ESTRATEGIA", "VENTAS"]); // asume que la API devuelve { topics: [...] }
+          console.log(data.length);
         }
-        setTopicsList(data || []); // asume que la API devuelve { topics: [...] }
+        else {
+          console.log("no autorizado");
+        }
       } catch (err) {
         console.error('Error inesperado:', err);
       }
     };
 
     fetchTopics();
-  }, [profId]);
+  }, []);
 
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {
