@@ -9,6 +9,7 @@ from app.utils.errors import NotFound
 
 
 def validate_token(token: str = Depends(get_bearer_token)):
+    print("ACA LLEGA?")
     return JsonWebToken(token).validate()
 
 
