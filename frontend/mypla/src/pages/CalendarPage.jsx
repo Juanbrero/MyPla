@@ -31,33 +31,38 @@ function Calendar() {
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const [events, setEvents] = useState([]);
 
-  const [specifics, setSpecifics] = useState([]);
   const [dbEvents, setDbEvents] = useState([]);
 
   const [clickedEvent, setClickedEvent] = useState(null);
 
-  const [message, setMessage] = useState("");
-  const { getAccessTokenSilently } = useAuth0();
+  // const [message, setMessage] = useState("");
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   
   useEffect(() => {
+
     const fetchProfessional = async () => {
-      const prof_id = "d8061f1e-c1a3-4518-b3ca-7fa4cade7f8b";
 
-      const { data, error } = await getAvailableProfessional(prof_id);
+      if (isAuthenticated) {
 
-      if (error) {
-        setError(error);
-      } else {
+        const accessToken = await getAccessTokenSilently({audience: import.meta.env.VITE_AUTH0_AUDIENCE});
 
-        const specific = data.specific;
-        const recurrent = data.recurrent;
-        const exception = data.exception;
-        const event = data.event;
-        // const clase = data.clase;
-        // setDbEvents([...specific, ...recurrent, ...exception, ...event, ...clase]);
-
-        setDbEvents([...specific, ...recurrent, ...exception, ...event]);
-
+        console.log("Access Token:", accessToken);
+        const { data, error } = await getAvailableProfessional(accessToken);
+        
+        if (error) {
+          setError(error);
+        } else {
+          
+          const specific = data.specific;
+          const recurrent = data.recurrent;
+          const exception = data.exception;
+          const event = data.event;
+          // const clase = data.clase;
+          // setDbEvents([...specific, ...recurrent, ...exception, ...event, ...clase]);
+          
+          setDbEvents([...specific, ...recurrent, ...exception, ...event]);
+          
+        }
       }
     };
 
@@ -103,9 +108,6 @@ function Calendar() {
       evFound = dbEvents.find(ev => {
         return (ev.extendedProps.day === event.extendedProps.day) && (ev.start === startFormateado);
       });
-
-      // console.log("specifics: ", specifics);
-      // console.log("speFound: ", evFound);
     }
 
     let evento = {
@@ -114,32 +116,17 @@ function Calendar() {
       title     :   arg.event.title,
       color     :   arg.event.color,
       start     :   evFound.start,
-      // start     :   arg.event.start,
-      // end       :   arg.event.end,
       end       :   evFound.end,
       extendedProps: {
           day         : evFound.extendedProps.day,
           date        : evFound.extendedProps.date,
-          // date        : arg.event.extendedProps.date,
-          // recurrent   : speFound.extendedProps.recurrent,
           category    : evFound.extendedProps.category,
           eventTopics : evFound.extendedProps.eventTopics,
-          // eventTopics : arg.event.extendedProps.eventTopics,
       }
     };
 
     console.log("evento: ", evento);
     setClickedEvent(evento);
-    // console.log("arg.event.id: ", arg.event.id);
-    // console.log("arg.event?.groupId: ", arg.event.groupId);
-    // console.log("arg.event.title: ", arg.event.title);
-    // console.log("arg.event.color: ", arg.event.color);
-    // console.log("arg.event.extendedProps.day: ", arg.event.extendedProps.day);
-    // console.log("arg.event.extendedProps.date: ", arg.event.extendedProps.date);
-    // console.log("arg.event.start: ", arg.event.start);
-    // console.log("arg.event.end: ", arg.event.end);
-    // console.log("arg.event.extendedProps.recurrent: ", arg.event.extendedProps.recurrent);
-    // console.log("arg.event.extendedProps.eventTopics: ", arg.event.extendedProps.eventTopics);
 
     setCreated(true);
     setModalOpen(true);
@@ -345,7 +332,6 @@ function Calendar() {
         select={handleSelect}
         eventClick={handleEventClick}
         events={Object.values(dbEvents).flat()}
-        // events={specifics}
         height={"90vh"}
         datesSet={ (info) => {
           setCalendarRange( {

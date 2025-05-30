@@ -7,13 +7,17 @@ export const ProfilePage = () => {
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
   // Obtengo la metadata de user
-  const metadata = user?.[import.meta.env.VITE_NAMESPACE];
+  // const metadata = user?.[import.meta.env.VITE_NAMESPACE];
+  const rol = user?.["https://miplasip.publicvm.com/roles"];
 
+  console.log(rol);
+  console.log(metadata);
   useEffect(() => {
     // para acceder a la metadata del user (ver username, rol, etc) hay que pegarle a la management API de auth0. PENDIENTE
-    if (metadata?.tipo_usuario) {
-      setTipoUsuario(metadata.tipo_usuario);
-    }
+    // if (metadata?.tipo_usuario) {
+    //   console.log(metadata.tipo_usuario);
+    //   setTipoUsuario(metadata.tipo_usuario);
+    // }
   }, [user]);
 
   if (isLoading) return <p>Cargando perfil...</p>;
