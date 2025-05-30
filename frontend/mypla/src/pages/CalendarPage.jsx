@@ -347,7 +347,6 @@ function Calendar() {
         select={handleSelect}
         eventClick={handleEventClick}
         events={Object.values(dbEvents).flat()}
-        // events={specifics}
         height={"90vh"}
         expandRows={true}
         datesSet={ (info) => {
