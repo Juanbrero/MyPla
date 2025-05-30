@@ -103,48 +103,20 @@ function Calendar() {
 
   const handleEventClick = (arg) => {
     
-    const event = arg.event;
-    const startFormateado = dateObjToLocalTime(event.start);
+    const startFormateado = dateObjToLocalTime(arg.event.start);
 
-    let evFound = {};
-
-    if (event.extendedProps.category !== "recurrent") {
-      evFound = dbEvents.find(ev => {
-        return (ev.extendedProps.day === event.extendedProps.day) && (ev.start === startFormateado);
-      });
-
-      // console.log("specifics: ", specifics);
-      // console.log("speFound: ", evFound);
-    }
-
-    let evento = {
-      id        :   arg.event.id,
-      groupId   :   arg.event?.groupId,
-      title     :   arg.event.title,
-      color     :   arg.event.color,
-      start     :   evFound.start,
-      end       :   evFound.end,
+    let protoEvent = {
+      start     :   startFormateado,
       extendedProps: {
-          day         : evFound.extendedProps.day,
-          date        : evFound.extendedProps.date,
-          category    : evFound.extendedProps.category,
-          eventTopics : evFound.extendedProps.eventTopics,
+          day         : arg.event.extendedProps.day,
+          date        : arg.event.extendedProps.date,
+          category    : arg.event.extendedProps.category,
       }
     };
 
-    console.log("evento: ", evento);
-    setClickedEvent(evento);
-    // console.log("arg.event.id: ", arg.event.id);
-    // console.log("arg.event?.groupId: ", arg.event.groupId);
-    // console.log("arg.event.title: ", arg.event.title);
-    // console.log("arg.event.color: ", arg.event.color);
-    // console.log("arg.event.extendedProps.day: ", arg.event.extendedProps.day);
-    // console.log("arg.event.extendedProps.date: ", arg.event.extendedProps.date);
-    // console.log("arg.event.start: ", arg.event.start);
-    // console.log("arg.event.end: ", arg.event.end);
-    // console.log("arg.event.extendedProps.recurrent: ", arg.event.extendedProps.recurrent);
-    // console.log("arg.event.extendedProps.eventTopics: ", arg.event.extendedProps.eventTopics);
+    let evFound = searchEvent(protoEvent);
 
+    setClickedEvent(evFound);
     setCreated(true);
     setModalOpen(true);
   };
@@ -184,7 +156,24 @@ function Calendar() {
 
   };
 
-  const handleSaveEditTask = (event) => {
+  const handleSaveEditTask = async (event) => {
+
+    const foundEv = searchEvent(event);
+
+    if (foundEv) {
+      switch (foundEv.extendedProps.category) {
+        case "specific":
+          console.log("update foundEv: ", foundEv);
+          await deleteSpecific("token", foundEv);
+          break;
+        case "recurrent":
+          break;
+        case "exception":
+          break;
+        case "class_":
+          break;
+      }
+    }
 
     setEvents((prevEvents) => {
 
@@ -230,6 +219,50 @@ function Calendar() {
         
       });
     });
+    // setEvents((prevEvents) => {
+
+    //   const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
+    //   const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
+    //   const dayOffset = dayHasChanged
+    //   ? dias.indexOf(event.extendedProps.day) - dias.indexOf(firstMatch.extendedProps.day)
+    //   : 0;
+
+    //   return prevEvents.map((ev) => {
+    //     if (event.extendedProps?.recurrent && ev.groupId === event.groupId) {
+    //       // Ajustamos la fecha si el día cambió
+    //       const originalDate = new Date(ev.extendedProps.date);
+    //       const newDate = dayHasChanged
+    //         ? new Date(originalDate.setDate(originalDate.getDate() + dayOffset))
+    //         : originalDate;
+
+    //       // Obtener la hora original de start y end
+    //       const startTime = getTimeFromDate(ev.start); // e.g. "14:00:00"
+    //       const endTime = getTimeFromDate(ev.end);
+
+    //       // Generar nuevos start y end con la nueva fecha
+    //       const newDateStr = newDate.toISOString().split('T')[0];
+    //       const newStart = new Date(`${newDateStr}T${startTime}`);
+    //       const newEnd = new Date(`${newDateStr}T${endTime}`);  
+
+
+    //       return {
+    //           ...event,
+    //           id            : ev.id,
+    //           start         : newStart,
+    //           end           : newEnd,
+    //           extendedProps : {
+    //             ...event.extendedProps,
+    //             date        : newDateStr,
+    //           },
+    //         };
+            
+    //     } else {
+    //       // Si no es recurrente, actualizamos solo por id
+    //       return ev.id === event.id ? event : ev;
+    //     }
+        
+    //   });
+    // });
 
     handleCloseModal();
   }
@@ -338,7 +371,7 @@ function Calendar() {
     switch (evCategory) {
       case "specific":
         foundEv = specifics.find(ev => ((ev.start === event.start) &&
-                                  (ev.extendedProps.day === event.extendedProps.day)));
+                                  (ev.extendedProps.date === event.extendedProps.date)));
         break;
       case "recurrent":
         break;

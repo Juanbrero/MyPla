@@ -108,7 +108,7 @@ export default function ScheduleEdit({
     console.log("editEvent: ", editEvent);
 
     setIsEditable(false); // Regresar al modo de solo lectura después de guardar
-    onSaveEditTask?.(editEvent);
+    // onSaveEditTask?.(editEvent);
     
   };
 
