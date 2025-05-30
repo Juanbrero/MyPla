@@ -1,9 +1,10 @@
 from app.utils.errors import handle_errors
-from app.models import SpecificSchedule, Class, RecurrentSchedule
+from app.models import SpecificSchedule, Class ,Reservation, RecurrentSchedule
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi import status
+from datetime import date
 
 class GetProfessionalAvailable():
     @handle_errors
@@ -20,6 +21,8 @@ class GetProfessionalAvailable():
         all_exceptions = exceptionR.getAllWithProfessional(prof_id)
         
         all_recurrents = recurrentR.getRecurrentsWithTopics(prof_id)
+
+        all_class = classR.getTopicClass(prof_id)
 
         data_specific = []
         for schedule in all_specifics:
@@ -53,12 +56,22 @@ class GetProfessionalAvailable():
             }
             data_exception.append(item)
         
+        data_class = []
+        for schedule, student_id, topic_name in all_class:
+            item ={
+                "prof_id": schedule.prof_id,
+                "student_id": student_id,
+                "day_hour": schedule.day_hour.isoformat(),
+                "topics": topic_name
+            }
+            data_class.append(item) 
+
+
         response = {
             'specific': data_specific,
             'recurrent': data_recurrent,
             'exception': data_exception,
-            'class': [],
-            'event': []
+            'class_': data_class
         }
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=response)

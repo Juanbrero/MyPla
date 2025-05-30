@@ -42,3 +42,18 @@ def del_topic_prof(prof_id: str, topic:str, db: Session = Depends(get_db)):#, us
 def update_price_professional(prof_id: str, topic: schema_prof_topic.ProfessionalTopicCreate, db: Session = Depends(get_db)):#, user_info = Depends(RolesValidator(["Profesional"]))):
     prof_topicS = schema_prof_topic.ProfessionalTopic(**topic.dict(), prof_id=prof_id)
     return ProfessionalTopicController(db= db).updatePrice(prof_topicS)
+
+@router.get('/topics', tags=['Prof Topic'])
+def get_professionals_topic(db: Session = Depends(get_db)):
+    """
+    - Estudiante recibe todos los profesionales y sus topicos
+
+    - Returns:
+        - list[{
+            'prof_id': str,
+            'topics': [ str ]
+        }
+        ]
+            
+    """
+    return ProfessionalTopicController(db= db).getTopicProf()
