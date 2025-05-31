@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfessionalProfile from '../components/ProfessionalProfile.jsx'
 import { prof_id } from "../utils/testData";
-
+import { LinkCalendar } from "../components/LinkCalendar.jsx";
 
 export const ProfilePage = () => {
   const { user, getAccessTokenSilently, isLoading } = useAuth0();
@@ -32,7 +32,9 @@ export const ProfilePage = () => {
 
       <p><strong>Nombre:</strong> {user.name}</p>
       <p><strong>Email:</strong> {user.email}</p>
-      <ProfessionalProfile prof_id={prof_id}></ProfessionalProfile>
+      <div className="prof-topics">
+        <ProfessionalProfile prof_id={prof_id}></ProfessionalProfile>
+      </div>
 
       {tipoUsuario ? (
         <>
@@ -44,6 +46,10 @@ export const ProfilePage = () => {
           <UserTypeForm /> */}
         </div>
       )} 
+      
+      <div className="link-agenda">
+        <LinkCalendar></LinkCalendar>
+      </div>
     </div>
   );
 };

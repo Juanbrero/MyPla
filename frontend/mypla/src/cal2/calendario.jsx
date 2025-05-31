@@ -285,9 +285,9 @@ const Calendario = () => {
     return (
     <div className="p-4 calendario">
       <div className="calendario-controles">
-        <button onClick={anteriorSemana}>⬅️ Anterior</button>
+        <button className="direccion" onClick={anteriorSemana}>⬅️ Anterior</button>
         <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>
-        <button onClick={siguienteSemana}>Siguiente ➡️</button>
+        <button className="direccion" onClick={siguienteSemana}>Siguiente ➡️</button>
       </div>
 
       <div className="calendario-contenedor">

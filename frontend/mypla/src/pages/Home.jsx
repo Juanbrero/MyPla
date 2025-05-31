@@ -29,8 +29,12 @@ function Home() {
       
       </div>
       
-      <PayPalButton></PayPalButton>
-      <MPButton></MPButton>
+      <div className='paypalButton'>
+          <PayPalButton></PayPalButton>
+      </div>
+      <div className="mpButton">
+          <MPButton></MPButton>
+      </div>
       {/* <ButtonLoginGoogle /> */}
       <div className='loginButtons'>
         <LoginButton />
