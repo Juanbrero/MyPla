@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-
+import ProfessionalProfile from '../components/ProfessionalProfile.jsx'
+import { prof_id } from "../utils/testData";
+import { LinkCalendar } from "../components/LinkCalendar.jsx";
 
 export const ProfilePage = () => {
   const { user, getAccessTokenSilently, isLoading } = useAuth0();
@@ -24,22 +26,30 @@ export const ProfilePage = () => {
   // console.log("METADATA", user?.[import.meta.env.VITE_NAMESPACE]);
   // getAccessTokenSilently().then(token => console.log("AccessToken", token));
 
-
   return (
     <div>
       <h2>Perfil</h2>
 
       <p><strong>Nombre:</strong> {user.name}</p>
       <p><strong>Email:</strong> {user.email}</p>
+      <div className="prof-topics">
+        <ProfessionalProfile prof_id={prof_id}></ProfessionalProfile>
+      </div>
 
       {tipoUsuario ? (
-        <p><strong>Tipo de usuario:</strong> {tipoUsuario}</p>
+        <>
+          <p><strong>Tipo de usuario:</strong> {tipoUsuario}</p>
+        </>
       ) : (
         <div>
           {/* <p>No seleccionaste tu tipo de usuario. Por favor, completalo:</p>
           <UserTypeForm /> */}
         </div>
       )} 
+      
+      <div className="link-agenda">
+        <LinkCalendar></LinkCalendar>
+      </div>
     </div>
   );
 };

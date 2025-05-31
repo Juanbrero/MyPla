@@ -1,72 +1,125 @@
-import * as React from 'react';
-import {
-  Box, Typography, Checkbox, MenuItem, Select, ListItemText, FormControl, InputLabel, Chip
-} from '@mui/material';
-import { useEffect, useState } from 'react';
 import { getTopics } from '../services/topics/topics.service';
-import { getProfessionalsTopic } from '../services/professionals-topic/professionals-topic.service'
+import { getProfessionalsTopic, postProfessionalsTopic } from '../services/professionals-topic/professionals-topic.service'
+
+import React, { useEffect, useState } from 'react';
+import { Button, Box, Typography } from '@mui/material';
+import Topics from './schedule/scheduleInfo/Topics';
 
 
-// Supongamos que tienes esta función:
-    // const topics = getTopics()
-    // const ownTopics = getProfessionalsTopic(token)
+export default function ProfessionalAddTopic({ professionalId }) {
+  const [availableTopics, setAvailableTopics] = useState([]);
+  const [selectedTopics, setSelectedTopics] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
-export default function Topics(props) {
-  const { taskData, clickedEvent, isEditable, onChangeData } = props;
+  const fetchTopicsData = async () => {
+    try {
+      setLoading(true);
 
-  const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
-  const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
+      const { data: allTopics, error: topicsError } = await getTopics();
+      if (topicsError) {
+        console.error('Error al obtener todos los tópicos:', topicsError);
+        setStatusMessage('Error al obtener los tópicos');
+        return;
+      }
 
-  const topicsList = getTopics(); // Obtiene los temas
+      const { data: professionalTopics, error: professionalError } = await getProfessionalsTopic(professionalId);
+      if (professionalError) {
+        console.error('Error al obtener tópicos del profesional:', professionalError);
+        setStatusMessage('Error al obtener los tópicos del profesional');
+        return;
+      }
+
+      const topicsAlreadyAssigned = professionalTopics || [];
+      const topicsToAdd = allTopics.filter((topic) => !topicsAlreadyAssigned.includes(topic));
+
+      setAvailableTopics(topicsToAdd);
+      setStatusMessage('');
+    } catch (error) {
+      console.error('Error inesperado:', error);
+      setStatusMessage('Error inesperado');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (taskData?.topics && Array.isArray(taskData.topics)) {
-      setSelectedTopicsState(taskData.topics);
-    }
-    if (clickedEvent?.extendedProps?.eventTopics) {
-      setEditTopics(clickedEvent.extendedProps.eventTopics);
-    }
-  }, [taskData?.topics, clickedEvent?.extendedProps?.eventTopics]);
+    fetchTopicsData();
+  }, [professionalId]);
 
-  const handleTopicChange = (event) => {
-    const { target: { value } } = event;
-    const newTopics = typeof value === 'string' ? value.split(',') : value;
-    setSelectedTopicsState(newTopics);
-    onChangeData?.({ topics: newTopics });
+  const handleChangeTopics = (data) => {
+    setSelectedTopics(data.topics || []);
+  };
+
+  const handleAddTopics = async () => {
+    if (!selectedTopics.length) {
+      setStatusMessage('Selecciona al menos un tópico');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setStatusMessage('');
+
+      for (const topic of selectedTopics) {
+        const { data, error } = await postProfessionalsTopic(topic);
+        if (error) {
+          console.error(`Error al agregar el tópico ${topic}:`, error);
+          setStatusMessage(`Error al agregar el tópico ${topic}`);
+          return;
+        }
+      }
+
+      setStatusMessage('Tópicos agregados correctamente');
+      setSelectedTopics([]);
+      await fetchTopicsData(); // Recarga los datos para actualizar la lista de disponibles
+    } catch (error) {
+      console.error('Error al agregar tópicos:', error);
+      setStatusMessage('Error al agregar tópicos');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      {!isEditable ? (
-        <Box>
-          <Typography variant="subtitle1"><strong>Topicos asignados:</strong></Typography>
-          {editTopics.length ? (
-            editTopics.map((topic) => (
-              <Chip key={topic} label={topic} sx={{ marginRight: 1, marginBottom: 1 }} />
-            ))
+    <Box>
+      <Typography variant="h6">Agregar tópicos al profesional</Typography>
+
+      {loading && <Typography>Cargando...</Typography>}
+
+      {!loading && (
+        <>
+          {availableTopics.length === 0 ? (
+            <Typography color="text.secondary" sx={{ marginTop: 2 }}>
+              El profesional ya tiene todos los tópicos asignados.
+            </Typography>
           ) : (
-            <Typography>No asignado</Typography>
+            <>
+              <Topics
+                taskData={{ topics: selectedTopics }}
+                isEditable={true}
+                onChangeData={handleChangeTopics}
+                topicsListFromParent={availableTopics}
+              />
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddTopics}
+                sx={{ marginTop: 2 }}
+              >
+                Agregar tópicos
+              </Button>
+            </>
           )}
-        </Box>
-      ) : (
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Posibles tópicos</InputLabel>
-          <Select
-            multiple
-            value={selectedTopicsState}
-            onChange={handleTopicChange}
-            renderValue={(selected) => selected.join(', ')}
-            label="Posibles tópicos"
-          >
-            {topicsList.map((topic) => (
-              <MenuItem key={topic} value={topic}>
-                <Checkbox checked={selectedTopicsState.indexOf(topic) > -1} />
-                <ListItemText primary={topic} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+
+          {statusMessage && (
+            <Typography color="secondary" sx={{ marginTop: 2 }}>
+              {statusMessage}
+            </Typography>
+          )}
+        </>
       )}
-    </>
+    </Box>
   );
 }

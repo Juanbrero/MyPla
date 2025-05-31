@@ -10,6 +10,7 @@ import ScheduleManager from './components/ScheduleManager';
 import Home from "./pages/Home"
 import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
+import Calendario from "./cal2/calendario"
 import { TestAuth } from "./pages/TestAuth"
 
 
@@ -32,6 +33,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/c2" element={<Calendario />} />
           <Route
             path="/profile"
             element={<AuthenticationGuard component={ProfilePage} />}

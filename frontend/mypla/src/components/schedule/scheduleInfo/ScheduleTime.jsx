@@ -5,6 +5,7 @@ import {
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useEffect } from 'react'
+import { dateFormater } from '../../../utils/dateFormater';
 
 export default function ScheduleTime(props) {
   const { taskData, clickedEvent, isEditable, onChangeData } = props;
@@ -39,7 +40,7 @@ export default function ScheduleTime(props) {
 
     const formatTime = (date) => {
         if (!(date instanceof Date)) return date
-        return date.toTimeString().slice(0, 5)
+        return date.slice(0, 5)
     } // 'HH:MM'
     
     const handleStartChange = (newValue) => {
@@ -58,7 +59,8 @@ export default function ScheduleTime(props) {
           {!isEditable ? (
             <Box>
               <Typography variant="subtitle1">
-                <strong>Horario:</strong> {formatTime(editStart)} - {formatTime(editEnd)}
+                <strong>Horario:</strong> {dateFormater(editStart).slice(0, 5)} - {dateFormater(editEnd).slice(0, 5)}
+                {/* <strong>Horario:</strong> {formatTime(editStart)} - {formatTime(editEnd)} */}
               </Typography>
             </Box>
           ) : (
