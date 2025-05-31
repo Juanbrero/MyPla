@@ -3,33 +3,42 @@ import CeldaHora from './celdaHora.jsx';
 import { prof_id } from "../utils/testData";
 import { getAvailableProfessional } from './service.js';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes } from 'date-fns';
-import './calendario.css'
+import './calendario.css';
 
+// --- funciones utilitarias para hora ---
+const parseHora = (horaStr) => {
+  if (!horaStr) return '';
+  return horaStr.slice(0, 5);
+};
+
+const horaNumero = (horaStr) => {
+  if (!horaStr) return null;
+  return parseInt(horaStr.slice(0, 2), 10);
+};
+
+// --- filtrar eventos por día adaptado ---
 const filtrarEventosPorDia = (eventos, dia) => {
   if (!eventos) return { recurrent: [], specific: [], exception: [] };
 
   const { recurrent = [], specific = [], exception = [] } = eventos;
 
-  // Filtrar especificos para el dia
+  // Filtrar específicos para el día
   const especificosDelDia = specific.filter(e => isSameDay(parseISO(e.day), dia));
 
-  // Filtrar excepciones para el dia
+  // Filtrar excepciones para el día
   const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
 
-  // Filtrar recurrentes para el dia, omitiendo los que tienen excepción
+  // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
   const recurrentesDelDia = recurrent.filter(e => {
     const esElDia = getDay(dia) === e.week_day;
+    const horaEv = horaNumero(parseHora(e.start));
     const tieneExcepcion = excepcionesDelDia.some(exc => {
-      const horaInicioRecurrente = e.start.slice(0, 8); // 'HH:mm:ss'
-      const horaInicioExcepcion = exc.start.slice(0, 8);
+      const horaInicioRecurrente = parseHora(e.start);
+      const horaInicioExcepcion = parseHora(exc.start);
       return esElDia && horaInicioRecurrente === horaInicioExcepcion;
     });
     return esElDia && !tieneExcepcion;
   });
-  console.log(dia)
-if (recurrentesDelDia.length > 0) console.log('rec: ', recurrentesDelDia)
-if (especificosDelDia.length > 0) console.log('esp: ', especificosDelDia)
-if (excepcionesDelDia.length > 0) console.log('exp', excepcionesDelDia)
 
   return {
     recurrent: recurrentesDelDia,
@@ -38,12 +47,12 @@ if (excepcionesDelDia.length > 0) console.log('exp', excepcionesDelDia)
   };
 };
 
-const horasDelDia = Array.from({ length: 13 }, (_, i) => i + 8); // Horas de 8 a 20 hs
+const horasDelDia = Array.from({ length: 13 }, (_, i) => i + 8); // 8 a 20
 
 const Calendario = () => {
-  const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })); // lunes
-  const [eventos, setEventos] = useState({}); 
-  const [modalInfo, setModalInfo] = useState(null); // Para abrir modal con info del evento o nueva cita
+  const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [eventos, setEventos] = useState({});
+  const [modalInfo, setModalInfo] = useState(null);
 
   const cargarEventos = async (profId) => {
     try {
@@ -64,16 +73,12 @@ const Calendario = () => {
 
   const diasSemana = Array.from({ length: 7 }).map((_, i) => addDays(semanaInicio, i));
 
-  // Abre el modal con info para crear o editar evento
   const handleCeldaClick = (dia, hora, evento = null) => {
-    // Creamos Date con la fecha y hora para el modal
     const fechaHora = setMinutes(setHours(dia, hora), 0);
     setModalInfo({ fechaHora, evento });
     console.log("Abrir modal con:", { fechaHora, evento });
-    // Aqui llamaria al modal para editar o crear nuevo evento
   };
 
-  // Precalcular eventos filtrados para cada día (solo una vez)
   const eventosPorDia = diasSemana.reduce((acc, dia) => {
     acc[format(dia, 'yyyy-MM-dd')] = filtrarEventosPorDia(eventos, dia);
     return acc;
@@ -81,51 +86,46 @@ const Calendario = () => {
 
   return (
     <div className="p-4">
-        {/* controles */}
-        <div className="calendario-controles">
-            <button onClick={anteriorSemana}>⬅️ Anterior</button>
-            <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>
-            <button onClick={siguienteSemana}>Siguiente ➡️</button>
+      <div className="calendario-controles">
+        <button onClick={anteriorSemana}>⬅️ Anterior</button>
+        <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>
+        <button onClick={siguienteSemana}>Siguiente ➡️</button>
+      </div>
+
+      <div className="calendario-contenedor">
+        <div className="columna-horas">
+          <div className="header-horas"></div>
+          {horasDelDia.map(hora => (
+            <div key={hora} className="hora">{hora}:00</div>
+          ))}
         </div>
 
-        {/* contenedor */}
-        <div className="calendario-contenedor">
-            {/* horas */}
-            <div className="columna-horas">
-                <div className="header-horas"></div> {/* espacio para alinear con header dias */}
-                {horasDelDia.map(hora => (
-                    <div key={hora} className="hora">{hora}:00</div>
-                ))}
+        <div className="grid-dias">
+          {diasSemana.map((dia, idxDia) => (
+            <div key={`header-${idxDia}`} className="header-dia">
+              {format(dia, 'EEE dd/MM')}
             </div>
+          ))}
 
-            {/* dias */}
-            <div className="grid-dias">
-                {diasSemana.map((dia, idxDia) => (
-                    <div key={`header-${idxDia}`} className="header-dia">
-                    {format(dia, 'EEE dd/MM')}
-                    </div>
-                ))}
+          {horasDelDia.map(hora =>
+            diasSemana.map((dia, idxDia) => {
+              const keyDia = format(dia, 'yyyy-MM-dd');
+              const eventosDelDia = eventosPorDia[keyDia];
 
-                {horasDelDia.map(hora =>
-                    diasSemana.map((dia, idxDia) => {
-                    const keyDia = format(dia, 'yyyy-MM-dd');
-                    const eventosDelDia = eventosPorDia[keyDia];
-
-                    return (
-                        <CeldaHora
-                        key={`${hora}-${idxDia}`}
-                        dia={dia}
-                        hora={hora}
-                        eventosDelDia={eventosDelDia}
-                        onClick={handleCeldaClick}
-                        />
-                    );
-                    })
-                )}
-            </div>
+              return (
+                <CeldaHora
+                  key={`${hora}-${idxDia}`}
+                  dia={dia}
+                  hora={hora}
+                  eventosDelDia={eventosDelDia}
+                  onClick={handleCeldaClick}
+                />
+              );
+            })
+          )}
         </div>
+      </div>
     </div>
-
   );
 };
 

@@ -46,7 +46,7 @@
   flex: 1; /* ocupa todo el espacio restante */
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 0;
 }
 
 /* Header de días */
