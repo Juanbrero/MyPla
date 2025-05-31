@@ -7,9 +7,6 @@ import { getProfessionalsTopic } from '../../../services/professionals-topic/pro
 
 export default function Topics(props) {
   const { taskData, clickedEvent, isEditable, onChangeData, topicsListFromParent } = props;
-
-  console.log(taskData)
-
   const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
   const [editTopics, setEditTopics] = useState([]);
   const [topicsList, setTopicsList] = useState(topicsListFromParent || []);

@@ -37,9 +37,10 @@ export default function ScheduleEdit({
   onCancelOneOccurrence,
 }) {
 
-    if (!clickedEvent || !taskData) {
-        return null; // O un loading, o un mensaje, o simplemente no renderizar nada
-    }
+  // LOADING .....
+  if (!clickedEvent || !taskData) {
+      return null;
+  }
 
   const [isEditable, setIsEditable] = React.useState(false); // Controla si el formulario es editable
   const [localTaskData, setLocalTaskData] = React.useState(taskData);

@@ -61,14 +61,6 @@ const Calendario = () => {
     const [editModalOpen, setEditModalOpen] = React.useState(false);
     const [editModalData, setEditModalData] = React.useState(null);
 
-    // React.useEffect(() => {
-    //     if(editModalData !== null) {
-    //     console.log('editModalData actualizado:', editModalData);
-    //     // Aquí podés hacer otras cosas que necesiten el valor actualizado
-    //     }
-    // }, [editModalData]);
-
-
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
@@ -80,8 +72,6 @@ const Calendario = () => {
         if (evento) {
             setEditModalData(evento);
             setEditModalOpen(true);
-            console.log(evento)
-            console.log(editModalData)
         }
         // Abrir modal de crear si no hay evento
         else {

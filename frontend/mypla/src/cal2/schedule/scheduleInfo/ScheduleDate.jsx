@@ -12,7 +12,13 @@ export default function ScheduleDate(props) {
   const { taskData, clickedEvent, isEditable, onChangeData } = props;
 
   const [day, setDay] = React.useState('Lunes');
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedDate, setSelectedDate] = React.useState(() => {
+  if (taskData?.day) {
+    const [year, month, day] = taskData.day.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+    return new Date();
+  });
 
   // Actualizo estados cuando cambia taskData o clickedEvent
   useEffect(() => {
@@ -27,7 +33,7 @@ export default function ScheduleDate(props) {
     } else {
       let dateVal = null;
 
-      if (type === 'specific' || type === 'exception') {
+      if (type === 'specific' || type === 'exception') {        // PONER ELSE
         dateVal = dayStr;
       } else if (type === 'class_') {
         dateVal = day_hour;

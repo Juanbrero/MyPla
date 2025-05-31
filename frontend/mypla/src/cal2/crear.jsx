@@ -34,6 +34,11 @@ export default function ScheduleCreate({
   onSaveTask,
 }) {
 
+  // LOADING .....
+  if (!taskData) {
+      return null;
+  }
+
   const [localTaskData, setLocalTaskData] = React.useState(taskData);
   
 
