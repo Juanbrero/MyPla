@@ -12,6 +12,7 @@ import { getAvailableProfessional } from "../services/available/available-profes
 import { dateObjToLocalTime } from "../utils/dateFormater";
 import './calendar.css';
 import { id } from "date-fns/locale";
+import { postRecurrent } from "../services/recurrent/recurrent.service";
 
 
 function Calendar() {
@@ -33,7 +34,7 @@ function Calendar() {
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const [events, setEvents] = useState([]);
+  const [recurrentRender, setRecurrentRender] = useState([]);
 
   const [dbEvents, setDbEvents] = useState([]);
   
@@ -57,6 +58,11 @@ function Calendar() {
         setSpecifics(specific);
         
         const recurrent = data.recurrent;
+
+        for (let i = 0; i < recurrent.length; i++) {
+          await createRecurrentEvent(recurrent[i]);
+          console.log("recu creado:", recurrent[i]);
+        }
         setRecurrents(recurrent);
 
         const exception = data.exception;
@@ -65,7 +71,7 @@ function Calendar() {
         // const clase = data.class_;
         // setDbEvents([...specific, ...recurrent, ...exception, ...class_]);
 
-        setDbEvents([...specific, ...recurrent, ...exception]);
+        setDbEvents([...specific, ...recurrent, ...exception, ...recurrentRender]);
 
       }
     };
@@ -125,36 +131,37 @@ function Calendar() {
 
   const handleSaveTask = async (taskName) => {
     
-    const startToCheck = combinarFechaYHora(taskName?.date, taskName.start);
-    const endToCheck = combinarFechaYHora(taskName?.date, taskName.end);
+    // const startToCheck = combinarFechaYHora(taskName?.date, taskName.start);
+    // const endToCheck = combinarFechaYHora(taskName?.date, taskName.end);
 
-    const haySolapamiento = events.some(ev => {
-      const evStart = new Date(ev.start);
-      const evEnd = new Date(ev.end);
+    // const haySolapamiento = events.some(ev => {
+    //   const evStart = new Date(ev.start);
+    //   const evEnd = new Date(ev.end);
 
-      return (
-        startToCheck.getTime() < evEnd.getTime() &&
-        endToCheck.getTime() > evStart.getTime()
-      );
-    });
+    //   return (
+    //     startToCheck.getTime() < evEnd.getTime() &&
+    //     endToCheck.getTime() > evStart.getTime()
+    //   );
+    // });
 
-    if (!haySolapamiento) {
+    // if (!haySolapamiento) {
  
-      if (taskName.category === "recurrent") {
-        await createRecurrentEvent(taskName);
-      }
-      else {
-        await createEvent(taskName);
-      }
+      // if (taskName.category === "recurrent") {
+      //   await createRecurrentEvent(taskName);
+      // }
+      // else {
+      //   await createEvent(taskName);
+      // }
+      await createEvent(taskName);
 
       handleCloseModal();
       // return true;
       setRefreshTrigger(prev => prev + 1);
-    }
-    else {
-      alert("Error al crear evento, el rango horario ya contiene eventos.")
+    // }
+    // else {
+      // alert("Error al crear evento, el rango horario ya contiene eventos.")
       // return false;
-    }
+    // }
 
   };
 
@@ -224,52 +231,7 @@ function Calendar() {
     //   });
     // });
 
-
-    // setEvents((prevEvents) => {
-
-    //   const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
-    //   const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
-    //   const dayOffset = dayHasChanged
-    //   ? dias.indexOf(event.extendedProps.day) - dias.indexOf(firstMatch.extendedProps.day)
-    //   : 0;
-
-    //   return prevEvents.map((ev) => {
-    //     if (event.extendedProps?.recurrent && ev.groupId === event.groupId) {
-    //       // Ajustamos la fecha si el día cambió
-    //       const originalDate = new Date(ev.extendedProps.date);
-    //       const newDate = dayHasChanged
-    //         ? new Date(originalDate.setDate(originalDate.getDate() + dayOffset))
-    //         : originalDate;
-
-    //       // Obtener la hora original de start y end
-    //       const startTime = getTimeFromDate(ev.start); // e.g. "14:00:00"
-    //       const endTime = getTimeFromDate(ev.end);
-
-    //       // Generar nuevos start y end con la nueva fecha
-    //       const newDateStr = newDate.toISOString().split('T')[0];
-    //       const newStart = new Date(`${newDateStr}T${startTime}`);
-    //       const newEnd = new Date(`${newDateStr}T${endTime}`);  
-
-
-    //       return {
-    //           ...event,
-    //           id            : ev.id,
-    //           start         : newStart,
-    //           end           : newEnd,
-    //           extendedProps : {
-    //             ...event.extendedProps,
-    //             date        : newDateStr,
-    //           },
-    //         };
-            
-    //     } else {
-    //       // Si no es recurrente, actualizamos solo por id
-    //       return ev.id === event.id ? event : ev;
-    //     }
-        
-    //   });
-    // });
-
+    setRefreshTrigger(prev => prev + 1);
     handleCloseModal();
   }
 
@@ -323,11 +285,19 @@ function Calendar() {
       },
     }
 
-    // setEvents([...events, 
-    //   newEvent
-    // ]);
-    
-    await postSpecific("token", newEvent);
+    const evCategory = newEvent.extendedProps.category;
+    switch (evCategory) {
+      case "specific":
+        await postSpecific("token", newEvent);
+        break;
+      case "recurrent":
+        await postRecurrent("token", newEvent);
+        break;
+      case "exception":
+        break;
+      case "class_":
+        break;
+    }
   }
 
   const createRecurrentEvent =  async (taskName) => {
@@ -335,38 +305,45 @@ function Calendar() {
     const current = new Date(calendarRange.start);
     const originalStart = taskName.start;
     const originalEnd = taskName.end;
-    const groupIdGen = crypto.randomUUID();
+    const groupIdGen = taskName.groupId;
     const newEvents = [];
+
+    // console.log("current: ", current);
+    // console.log("originalStart: ", originalStart);
+    // console.log("originalEnd: ", originalEnd);
+    // console.log("calendarRange.start: ", calendarRange.start);
+    // console.log("calendarRange.end: ", calendarRange.end);
+ 
 
     while (current <= calendarRange.end) {
       const currentDay = dias[current.getDay()];
 
-      if (currentDay === taskName.day) {
+      if (currentDay === taskName.extendedProps.day) {
         const dateStr = current.toISOString().split("T")[0];
-
+        console.log("dateStr: ", dateStr);
         const newEvent = {
           // id      :    `${crypto.randomUUID()}`,
           groupId :    `${groupIdGen}`,
           title   :    '',
-          color   :    'green',          
+          // color   :    'green',          
           start   :    `${dateStr}T${originalStart}`,
           end     :    `${dateStr}T${originalEnd}`,
           extendedProps : {
                       date: dateStr,
                       day: currentDay,
-                      recurrent: taskName.recurrent,
                       eventTopics: taskName.topics,
+                      category: taskName.extendedProps.category,
           },
         }
-
+        console.log("newEvent recu: ", newEvent);
         newEvents.push(newEvent);
       };
 
       current.setDate(current.getDate() + 1);
     }
 
-    setEvents(prevEvents => [...prevEvents, ...newEvents]);
-
+    setRecurrentRender(prevEvents => [...prevEvents, ...newEvents]);
+    // setRefreshTrigger(prev => prev + 1);
   }
   
   const searchEvent = (event) => {

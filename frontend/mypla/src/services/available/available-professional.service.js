@@ -5,7 +5,7 @@ import { callExternalApi } from "../external-api.service";
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 const dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const colores = {
-    'recurrent': 'blue',
+    'recurrent': 'green',
     'specific': 'light_blue',
     'exception': 'red',
     // 'event': 'orange',
@@ -26,6 +26,7 @@ export const getAvailableProfessional = async (token) => {
     const { data, error } = await callExternalApi({ config });
 
     if (data) {
+        
         for (const category in data) {
             if (data.hasOwnProperty(category)) {
                 data[category] = data[category].map(item => {
@@ -33,11 +34,11 @@ export const getAvailableProfessional = async (token) => {
                     const diaSemana = fecha.getDay()
                     return {
                         id        :   `${crypto.randomUUID()}`,
-                        // groupId   :   arg.event?.groupId,
+                        // groupId   :   category == 'recurrent' ? `${crypto.randomUUID()}` : '',
                         // title     :   arg.event.title,
                         color     :   colores[category],
-                        start     :   dateFormaterReverse(item.day, item.start),
-                        end       :   dateFormaterReverse(item.day, item.end),
+                        start     :   item.day? dateFormaterReverse(item.day, item.start) : item.start,
+                        end       :   item.day? dateFormaterReverse(item.day, item.end) : item.end,
                         extendedProps: {
                             day         : item.week_day ? dias[item.week_day] : dias[diaSemana],
                             date        : item.day ? item.day : '',

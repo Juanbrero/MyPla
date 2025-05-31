@@ -61,7 +61,7 @@ export const postRecurrent = async (token, recurrent) => {
     const startISO = dateFormater(recurrent.start);
     const endISO = dateFormater(recurrent.end);
 
-    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
+    const indice = dias.indexOf(recurrent.extendedProps.day)
     const week_day_index = indice == 0 ? 7 : indice
 
     const config = {
@@ -78,6 +78,8 @@ export const postRecurrent = async (token, recurrent) => {
         topics  : recurrent.extendedProps.eventTopics,
     }
     };
+
+    console.log("config recurrent: ", config);
 
     const { data, error } = await callExternalApi({ config });
 
