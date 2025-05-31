@@ -32,22 +32,29 @@ class UpdateSpecific:
         if specificS.Nday or specificS.Nend or specificS.Nstart:
             
             start = specificS.Nstart if specificS.Nstart else specificS.start
-
+            start = strip_time_hour_minute(start)
             if specificS.Nend:
+
                 specificS.Nend = strip_time_hour_minute(specificS.Nend)
                 
-                if specificS.Nend == 0:
-                    specificS.Nend = time(hour=23, minute=59)
-
+                """if specificS.Nend.hour == 0:
+                    specificS.Nend = time(hour=23, minute=59)"""
+               
                 if specificS.start >= specificS.Nend:
                     raise ValidationError("The range hour is invalid")
             
             day = specificS.Nday if specificS.Nday else specificS.day
             end = specificS.Nend if specificS.Nend else old_specific[0].end
 
-            if end.minute != start.minute:
-		            raise ValidationError('Hour incomplete')
-    
+            if start.minute != end.minute:
+                    raise ValidationError("The range hour is invalid")
+            
+            day = specificS.Nday if specificS.Nday else specificS.day
+            end = specificS.Nend if specificS.Nend else old_specific[0].end
+
+            if start.minute != end.minute:
+                raise ValidationError('Hour incomplete')
+            
             specifics = specificR.getSpecificsToRange(specificS.prof_id, day, start, end)
             # Valido si existe otro specific en el rango, en caso de que haya uno deberia chequear si no es el mismo que envio el usuario 
             if len(specifics) > 1 or (len(specifics) == 1 and (specificS.day != specifics[0].day or specificS.start != specifics[0].start)):
@@ -59,7 +66,8 @@ class UpdateSpecific:
             
             specificR.update({
                 "day": day,
-                "start": start
+                "start": start,
+                "end": end
             }, {
                 "day": specificS.day,
                 "start": specificS.start,
@@ -71,8 +79,8 @@ class UpdateSpecific:
                 raise ValidationError("You don't have a topic")
             
             topics = topic_specificR.get_by({
-                "day": specificS.day,
-                "start": specificS.start,
+                "day": day,
+                "start": start,
                 "prof_id": specificS.prof_id
             })
             
@@ -87,16 +95,16 @@ class UpdateSpecific:
             for t in topic_remove:
                 topic_specificR.delete({
                     "prof_id": specificS.prof_id,
-                    "start": specificS.start,
-                    "day": specificS.day,
+                    "start": start,
+                    "day": day,
                     "topic_name": t
                 })
             
             for t in topic_add:
                 topic_specificR.create({
                     "prof_id": specificS.prof_id,
-                    "start": specificS.start,
-                    "day": specificS.day,
+                    "start": start,
+                    "day": day,
                     "topic_name": t
                 })
         

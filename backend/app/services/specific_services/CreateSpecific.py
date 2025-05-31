@@ -21,14 +21,16 @@ class CreateSpecific:
         specificS.start = strip_time_hour_minute(specificS.start)
         specificS.end = strip_time_hour_minute(specificS.end)
 
-        if specificS.end == 0:
+        if specificS.end.minute != specificS.start.minute:
+            raise ValidationError('Hour incomplete')
+
+        if specificS.end.hour == 0:
             specificS.end = time(hour=23, minute=59)
         
         if specificS.start >= specificS.end:
             raise ValidationError("The range hour is invalid")
         
-        if specificS.end.minute != specificS.start.minute:
-            raise ValidationError('Hour incomplete')
+        
 
         specifics = specificR.getSpecificsToRange(specificS.prof_id, specificS.day, specificS.start, specificS.end)
         if len(specifics) > 0:
