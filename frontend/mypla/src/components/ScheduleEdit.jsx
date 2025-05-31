@@ -66,10 +66,10 @@ export default function ScheduleEdit({
 
     const { topics, start, end } = localTaskData;
     
-    if (!topics?.length || !start || !end) {
-      alert('Por favor complete todos los campos');
-      return;
-    }
+    // if (!topics?.length || !start || !end) {
+    //   alert('Por favor complete todos los campos');
+    //   return;
+    // }
     
     if (start >= end) {
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
@@ -139,10 +139,11 @@ export default function ScheduleEdit({
             onChangeData={handleTaskDataChange}
           />
           <ScheduleTime
-            taskData={taskData}
+            taskData={localTaskData}
             clickedEvent={clickedEvent}
             isEditable={isEditable}
             onChangeData={handleTaskDataChange}
+            editando = {true}
           />
           <Recurrent
             taskData={localTaskData}

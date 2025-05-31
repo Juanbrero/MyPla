@@ -22,3 +22,9 @@ export const dateObjToLocalTime = (dateObj) => {
     return dateFormaterReverse(date, time);
 
 }
+
+export const stringDateToLocalTime = (dateString) => {
+    const [datePart, timePart] = dateString.split("T");
+
+    return timePart;
+}

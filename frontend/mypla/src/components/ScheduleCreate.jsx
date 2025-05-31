@@ -88,6 +88,7 @@ export default function ScheduleCreate({
             taskData={taskData}
             isEditable={true}
             onChangeData={handleTaskDataChange}
+            editando= {false}
           />          
           <Recurrent
             taskData={taskData}
