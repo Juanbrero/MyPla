@@ -27,12 +27,29 @@ const eventoEnHora = (eventos, dia, hora) => {
 
 const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
   const { recurrent = [], specific = [] } = eventosDelDia || {};
-
   const todosEventos = [...recurrent, ...specific];
+
+  // const { recurrent = [], specific = [], exceptions = [] } = eventosDelDia || {};
+  // const todosEventos = [...recurrent, ...specific, exceptions];
+
   const evento = eventoEnHora(todosEventos, dia, hora);
-
-  const claseCelda = evento ? 'celda-hora-ocupada' : 'celda-hora';
-
+  
+  let claseCelda = 'celda-hora'
+  
+  if (evento) {
+    claseCelda += ' celda-hora-ocupada'
+    if (evento.type == 'recurrent') {
+      claseCelda += ' celda-recurrent'
+    }
+    else if (evento.type == 'specific') {
+      claseCelda += ' celda-specific'
+    }
+    else if (evento.type == 'exception') {
+      claseCelda += ' celda-exception'
+    }
+  }
+  // const claseCelda = evento ? 'celda-hora-ocupada' : 'celda-hora';
+  
   return (
     <div className={claseCelda} onClick={() => onClick(dia, hora, evento)}>
       {evento ? (

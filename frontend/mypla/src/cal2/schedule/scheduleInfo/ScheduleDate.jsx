@@ -65,14 +65,14 @@ export default function ScheduleDate(props) {
       {!isEditable ? (
         <Box>
           <Typography variant="subtitle1">
-            <strong>{clickedEvent?.extendedProps?.type === 'recurrent' ? 'Día' : 'Fecha'}: </strong>
-            {clickedEvent?.extendedProps?.type === 'recurrent'
+            <strong>{clickedEvent?.type == 'recurrent' ? 'Día' : 'Fecha'}: </strong>
+            {clickedEvent?.type == 'recurrent'
               ? day
               : selectedDate.toLocaleDateString()}
           </Typography>
         </Box>
       ) : (
-        clickedEvent?.extendedProps?.type === 'recurrent' ? (
+        clickedEvent?.type == 'recurrent' ? (
           <FormControl fullWidth margin="normal">
             <InputLabel>Día</InputLabel>
             <Select

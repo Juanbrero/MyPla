@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './celdaHora.jsx';
 import { prof_id } from "../utils/testData";
-import { getAvailableProfessional } from './service.js';
+import { getAvailableProfessional, postSpecific, postRecurrent } from './service.js';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes } from 'date-fns';
 import './calendario.css';
 import ScheduleCreate from './crear';
@@ -19,6 +19,14 @@ const horaNumero = (horaStr) => {
     if (!horaStr) return null;
     return parseInt(horaStr.slice(0, 2), 10);
 };
+
+function getRawTimeString(date) {
+  const horas = String(date.getHours()).padStart(2, '0');
+  const minutos = String(date.getMinutes()).padStart(2, '0');
+  const segundos = String(date.getSeconds()).padStart(2, '0');
+  const milisegundos = String(date.getMilliseconds()).padStart(3, '0');
+  return `${horas}:${minutos}:${segundos}.${milisegundos}Z`; // O sin la Z, según quieras
+}
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
@@ -102,41 +110,60 @@ const Calendario = () => {
     };
 
     // --- guardo nueva tarea (modal de CREATE) ---------------------------------------------------
-    const handleSaveNewTask = (newTask) => {
-    
-        // TODO : guardar en back y recargar
-    
-            // setEventos((prev) => {
-            //   const tipo = newTask.recurrent ? 'recurrent' : 'specific';
-            //   const nuevos = prev[tipo] ? [...prev[tipo]] : [];
-            
-            //   // Para guardar, convertimos start/end a string con formato ISO o que espere backend:
-            //   const startISO = newTask.start.toISOString();
-            //   const endISO = newTask.end.toISOString();
-
-            //   nuevos.push({
-            //     ...newTask,
-            //     start: startISO,
-            //     end: endISO,
-            //     day: tipo === 'specific' ? newTask.day : undefined,
-            //     week_day: tipo === 'recurrent' ? getDay(newTask.start) : undefined,
-            //   });
-
-            //   return {
-            //     ...prev,
-            //     [tipo]: nuevos,
-            //   };
-            // });
+    const handleSaveNewTask = async (newTask) => {
+      let data = {}
+      try {
+        if (newTask.category == 'recurrent') {
+          data = {
+            week_day: new Date(newTask.day).getDay() + 1,
+            start: getRawTimeString(newTask.start),
+            end: getRawTimeString(newTask.end),
+            topics: newTask.topics
+          }
+          await postRecurrent(prof_id, data)
+        }
+        else {
+          data = {
+            day: newTask.day,
+            start: getRawTimeString(newTask.start),
+            end: getRawTimeString(newTask.end),
+            topics: newTask.topics
+          }
+          await postSpecific(prof_id, data)
+        }
 
         setCreateModalOpen(false);
         setCreateModalData(null);
+
+        await cargarEventos(prof_id);
+      } catch (error) {
+        console.error('Error al guardar la tarea:', error);
+      }
     };
+
 
     // --- edito una tarea (modal de EDIT) --------------------------------------------------------
     const handleSaveEditTask = (updatedEvent) => {
-        
+      console.log(updatedEvent)
+      let data = {}
+      if (updatedEvent.type == 'recurrent') {
+        data = {
+          day: updatedEvent.day,
+          start: "04:21:15.776Z",
+          Nday: "2025-05-31",
+          Nstart: "04:21:15.776Z",
+          Nend: "04:21:15.776Z",
+          topics: updatedEvent.topics
+        }
+      }
+      else if (updatedEvent == 'specific') {
+
+      }
+
         // TODO : guardar en back y recargar
-        
+
+
+
             // setEventos((prev) => {
             //    const tipo = updatedEvent.extendedProps?.category === 'recurrent' ? 'recurrent' : 'specific';
 

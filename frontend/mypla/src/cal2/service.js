@@ -36,3 +36,39 @@ export const getAvailableProfessional = async (prof_id) => {
 
   return result;
 };
+
+export const postSpecific = async (prof_id, body) => {
+  const config = {
+    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: body,
+  };
+
+  const { data, error } = await callExternalApi({ config });
+
+  return {
+      data: data,
+      error,
+  };
+};
+
+export const postRecurrent = async (prof_id, body) => {
+  const config = {
+    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: body,
+  };
+
+  const { data, error } = await callExternalApi({ config });
+
+  return {
+      data: data,
+      error,
+  };
+};

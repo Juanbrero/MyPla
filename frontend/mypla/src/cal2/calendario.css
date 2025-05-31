@@ -77,3 +77,15 @@
 .grid-dias .celda-hora:hover {
   background-color: #fef3c7; /* amarillo claro */
 }
+
+.celda-specific {
+  background-color: lightblue;
+}
+
+.celda-recurrent {
+  background-color: blue;
+}
+
+.celda-exception {
+  background-color: red;
+}

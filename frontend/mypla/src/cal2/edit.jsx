@@ -92,9 +92,6 @@ export default function ScheduleEdit({
       dateStr = `${y}-${m}-${d}`;
     }
 
-    console.log(dateStr);
-    console.log(localTaskData.day);
-
     const editEvent = {
         ...clickedEvent,
         color     : localTaskData.recurrent ? 'green' : 'orange', 
@@ -106,9 +103,6 @@ export default function ScheduleEdit({
         topics    : localTaskData.topics,
         recurrent : localTaskData.recurrent,
     };
-    
-    console.log("clickedEvent: ", clickedEvent);
-    console.log("editEvent: ", editEvent);
 
     setIsEditable(false); // Regresar al modo de solo lectura después de guardar
     onSaveEditTask?.(editEvent);
