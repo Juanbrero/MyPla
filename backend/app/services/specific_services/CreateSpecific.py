@@ -6,6 +6,7 @@ from app.bd.repositories.Repository import Repository
 from app.bd.bd_utils import strip_time_hour_minute
 from fastapi.responses import JSONResponse
 from fastapi import status
+from datetime import time
 
 class CreateSpecific:
     @handle_errors
@@ -19,9 +20,15 @@ class CreateSpecific:
     ):
         specificS.start = strip_time_hour_minute(specificS.start)
         specificS.end = strip_time_hour_minute(specificS.end)
+
+        if specificS.end == 0:
+            specificS.end = time(hour=23, minute=59)
         
         if specificS.start >= specificS.end:
             raise ValidationError("The range hour is invalid")
+        
+        if specificS.end.minute != specificS.start.minute:
+            raise ValidationError('Hour incomplete')
 
         specifics = specificR.getSpecificsToRange(specificS.prof_id, specificS.day, specificS.start, specificS.end)
         if len(specifics) > 0:

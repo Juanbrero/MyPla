@@ -6,6 +6,7 @@ from app.bd.repositories.Repository import Repository
 from app.bd.bd_utils import strip_time_hour_minute
 from fastapi.responses import JSONResponse
 from fastapi import status
+from datetime import time
 
 class UpdateSpecific:
     @handle_errors
@@ -27,16 +28,25 @@ class UpdateSpecific:
         if (len(old_specific) <= 0):
             raise NotFound("Specific disponibility not exist")
         
+        
         if specificS.Nday or specificS.Nend or specificS.Nstart:
+            
             start = specificS.Nstart if specificS.Nstart else specificS.start
 
             if specificS.Nend:
-                specificS.Nend = strip_time_hour_minute(specificS.end)
+                specificS.Nend = strip_time_hour_minute(specificS.Nend)
+                
+                if specificS.Nend == 0:
+                    specificS.Nend = time(hour=23, minute=59)
+
                 if specificS.start >= specificS.Nend:
                     raise ValidationError("The range hour is invalid")
             
             day = specificS.Nday if specificS.Nday else specificS.day
             end = specificS.Nend if specificS.Nend else old_specific[0].end
+
+            if end.minute != start.minute:
+		            raise ValidationError('Hour incomplete')
     
             specifics = specificR.getSpecificsToRange(specificS.prof_id, day, start, end)
             # Valido si existe otro specific en el rango, en caso de que haya uno deberia chequear si no es el mismo que envio el usuario 

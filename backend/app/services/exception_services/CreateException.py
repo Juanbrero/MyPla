@@ -1,4 +1,4 @@
-from app.utils.errors import handle_errors, ValidationError
+from app.utils.errors import handle_errors, ValidationError, NotFound
 from app.bd.schemas import schema_exception
 from sqlalchemy.orm import Session
 from app.models import Meeting, SpecificSchedule, RecurrentSchedule
@@ -42,7 +42,8 @@ class CreateException:
                 'end': exceptionS.end
             }
         )
-        
+        if len(recurrent) == 0:
+            raise NotFound('Recurrent day not found')
 
         meetings = meetingR.getMeetingToRange(exceptionS.prof_id, exceptionS.day, exceptionS.start, exceptionS.end)
         if len(meetings) > 0:

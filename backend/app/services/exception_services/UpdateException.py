@@ -21,6 +21,8 @@ class UpdateExceptions():
         if not (exceptionS.Nday or exceptionS.Nend or exceptionS.Nstart):
             raise NotFound('Not update information')
         
+        exceptionS.start = strip_time_hour_minute(exceptionS.start)
+        
         old_exception = exceptionR.get_by({
             "day": exceptionS.day,
             "start": exceptionS.start,
