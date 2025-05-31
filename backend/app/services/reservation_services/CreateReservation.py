@@ -20,10 +20,15 @@ class CreateReservation ():
         classR: Repository[Class],
         reservationS: schema_reservation.ReservationClassIn
     ):
+        
+        reservationS.day_hour = reservationS.day_hour.replace(second=0, microsecond=0)
         day = reservationS.day_hour.date()
         start = reservationS.day_hour.time()
         end = (reservationS.day_hour + timedelta(hours=1)).time()
         topic = reservationS.topic
+
+        if start.day != end.day:
+            raise ValidationError('Change of day')
 
         schedule_class = Schedule(start=start, end=end)
 

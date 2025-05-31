@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
-from . import schema_exception, schema_topic_recurrent, schema_topic_specific, schema_specific
+from . import schema_exception, schema_topic_recurrent, schema_topic_specific, schema_specific, schema_reservation
 
 
 class ResponseRecurrent(BaseModel):
@@ -34,17 +34,17 @@ class ResponseEvent(BaseModel):
 class ResponseClass(BaseModel):
     """
     Esquema de clases
-      -clase: list[schema_specific.Specific]
+      -class_: list[schema_reservation.ReservationClassIn]
     """
-    clase: list[schema_specific.Specific]  #Cambiar a esquema de clase
+    class_: list[schema_reservation.ReservationClassIn]  #Cambiar a esquema de clase
 
-class Response(ResponseEvent, ResponseException, ResponseSpecific, ResponseRecurrent):
+class Response(ResponseException, ResponseSpecific, ResponseRecurrent):
     """
     Esquema de respuesta Event, Exception, Specific y Recurrent
       - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
       - specific: list[schema_topic_specific.TopicSpecificCr1]
       - exception: list[schema_specific.ExceptionGet]
-      - event: list[schema_specific.SpecificCreate]
+      NO - event: list[schema_specific.SpecificCreate]
     """
     pass
     
@@ -59,15 +59,14 @@ class ResponseProfessional(ResponseClass, Response):
     pass
     
 
-class ResponseAlumno(Response):
+class ResponseStudent(BaseModel):
     """
     Esquema de respuesta a alumno
-      - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
-      - specific: list[schema_topic_specific.TopicSpecificCr1]
-      - exception: list[schema_specific.ExceptionGet]
-      - event: list[schema_specific.SpecificCreate]
+      - avaible:  list[schema_topic_specific.TopicSpecificCr1]
+      - exception: list[schema_specific.ExceptionCreate]
     """
-    pass
+    avaible: list[schema_topic_specific.TopicSpecificCr1]
+    exception: list[schema_exception.ExceptionCreate]
     
 
    

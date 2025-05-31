@@ -7,6 +7,7 @@ from app.services.professional_topic_services.CreateProfTopic import CreateProfT
 from app.services.professional_topic_services.GetProfTopic import GetProfTopic
 from app.services.professional_topic_services.UpdatePrice import UpdatePrice
 from app.services.professional_topic_services.DelProfTopic import DelProfTopic
+from app.services.professional_topic_services.GetTopicProf import GetTopicProf
 
 
 class ProfessionalTopicController:
@@ -42,5 +43,11 @@ class ProfessionalTopicController:
         return DelProfTopic.run(
             db= self.db,
             prof_topicS = prof_topicS,
+            professional_topicR= self.professional_topicR
+        )
+    
+    def getTopicProf(self):
+        return GetTopicProf.run(
+            db = self.db,
             professional_topicR= self.professional_topicR
         )
