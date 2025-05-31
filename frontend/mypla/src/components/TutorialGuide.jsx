@@ -8,21 +8,61 @@ const steps = [
     content: 'Recordá que es un work in progress.',
     foot: 'Hagamos un recorrido ->', 
     selector: '' },
+  
+  { title: 'PayPal', 
+    content: 'Otro botón disponible en caso de que se quiera usar PayPal',
+    selector: '.paypalButton' },
+
+  { title: 'Mercado Pago', 
+    content: 'Este botón es uno de los que se utilizaran para pagar una clase, evento o curso, en caso de usar mercado pago',
+    selector: '.mpButton' },
 
   { title: 'Log in / Sing up', 
     content: 'La gestion del modulo de usuarios esta realizada integrando Auth0, con autenticacion de doble factor, y usando su capacidad de gestion de roles.', 
     foot: 'Logueate para seguir ->',
     selector: '.loginButtons' },
+  
+  { title: 'Profile', 
+      content: 'En esta sección se podrá visualizar al perfil del usuario, donde tambien se puede seleccionar los topicos las clases que puede enseñar el profesional.', 
+      selector: '.prof-topics' },
+    
+  {
+    title: 'Ir a Agenda',
+    content: 'Usa el link para ver la funcionalidad de la agenda de la página.',
+    selector: '.link-agenda'
+  },
 
   { title: 'Calendario', 
-    content: 'Vamos a ver como se vería la funcionalidad de calendario para el tipo de usuario que seleccionaste.', 
+    content: 'Llegaste a la funcionalidad principal de la página!!', 
     foot: '',
-    selector: '.fc' },
+    selector: '.calendario' },
+  
+  { title: 'Semana', 
+      content: 'Con este boton se puede cambiar de semana.', 
+      foot: '',
+      selector: '.direccion' },
+  
+  { 
+    title: 'Dias Recurrentes', 
+    content: 'Estos horarios representan los que el profesional esta disponible en todas las semanas.', 
+    foot: '',
+    selector: '.celda-recurrent' 
+  },
 
-  { title: 'aaa', 
-    content: 'aaa', 
-    foot: 'aaa',
-    selector: '' },
+  { 
+    title: 'Dias especificos', 
+    content: 'Estas celdas son de dias en especifico que el profesor decide dar clase.', 
+    foot: '',
+    selector: '.celda-specific' 
+  },
+  { 
+    title: 'Agregar horario', 
+    content: 'Bueno ahora agreguemos algun horario, para probar, selecciona un espacio vacío del calendario.', 
+  },
+  { 
+    title: 'Integracion con auth0', 
+    content: 'Por último dejamos una ruta para que puedan probar la integración con auth0 en caso de estar logueado entren a /test-auth', 
+  }
 ];
 
 
@@ -60,16 +100,21 @@ const TutorialGuide = () => {
   useEffect(() => {
     // Primero removemos el highlight previo
     document.querySelectorAll('.highlight-tutorial').forEach(el => el.classList.remove('highlight-tutorial'));
+    document.querySelectorAll('.highlight-tutorial2').forEach(el => el.classList.remove('highlight-tutorial2'));
 
     if (!isOpen) return; // si está cerrado, no hacemos nada
 
     const selector = steps[stepIndex]?.selector;
     if (!selector) return;
 
-    const element = document.querySelector(selector);
-    if (element) {
-      element.classList.add('highlight-tutorial');
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const elements = document.querySelectorAll(selector);
+    for (const e of elements) {
+      if (selector === '.celda-recurrent' || selector === '.celda-specific') {
+        e.classList.add('highlight-tutorial2');
+      } else {
+        e.classList.add('highlight-tutorial');
+      }
+      e.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [stepIndex, isOpen]);
 

@@ -65,9 +65,9 @@ export default function ScheduleManager() {
         onSaveTask={handleSaveTask}
       />
 
-      <h2>Ver, editar, borrar</h2>
+      <h2>Reservar clase</h2>
       <Button variant="contained" onClick={handleOpenInfoModal}>
-        Abrir para ver información
+        Reservar clase
       </Button>
 
       <ScheduleEdit

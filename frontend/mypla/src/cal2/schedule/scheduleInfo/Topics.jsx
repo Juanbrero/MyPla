@@ -7,13 +7,12 @@ import { getProfessionalsTopic } from '../../../services/professionals-topic/pro
 
 export default function Topics(props) {
   const { taskData, clickedEvent, isEditable, onChangeData, topicsListFromParent } = props;
-
   const [selectedTopicsState, setSelectedTopicsState] = useState(taskData?.topics || []);
-  const [editTopics, setEditTopics] = useState(clickedEvent?.extendedProps?.eventTopics || []);
+  const [editTopics, setEditTopics] = useState([]);
   const [topicsList, setTopicsList] = useState(topicsListFromParent || []);
 
+  // Fetch topics si no vienen del padre
   useEffect(() => {
-    // Solo hacemos fetch si no recibimos lista desde el padre
     if (!topicsListFromParent || topicsListFromParent.length === 0) {
       const fetchTopics = async () => {
         try {
@@ -31,15 +30,29 @@ export default function Topics(props) {
     }
   }, [topicsListFromParent]);
 
+  // Actualizar selectedTopicsState si cambia taskData
   useEffect(() => {
     if (taskData?.topics && Array.isArray(taskData.topics)) {
       setSelectedTopicsState(taskData.topics);
     }
-    if (clickedEvent?.extendedProps?.eventTopics) {
-      setEditTopics(clickedEvent.extendedProps.eventTopics);
-    }
-  }, [taskData?.topics, clickedEvent?.extendedProps?.eventTopics]);
+  }, [taskData?.topics]);
 
+  // Actualizar editTopics según el tipo de evento
+  useEffect(() => {
+    if (!clickedEvent?.extendedProps) return;
+
+    const { type, topics, topic } = clickedEvent.extendedProps;
+
+    if (type === 'recurrent' || type === 'specific') {
+      setEditTopics(Array.isArray(topics) ? topics : []);
+    } else if (type === 'class_') {
+      setEditTopics(topic ? [topic] : []);
+    } else {
+      setEditTopics([]);
+    }
+  }, [clickedEvent?.extendedProps]);
+
+  // Actualizar topicsList si cambia desde el padre
   useEffect(() => {
     if (topicsListFromParent && topicsListFromParent.length > 0) {
       setTopicsList(topicsListFromParent);
@@ -47,7 +60,7 @@ export default function Topics(props) {
   }, [topicsListFromParent]);
 
   const handleTopicChange = (event) => {
-    const { target: { value } } = event;
+    const { value } = event.target;
     const newTopics = typeof value === 'string' ? value.split(',') : value;
     setSelectedTopicsState(newTopics);
     onChangeData?.({ topics: newTopics });
@@ -57,9 +70,9 @@ export default function Topics(props) {
     <>
       {!isEditable ? (
         <Box>
-          <Typography variant="subtitle1"><strong>Topicos asignados:</strong></Typography>
-          {editTopics.length ? (
-            editTopics.map((topic) => (
+          <Typography variant="subtitle1"><strong>Tópicos asignados:</strong></Typography>
+          {(taskData?.topics && taskData.topics.length > 0) ? (
+            taskData.topics.map((topic) => (
               <Chip key={topic} label={topic} sx={{ marginRight: 1, marginBottom: 1 }} />
             ))
           ) : (
@@ -68,13 +81,13 @@ export default function Topics(props) {
         </Box>
       ) : (
         <FormControl fullWidth margin="normal">
-          <InputLabel>Posibles topicos</InputLabel>
+          <InputLabel>Temas disponibles</InputLabel>
           <Select
             multiple
             value={selectedTopicsState}
             onChange={handleTopicChange}
             renderValue={(selected) => selected.join(', ')}
-            label="Posibles topicos"
+            label="Temas disponibles"
           >
             {topicsList.map((topic) => (
               <MenuItem key={topic} value={topic}>
