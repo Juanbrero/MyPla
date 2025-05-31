@@ -10,7 +10,7 @@
   border-radius: 6px;
   overflow: hidden;
   color: #000;
-  background-color: #faa;
+  background-color: #f2f4f8;
 }
 
 /* Columna fija para horas */
@@ -75,15 +75,15 @@
 }
 
 .grid-dias .celda-hora:hover {
-  background-color: #fef3c7; /* amarillo claro */
+  background-color: #ddd;
 }
 
 .celda-specific {
-  background-color: lightblue;
+  background-color: #50e3c2;
 }
 
 .celda-recurrent {
-  background-color: blue;
+  background-color: #4a90e2;
 }
 
 .celda-exception {

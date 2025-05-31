@@ -15,6 +15,7 @@ const parseHora = (horaStr) => {
     if (!horaStr) return '';
     return horaStr.slice(0, 5);
 };
+
 const horaNumero = (horaStr) => {
     if (!horaStr) return null;
     return parseInt(horaStr.slice(0, 2), 10);
@@ -72,8 +73,6 @@ const filtrarEventosPorDia = (eventos, dia) => {
         });
         return esElDia && !tieneExcepcion;
     });
-
-    // console.log(specific)
 
     return {
         recurrent: recurrentesDelDia,
@@ -284,7 +283,7 @@ const Calendario = () => {
     }, {});
 
     return (
-    <div className="p-4">
+    <div className="p-4 calendario">
       <div className="calendario-controles">
         <button onClick={anteriorSemana}>⬅️ Anterior</button>
         <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>

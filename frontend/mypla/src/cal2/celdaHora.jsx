@@ -8,18 +8,30 @@ const parseHora = (horaStr) => {
 
 const eventoEnHora = (eventos, dia, hora) => {
   for (const ev of eventos) {
-    let inicio;
+    let inicio, fin;
+
     if (ev.day) {
       inicio = parseISO(ev.day + 'T' + ev.start);
-    } else if (ev.start) {
-      const horaStr = ev.start.slice(0, 5);
-      const h = parseInt(horaStr.slice(0, 2));
-      const m = parseInt(horaStr.slice(3, 5));
-      inicio = setMinutes(setHours(dia, h), m);
+      fin = parseISO(ev.day + 'T' + ev.end);
+    } else if (ev.start && ev.end) {
+      const horaInicioStr = ev.start.slice(0, 5);
+      const horaFinStr = ev.end.slice(0, 5);
+      const hInicio = parseInt(horaInicioStr.slice(0, 2));
+      const mInicio = parseInt(horaInicioStr.slice(3, 5));
+      const hFin = parseInt(horaFinStr.slice(0, 2));
+      const mFin = parseInt(horaFinStr.slice(3, 5));
+      inicio = setMinutes(setHours(dia, hInicio), mInicio);
+      fin = setMinutes(setHours(dia, hFin), mFin);
     }
 
-    if (inicio && isSameDay(inicio, dia) && inicio.getHours() === hora) {
-      return ev;
+    if (inicio && fin && isSameDay(inicio, dia)) {
+      const inicioHora = inicio.getHours();
+      const finHora = fin.getHours();
+
+      // Consideramos las celdas de cada hora completa del evento
+      if (hora >= inicioHora && hora < finHora) {
+        return ev;
+      }
     }
   }
   return null;
