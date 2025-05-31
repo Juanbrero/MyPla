@@ -143,8 +143,8 @@ const Calendario = () => {
         if (newTask.category == 'recurrent') {
           data = {
             week_day: new Date(newTask.day).getDay() + 1,
-            start: getRawTimeString(newTask.start),
-            end: getRawTimeString(newTask.end),
+            start: typeof newTask.start === 'string' ? formatTimeUndefined(newTask.start) : getRawTimeString(newTask.start),
+            end: typeof newTask.end === 'string' ? formatTimeUndefined(newTask.end) : getRawTimeString(newTask.end),
             topics: newTask.topics
           }
           await postRecurrent(prof_id, data)
@@ -152,8 +152,8 @@ const Calendario = () => {
         else {
           data = {
             day: newTask.day,
-            start: getRawTimeString(newTask.start),
-            end: formatTimeUndefined(newTask.end),
+            start: typeof newTask.start === 'string' ? formatTimeUndefined(newTask.start) : getRawTimeString(newTask.start),
+            end: typeof newTask.end === 'string' ? formatTimeUndefined(newTask.end) : getRawTimeString(newTask.end),
             topics: newTask.topics
           }
           await postSpecific(prof_id, data)
