@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './celdaHora.jsx';
 import { prof_id } from "../utils/testData";
-import { getAvailableProfessional, postSpecific, postRecurrent } from './service.js';
-import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes } from 'date-fns';
+import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent } from './service.js';
+import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays } from 'date-fns';
 import './calendario.css';
 import ScheduleCreate from './crear';
 import ScheduleEdit from './edit.jsx';
@@ -28,6 +28,27 @@ function getRawTimeString(date) {
   return `${horas}:${minutos}:${segundos}.${milisegundos}Z`; // O sin la Z, según quieras
 }
 
+function formatTimeUndefined(inputTime, defaultMilliseconds = '000') {
+  // 1. Limpiar el string de "undefinedT" si existe
+  const cleanTime = inputTime.toString().replace('undefinedT', '');
+  
+  // 2. Extraer horas, minutos y segundos
+  const timeParts = cleanTime.split(':');
+  
+  // 3. Validar y obtener componentes
+  const hours = timeParts[0]?.padStart(2, '0') || '00';
+  const minutes = timeParts[1]?.padStart(2, '0') || '00';
+  const seconds = timeParts[2]?.split('.')[0]?.padStart(2, '0') || '00';
+  
+  // 4. Obtener milisegundos si existen, sino usar los predeterminados
+  const milliseconds = timeParts[2]?.includes('.') 
+    ? timeParts[2].split('.')[1]?.padEnd(3, '0').substring(0, 3) 
+    : defaultMilliseconds;
+  
+  // 5. Construir el nuevo formato
+  return `${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+}
+
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
      if (!eventos) return { recurrent: [], specific: [], exception: [] };
@@ -51,6 +72,8 @@ const filtrarEventosPorDia = (eventos, dia) => {
         });
         return esElDia && !tieneExcepcion;
     });
+
+    // console.log(specific)
 
     return {
         recurrent: recurrentesDelDia,
@@ -78,7 +101,12 @@ const Calendario = () => {
     const handleCeldaClick = (dia, hora, evento = null) => {
         // Abrir modal de edición si hay evento
         if (evento) {
-            setEditModalData(evento);
+            const updatedEvento = {
+                ...evento,          
+                start_actual: evento.start, 
+                day_actual: evento.day
+            };
+            setEditModalData(updatedEvento);
             setEditModalOpen(true);
         }
         // Abrir modal de crear si no hay evento
@@ -126,7 +154,7 @@ const Calendario = () => {
           data = {
             day: newTask.day,
             start: getRawTimeString(newTask.start),
-            end: getRawTimeString(newTask.end),
+            end: formatTimeUndefined(newTask.end),
             topics: newTask.topics
           }
           await postSpecific(prof_id, data)
@@ -144,21 +172,22 @@ const Calendario = () => {
 
     // --- edito una tarea (modal de EDIT) --------------------------------------------------------
     const handleSaveEditTask = (updatedEvent) => {
-      console.log(updatedEvent)
-      let data = {}
-      if (updatedEvent.type == 'recurrent') {
-        data = {
-          day: updatedEvent.day,
-          start: "04:21:15.776Z",
-          Nday: "2025-05-31",
-          Nstart: "04:21:15.776Z",
-          Nend: "04:21:15.776Z",
-          topics: updatedEvent.topics
-        }
-      }
-      else if (updatedEvent == 'specific') {
-
-      }
+      // console.log(updatedEvent)
+      // let data = {}
+      // if (updatedEvent.type == 'recurrent') {
+        
+      // }
+      // else {
+      //   data = {
+      //     day: updatedEvent.day_actual,
+      //     start: formatTimeUndefined(updatedEvent.start_actual),
+      //     Nday: formatTimeUndefined(updatedEvent.day),
+      //     Nstart: formatTimeUndefined(updatedEvent.start),
+      //     Nend: formatTimeUndefined(updatedEvent.end),
+      //     topics: updatedEvent.topics
+      //   }
+      //   console.log(data)
+      // }
 
         // TODO : guardar en back y recargar
 
@@ -177,10 +206,31 @@ const Calendario = () => {
     };
 
     // --- borro una tarea (modal de EDIT) --------------------------------------------------------
-    const handleDeleteTask = (eventToDelete) => {
+    const handleDeleteTask = async (eventToDelete) => {
+      let data = {}
+      try {
+        if (eventToDelete.type == 'recurrent') {
+          const week_day = eventToDelete.week_day
+          const start = formatTimeUndefined(eventToDelete.start)
+          await deleteRecurrent(prof_id, week_day, start)
+        }
+        else if (eventToDelete.type == 'specific') {
+          data = {
+            day: eventToDelete.day,
+            start: formatTimeUndefined(eventToDelete.start)
+          }
+          await deleteSpecific(prof_id, data)
+        }
 
-        // TODO : guardar en back y recargar
+        setCreateModalOpen(false);
+        setCreateModalData(null);
 
+        await cargarEventos(prof_id);
+      } catch (error) {
+        console.error('Error al guardar la tarea:', error);
+      }
+
+        
             // setEventos((prev) => {
             //     const tipo = eventToDelete.extendedProps?.category === 'recurrent' ? 'recurrent' : 'specific';
 

@@ -5,19 +5,23 @@ import {
 } from '@mui/material';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { format, parseISO, isValid as isDateValid } from 'date-fns';
+import { format, isValid as isDateValid } from 'date-fns';
 
 export default function ScheduleTime(props) {
-  const { taskData, clickedEvent, isEditable, onChangeData } = props;
+  const { taskData, isEditable, onChangeData } = props;
 
   const [startTime, setStartTime] = React.useState(null);
   const [endTime, setEndTime] = React.useState(null);
 
   useEffect(() => {
-    // Para edición (formato con strings de hora)
+    // Para edición (formato con strings de hora) 
     if (taskData?.day && taskData?.start && typeof taskData.start === 'string') {
-      const startDate = new Date(`${taskData.day}T${taskData.start}`);
-      const endDate = new Date(`${taskData.day}T${taskData.end}`);
+      // Eliminar "undefinedT" si existe
+      const cleanStart = taskData.start.replace('undefinedT', '');
+      const cleanEnd = taskData.end.replace('undefinedT', '');
+      
+      const startDate = new Date(`${taskData.day}T${cleanStart}`);
+      const endDate = new Date(`${taskData.day}T${cleanEnd}`);
       
       setStartTime(isDateValid(startDate) ? startDate : null);
       setEndTime(isDateValid(endDate) ? endDate : null);
@@ -27,26 +31,30 @@ export default function ScheduleTime(props) {
       setStartTime(isDateValid(taskData.start) ? taskData.start : null);
       setEndTime(isDateValid(taskData.end) ? taskData.end : null);
     }
-    // Caso por defecto (sin datos)
+    else if (taskData.week_day != null){
+      setStartTime(taskData.start);
+      setEndTime(taskData.end)
+    }
     else {
+      // Caso por defecto (sin datos)
       const now = new Date();
       setStartTime(now);
       setEndTime(new Date(now.getTime() + 60 * 60 * 1000)); // +1 hora
     }
   }, [taskData]);
 
-  const formatTime = (date) => {
-    if (!date || !isDateValid(date)) return '--:--';
-    return format(date, 'HH:mm');
+  const formatTimeForAPI = (date) => {
+    if (!date || !isDateValid(date)) return '00:00:00';
+    return format(date, 'HH:mm:ss');
   };
     
   const handleStartChange = (newValue) => {
     if (isDateValid(newValue)) {
       setStartTime(newValue);
       onChangeData?.({ 
-        start: format(newValue, 'HH:mm:ss'),
-        // Para mantener compatibilidad con ambos formatos
-        startDate: newValue 
+        start: formatTimeForAPI(newValue),
+        // Mantenemos el día original para edición
+        day: taskData?.day || format(newValue, 'yyyy-MM-dd')
       });
       
       // Ajustar automáticamente el endTime si es anterior
@@ -54,8 +62,7 @@ export default function ScheduleTime(props) {
         const newEndTime = new Date(newValue.getTime() + 60 * 60 * 1000);
         setEndTime(newEndTime);
         onChangeData?.({ 
-          end: format(newEndTime, 'HH:mm:ss'),
-          endDate: newEndTime
+          end: formatTimeForAPI(newEndTime)
         });
       }
     }
@@ -65,8 +72,7 @@ export default function ScheduleTime(props) {
     if (isDateValid(newValue)) {
       setEndTime(newValue);
       onChangeData?.({ 
-        end: format(newValue, 'HH:mm:ss'),
-        endDate: newValue
+        end: formatTimeForAPI(newValue)
       });
     }
   };
@@ -76,7 +82,7 @@ export default function ScheduleTime(props) {
       {!isEditable ? (
         <Box>
           <Typography variant="subtitle1">
-            <strong>Horario:</strong> {formatTime(startTime)} - {formatTime(endTime)}
+            <strong>Horario:</strong> {formatTimeForDisplay(startTime)} - {formatTimeForDisplay(endTime)}
           </Typography>
         </Box>
       ) : (
@@ -115,4 +121,11 @@ export default function ScheduleTime(props) {
       )}
     </LocalizationProvider>
   );
+}
+
+// Función separada para formato de visualización
+function formatTimeForDisplay(date) {
+  if (typeof date === 'string') return date;
+  if (!date || !isDateValid(date)) return '--:--';
+  return format(date, 'HH:mm');
 }

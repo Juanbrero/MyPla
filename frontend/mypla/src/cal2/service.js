@@ -72,3 +72,39 @@ export const postRecurrent = async (prof_id, body) => {
       error,
   };
 };
+
+export const deleteSpecific = async (prof_id, body) => {
+  const config = {
+    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: body,
+  };
+
+  const { data, error } = await callExternalApi({ config });
+
+  return {
+      data: data,
+      error,
+  };
+};
+
+
+export const deleteRecurrent = async (prof_id, week_day, start) => {
+  const config = {
+    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}&week_day=${encodeURIComponent(week_day)}&start=${encodeURIComponent(start)}`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  };
+
+  const { data, error } = await callExternalApi({ config });
+
+  return {
+      data: data,
+      error,
+  };
+};
