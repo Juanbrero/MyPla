@@ -9,6 +9,7 @@ import Topics from './schedule/scheduleInfo/Topics';
 import ScheduleDate from './schedule/scheduleInfo/ScheduleDate';
 import ScheduleTime from './schedule/scheduleInfo/ScheduleTime';
 import Recurrent from './schedule/scheduleInfo/Recurrent';
+import { stringDateToLocalTime } from '../utils/dateFormater';
 
 
 const style = {
@@ -92,23 +93,25 @@ export default function ScheduleEdit({
 
     const editEvent = {
       ...clickedEvent,
-      color     :     localTaskData.recurrent ? 'green' : 'orange', 
-      start     :     `${dateStr}T${localTaskData.start}`,
-      end       :     `${dateStr}T${localTaskData.end}`,
+      // color     :     localTaskData.recurrent ? 'green' : 'orange', 
+      start         :     dateStr ? `${dateStr}T${stringDateToLocalTime(localTaskData.start)}`: `${clickedEvent.extendedProps.date}T${stringDateToLocalTime(localTaskData.start)}`,
+      end           :     dateStr ? `${dateStr}T${stringDateToLocalTime(localTaskData.start)}` : `${clickedEvent.extendedProps.date}T${stringDateToLocalTime(localTaskData.end)}`,
       extendedProps : {
-        day         : localTaskData.day,
-        date        : dateStr,
-        category    : localTaskData.category,
+        day         : localTaskData.day ? localTaskData.day : clickedEvent.extendedProps.day,
+        date        : dateStr ? dateStr : clickedEvent.extendedProps.date,
+        category    : localTaskData.category ? localTaskData.category : clickedEvent.extendedProps.category,
         eventTopics : localTaskData.topics,
         // recurrent   : localTaskData.recurrent,
       },
     }
     
+    console.log("======= en edit ========== ");
+    console.log("localTaskData: ", localTaskData);
     console.log("clickedEvent: ", clickedEvent);
     console.log("editEvent: ", editEvent);
 
     setIsEditable(false); // Regresar al modo de solo lectura después de guardar
-    // onSaveEditTask?.(editEvent);
+    onSaveEditTask?.(editEvent);
     
   };
 
@@ -156,7 +159,7 @@ export default function ScheduleEdit({
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             {!isEditable ? (
               <>
-                {clickedEvent.extendedProps.category == "recurrent" && (
+                {clickedEvent?.extendedProps.category == "recurrent" && (
                   <Button color="error" variant="outlined" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
                     Cancelar solo esta vez
                   </Button>

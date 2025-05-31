@@ -7,10 +7,11 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
-import { deleteSpecific, postSpecific }  from "../services/specific/specific.service";
+import { deleteSpecific, postSpecific, putSpecific }  from "../services/specific/specific.service";
 import { getAvailableProfessional } from "../services/available/available-professional.service";
 import { dateObjToLocalTime } from "../utils/dateFormater";
 import './calendar.css';
+import { id } from "date-fns/locale";
 
 
 function Calendar() {
@@ -106,6 +107,7 @@ function Calendar() {
     const startFormateado = dateObjToLocalTime(arg.event.start);
 
     let protoEvent = {
+      id        :   arg.event.id,
       start     :   startFormateado,
       extendedProps: {
           day         : arg.event.extendedProps.day,
@@ -163,8 +165,10 @@ function Calendar() {
     if (foundEv) {
       switch (foundEv.extendedProps.category) {
         case "specific":
-          console.log("update foundEv: ", foundEv);
-          await deleteSpecific("token", foundEv);
+          console.log("foundEv a editar: ", foundEv);
+          console.log("evento editado: ", event);
+
+          await putSpecific("token", event, foundEv);
           break;
         case "recurrent":
           break;
@@ -175,50 +179,52 @@ function Calendar() {
       }
     }
 
-    setEvents((prevEvents) => {
+    // setEvents((prevEvents) => {
 
-      const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
-      const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
-      const dayOffset = dayHasChanged
-      ? dias.indexOf(event.extendedProps.day) - dias.indexOf(firstMatch.extendedProps.day)
-      : 0;
+    //   const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
+    //   const dayHasChanged = event.extendedProps.day !== firstMatch?.extendedProps.day;
+    //   const dayOffset = dayHasChanged
+    //   ? dias.indexOf(event.extendedProps.day) - dias.indexOf(firstMatch.extendedProps.day)
+    //   : 0;
 
-      return prevEvents.map((ev) => {
-        if (event.extendedProps?.recurrent && ev.groupId === event.groupId) {
-          // Ajustamos la fecha si el día cambió
-          const originalDate = new Date(ev.extendedProps.date);
-          const newDate = dayHasChanged
-            ? new Date(originalDate.setDate(originalDate.getDate() + dayOffset))
-            : originalDate;
+    //   return prevEvents.map((ev) => {
+    //     if (event.extendedProps?.recurrent && ev.groupId === event.groupId) {
+    //       // Ajustamos la fecha si el día cambió
+    //       const originalDate = new Date(ev.extendedProps.date);
+    //       const newDate = dayHasChanged
+    //         ? new Date(originalDate.setDate(originalDate.getDate() + dayOffset))
+    //         : originalDate;
 
-          // Obtener la hora original de start y end
-          const startTime = getTimeFromDate(ev.start); // e.g. "14:00:00"
-          const endTime = getTimeFromDate(ev.end);
+    //       // Obtener la hora original de start y end
+    //       const startTime = getTimeFromDate(ev.start); // e.g. "14:00:00"
+    //       const endTime = getTimeFromDate(ev.end);
 
-          // Generar nuevos start y end con la nueva fecha
-          const newDateStr = newDate.toISOString().split('T')[0];
-          const newStart = new Date(`${newDateStr}T${startTime}`);
-          const newEnd = new Date(`${newDateStr}T${endTime}`);  
+    //       // Generar nuevos start y end con la nueva fecha
+    //       const newDateStr = newDate.toISOString().split('T')[0];
+    //       const newStart = new Date(`${newDateStr}T${startTime}`);
+    //       const newEnd = new Date(`${newDateStr}T${endTime}`);  
 
 
-          return {
-              ...event,
-              id            : ev.id,
-              start         : newStart,
-              end           : newEnd,
-              extendedProps : {
-                ...event.extendedProps,
-                date        : newDateStr,
-              },
-            };
+    //       return {
+    //           ...event,
+    //           id            : ev.id,
+    //           start         : newStart,
+    //           end           : newEnd,
+    //           extendedProps : {
+    //             ...event.extendedProps,
+    //             date        : newDateStr,
+    //           },
+    //         };
             
-        } else {
-          // Si no es recurrente, actualizamos solo por id
-          return ev.id === event.id ? event : ev;
-        }
+    //     } else {
+    //       // Si no es recurrente, actualizamos solo por id
+    //       return ev.id === event.id ? event : ev;
+    //     }
         
-      });
-    });
+    //   });
+    // });
+
+
     // setEvents((prevEvents) => {
 
     //   const firstMatch = prevEvents.find(ev => ev.groupId === event.groupId);
@@ -302,7 +308,7 @@ function Calendar() {
   const createEvent = async (taskName) => {
     
     const newEvent = {
-      id      :     `${crypto.randomUUID()}`,
+      // id      :     `${crypto.randomUUID()}`,
       title   :     '',
       color   :     'orange',          
       start   :     `${taskName.date}T${taskName.start}`,
@@ -339,7 +345,7 @@ function Calendar() {
         const dateStr = current.toISOString().split("T")[0];
 
         const newEvent = {
-          id      :    `${crypto.randomUUID()}`,
+          // id      :    `${crypto.randomUUID()}`,
           groupId :    `${groupIdGen}`,
           title   :    '',
           color   :    'green',          
@@ -370,10 +376,12 @@ function Calendar() {
 
     switch (evCategory) {
       case "specific":
-        foundEv = specifics.find(ev => ((ev.start === event.start) &&
-                                  (ev.extendedProps.date === event.extendedProps.date)));
+        foundEv = specifics.find(ev => (ev.id === event.id));
+        // foundEv = specifics.find(ev => ((ev.start === event.start) &&
+        //                           (ev.extendedProps.date === event.extendedProps.date)));
         break;
       case "recurrent":
+
         break;
       case "exception":
         break;

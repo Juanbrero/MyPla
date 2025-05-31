@@ -22,8 +22,8 @@ export default function ScheduleTime(props) {
   const [editStart, setEventStart] = React.useState(clickedEvent?.start);
   const [editEnd, setEventEnd] = React.useState(clickedEvent?.end);
   
-  console.log("startTime: ", typeof startTime, "value: ", startTime);
-  console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
+  // console.log("startTime: ", typeof startTime, "value: ", startTime);
+  // console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
   console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
 
 
@@ -49,34 +49,30 @@ export default function ScheduleTime(props) {
       setEventEnd(clickedEvent.end);
     }
 
-    console.log("======== en useEffect =========");
-    console.log("startTime: ", typeof startTime, "value: ", startTime);
-    console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
-    console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
+    // console.log("======== en useEffect =========");
+    // console.log("startTime: ", typeof startTime, "value: ", startTime);
+    // console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
+    // console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
 
-  }, [taskData?.start, taskData?.end, clickedEvent?.start, clickedEvent?.end]);
+  }, [clickedEvent?.start, clickedEvent?.end]);
+  // }, [taskData?.start, taskData?.end, clickedEvent?.start, clickedEvent?.end]);
     
 
-    // const formatTime = (date) => {
-    //     if (!(date instanceof Date)) return date
-    //     return date.slice(0, 5)
-    // } // 'HH:MM'
-    
     const handleStartChange = (newValue) => {
 
       if (newValue instanceof Date && !isNaN(newValue)) {
         setStartTime(newValue);
         const formattedStart = dateObjToLocalTime(newValue);
         onChangeData?.({ ...taskData, start: formattedStart });
-        console.log("======== en handleStartChange.if =========");
-        console.log("startTime: ", typeof startTime, "value: ", startTime);
-        console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
-        console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
+        // console.log("======== en handleStartChange.if =========");
+        // console.log("startTime: ", typeof startTime, "value: ", startTime);
+        // console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
+        // console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
       }
-      console.log("======== en handleStartChange =========");
-      console.log("startTime: ", typeof startTime, "value: ", startTime);
-      console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
-      console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
+      // console.log("======== en handleStartChange =========");
+      // console.log("startTime: ", typeof startTime, "value: ", startTime);
+      // console.log("taskData.start: ", typeof taskData.start, "value: ", taskData.start);
+      // console.log("clickedEvent?.start: ", typeof clickedEvent?.start, "value: ", clickedEvent?.start);
 
 
     };
@@ -87,16 +83,16 @@ export default function ScheduleTime(props) {
         setEndTime(newValue);
         const formattedEnd = dateObjToLocalTime(newValue);
         onChangeData?.({ ...taskData, end: formattedEnd });
-        console.log("======== en handleEndChange.if =========");
-        console.log("endTime: ", typeof endTime, "value: ", endTime);
-        console.log("taskData.end: ", typeof taskData.end, "value: ", taskData.end);
-        console.log("clickedEvent?.end: ", typeof clickedEvent?.end, "value: ", clickedEvent?.end);
+        // console.log("======== en handleEndChange.if =========");
+        // console.log("endTime: ", typeof endTime, "value: ", endTime);
+        // console.log("taskData.end: ", typeof taskData.end, "value: ", taskData.end);
+        // console.log("clickedEvent?.end: ", typeof clickedEvent?.end, "value: ", clickedEvent?.end);
       }
 
-      console.log("======== en handleEndChange =========");
-      console.log("endTime: ", typeof endTime, "value: ", endTime);
-      console.log("taskData.end: ", typeof taskData.end, "value: ", taskData.end);
-      console.log("clickedEvent?.end: ", typeof clickedEvent?.end, "value: ", clickedEvent?.end);
+      // console.log("======== en handleEndChange =========");
+      // console.log("endTime: ", typeof endTime, "value: ", endTime);
+      // console.log("taskData.end: ", typeof taskData.end, "value: ", taskData.end);
+      // console.log("clickedEvent?.end: ", typeof clickedEvent?.end, "value: ", clickedEvent?.end);
 
     };
 

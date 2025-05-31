@@ -32,7 +32,7 @@ export const getAvailableProfessional = async (token) => {
                     const fecha = new Date(item.day)
                     const diaSemana = fecha.getDay()
                     return {
-                        // id        :   arg.event.id,
+                        id        :   `${crypto.randomUUID()}`,
                         // groupId   :   arg.event?.groupId,
                         // title     :   arg.event.title,
                         color     :   colores[category],

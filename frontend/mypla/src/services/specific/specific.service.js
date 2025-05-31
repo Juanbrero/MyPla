@@ -25,6 +25,7 @@ export const getSpecific = async (token) => {
 
 export const putSpecific = async (token, newSpecific, oldSpecific) => {
 
+    console.log("newSpecific: ", newSpecific);
     const oldStartISO = dateFormater(oldSpecific.start);
     const newStartISO = newSpecific.start ? dateFormater(newSpecific.start) : "";
     const newEndISO = newSpecific.end ? dateFormater(newSpecific.end) : "";
@@ -39,13 +40,14 @@ export const putSpecific = async (token, newSpecific, oldSpecific) => {
     data: {
         day     : oldSpecific.extendedProps.date,
         start   : oldStartISO,
-        Nday    : newSpecific.extendedProps.day ? newSpecific.extendedProps.day : "",
+        Nday    : newSpecific.extendedProps.date ? newSpecific.extendedProps.date : "",
         Nstart  : newStartISO,
         Nend    : newEndISO,
         topics  : newSpecific.extendedProps.eventTopics ? newSpecific.extendedProps.eventTopics : [],
     }
     };
 
+    console.log(config);
     const { data, error } = await callExternalApi({ config });
 
     return {

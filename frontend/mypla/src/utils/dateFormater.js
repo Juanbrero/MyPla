@@ -1,7 +1,10 @@
 export const dateFormater = (input) => {
 
+    console.log("input: ", input);
     const [datePart, timePart] = input.split("T");
+    console.log(timePart);
     const [hours, minutes] = timePart.split(":");
+    // console.log(timePart);
 
     const formatted = `${hours}:${minutes}:00.469Z`;
 
