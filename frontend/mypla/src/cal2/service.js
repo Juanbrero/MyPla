@@ -10,7 +10,6 @@ export const getAvailableProfessional = async (prof_id) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      // "Authorization": `Bearer ${token}`, // Si usás autenticación
     },
   };
 
@@ -21,5 +20,19 @@ export const getAvailableProfessional = async (prof_id) => {
     throw error;
   }
 
-  return data;
+  // Procesar la respuesta para agregar el campo 'type' a cada objeto, manteniendo la estructura original
+  const result = {};
+
+  for (const [key, items] of Object.entries(data)) {
+    if (Array.isArray(items)) {
+      result[key] = items.map((item) => ({
+        ...item,
+        type: key, // Agregar el campo 'type' con el nombre de la clave
+      }));
+    } else {
+      result[key] = items;
+    }
+  }
+
+  return result;
 };
