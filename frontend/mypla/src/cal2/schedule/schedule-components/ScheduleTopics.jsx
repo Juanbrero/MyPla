@@ -3,7 +3,7 @@ import {
   Box, Typography, Checkbox, MenuItem, Select, ListItemText, FormControl, InputLabel, Chip
 } from '@mui/material';
 
-export default function Topics({ value = [], onChange, isEditable, topicsList = [] }) {
+export default function ScheduleTopics({ value = [], onChange, isEditable, topicsList = [] }) {
 
   const handleChange = (event) => {
     const newTopics = typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value;
@@ -35,12 +35,16 @@ export default function Topics({ value = [], onChange, isEditable, topicsList = 
         renderValue={(selected) => selected.join(', ')}
         label="Temas disponibles"
       >
-        {topicsList.map((topic) => (
+      {Array.isArray(topicsList) ? (
+        topicsList.map((topic) => (
           <MenuItem key={topic} value={topic}>
             <Checkbox checked={value.indexOf(topic) > -1} />
             <ListItemText primary={topic} />
           </MenuItem>
-        ))}
+        ))
+      ) : (
+        <Typography color="error">No hay temas disponibles</Typography>
+      )}
       </Select>
     </FormControl>
   );

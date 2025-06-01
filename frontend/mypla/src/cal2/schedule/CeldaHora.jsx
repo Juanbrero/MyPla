@@ -38,11 +38,11 @@ const eventoEnHora = (eventos, dia, hora) => {
 };
 
 const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
-  const { recurrent = [], specific = [] } = eventosDelDia || {};
-  const todosEventos = [...recurrent, ...specific];
+  // const { recurrent = [], specific = [] } = eventosDelDia || {};
+  // const todosEventos = [...recurrent, ...specific];
 
-  // const { recurrent = [], specific = [], exceptions = [] } = eventosDelDia || {};
-  // const todosEventos = [...recurrent, ...specific, exceptions];
+  const { recurrent = [], specific = [], exceptions = [] } = eventosDelDia || {};
+  const todosEventos = [...recurrent, ...specific, exceptions];
 
   const evento = eventoEnHora(todosEventos, dia, hora);
   

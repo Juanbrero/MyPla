@@ -3,10 +3,10 @@ import { Box, Button, Typography, Modal } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale';
-import Topics from './schedule/scheduleInfo/Topics';
-import ScheduleDate from './schedule/scheduleInfo/ScheduleDate';
-import ScheduleTime from './schedule/scheduleInfo/ScheduleTime';
-import Recurrent from './schedule/scheduleInfo/Recurrent';
+import ScheduleTopics from './schedule-components/ScheduleTopics';
+import ScheduleDate from './schedule-components/ScheduleDate';
+import ScheduleTime from './schedule-components/ScheduleTime';
+import ScheduleRecurrent from './schedule-components/ScheduleRecurrent';
 
 
 // RECIBE Y DEVUELVE:
@@ -19,7 +19,8 @@ import Recurrent from './schedule/scheduleInfo/Recurrent';
 //   day: "2025-05-31",
 //   week_day: 1, (lunes)
 //   recurrent: false,
-//   selectedHour: 'HH:MM:00.000Z',   // para generar excepciones
+//   selectedHour: 'HH:MM:00.000Z', (para excepciones)  SOLO EN MODO EDITAR
+//   tipo: 'recurrent', 'specific', 'exception'         SOLO EN MODO EDITAR
 // };
 // mode = 'create', 'edit'
 
@@ -41,12 +42,11 @@ export default function ScheduleModal({
   open,
   onClose,
   taskData,
-  mode = 'create', // 'create' o 'edit'
-  // clickedEvent,    // opcional, para el modo 'edit'
-  onCancelTask,
   onSaveTask,
+  onEditTask,
   onDeleteTask,
   onCancelOneOccurrence,
+  mode = 'create', // 'create' o 'edit'
 }) {
   if (!taskData) return null;
 
@@ -67,6 +67,12 @@ export default function ScheduleModal({
     }));
   };
 
+  const handleCancelarCambios = () => {
+    setLocalTaskData(taskData)
+    setIsEditable(false)
+  }
+
+  // CREAR y EDITAR
   const handleSaveTask = () => {
     const { topics, start, end } = localTaskData;
     if (!topics?.length || !start || !end) {
@@ -80,21 +86,25 @@ export default function ScheduleModal({
 
     if (mode === 'edit') {
       // Editar evento existente
-      const updatedEvent = {
-        ...clickedEvent,
-        ...localTaskData,
-      };
-      onSaveTask?.(updatedEvent);
-    } else {
+      onEditTask?.(taskData, localTaskData);
+      setIsEditable(false);
+    } else if (mode === 'create') {
       // Crear nuevo
       onSaveTask?.(localTaskData);
+      onClose?.()
     }
 
-    setIsEditable(false);
   };
 
+  // BORRAR
   const handleDeleteTask = () => {
-    // TODO
+    onDeleteTask?.(taskData);
+  }
+
+  // GENERAR EXCEPCION
+  const handleCancelOneOccurrence = () => {
+    console.log(taskData)
+    onCancelOneOccurrence?.(taskData)
   }
 
   return (
@@ -105,7 +115,7 @@ export default function ScheduleModal({
             {mode === 'edit' ? 'Información del Horario' : 'Crear Horario'}
           </Typography>
 
-          <Topics
+          <ScheduleTopics
             value={localTaskData.topics || []}
             topicsList={localTaskData.avaliableTopics}
             onChange={(newTopics) => handleTaskDataChange({ topics: newTopics })}
@@ -131,7 +141,7 @@ export default function ScheduleModal({
             isEditable={isEditable}
           />
 
-          <Recurrent
+          <ScheduleRecurrent
             value={localTaskData.recurrent || false}
             onChange={(newRecurrent) => {
               if (mode === 'create') {
@@ -144,12 +154,12 @@ export default function ScheduleModal({
           {/* Botones */}
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             {!isEditable && localTaskData.recurrent === true && (
-              <Button color="error" variant="contained" onClick={() => onCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
+              <Button color="error" variant="contained" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
                 Cancelar solo por esta vez
               </Button>
             )}
             {(mode === 'create' || !isEditable) && (
-              <Button color="secondary" variant="outlined" onClick={() => onCancelTask?.()} fullWidth sx={{ p: 2 }}>
+              <Button color="secondary" variant="outlined" onClick={() => onClose?.()} fullWidth sx={{ p: 2 }}>
                 Volver
               </Button>
             )}
@@ -164,7 +174,7 @@ export default function ScheduleModal({
                     <Button color="error" variant="contained" onClick={handleDeleteTask} fullWidth sx={{ p: 2 }}>
                       Borrar tarea
                     </Button>
-                    <Button color="secondary" variant="outlined" onClick={() => setIsEditable(false)} fullWidth sx={{ p: 2 }}>
+                    <Button color="secondary" variant="outlined" onClick={handleCancelarCambios} fullWidth sx={{ p: 2 }}>
                       Cancelar cambios
                     </Button>
                   </>

@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import CeldaHora from './celdaHora.jsx';
-import { prof_id } from "../utils/testData";
-import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent, getProfessionalTopics } from './service.js';
+import CeldaHora from './CeldaHora.jsx';
+import { prof_id } from "../../utils/testData.js";
+import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent, getProfessionalTopics, postException, putSpecific, putRecurrent } from '../service.js';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
 import { es } from 'date-fns/locale';
 import './calendario.css';
-import ScheduleCreate from './crear';
+import ScheduleCreate from './ScheduleModal.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
 
-// --- funciones utilitarias para hora ------------------------------------------------------
+// --- funciones utilitarias para fechas y horas --------------------------------------------
 const parseHora = (horaStr) => {
     if (!horaStr) return '';
     return horaStr.slice(0, 5);
@@ -30,35 +30,6 @@ const obtenerDiaDeLaSemana = (fecha) => {
 const toISO8601 = (hora, minutos = '00') => {
   return `${String(hora).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:00.000Z`;
 };
-
-function getRawTimeString(date) {
-  const horas = String(date.getHours()).padStart(2, '0');
-  const minutos = String(date.getMinutes()).padStart(2, '0');
-  const segundos = String(date.getSeconds()).padStart(2, '0');
-  const milisegundos = String(date.getMilliseconds()).padStart(3, '0');
-  return `${horas}:${minutos}:${segundos}.${milisegundos}Z`; // O sin la Z, según quieras
-}
-
-function formatTimeUndefined(inputTime, defaultMilliseconds = '000') {
-  // 1. Limpiar el string de "undefinedT" si existe
-  const cleanTime = inputTime.toString().replace('undefinedT', '');
-  
-  // 2. Extraer horas, minutos y segundos
-  const timeParts = cleanTime.split(':');
-  
-  // 3. Validar y obtener componentes
-  const hours = timeParts[0]?.padStart(2, '0') || '00';
-  const minutes = timeParts[1]?.padStart(2, '0') || '00';
-  const seconds = timeParts[2]?.split('.')[0]?.padStart(2, '0') || '00';
-  
-  // 4. Obtener milisegundos si existen, sino usar los predeterminados
-  const milliseconds = timeParts[2]?.includes('.') 
-    ? timeParts[2].split('.')[1]?.padEnd(3, '0').substring(0, 3) 
-    : defaultMilliseconds;
-  
-  // 5. Construir el nuevo formato
-  return `${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-}
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
@@ -92,8 +63,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
 };
 
 const Calendario = () => {
-
-    // estados modal
+    // estados del modal
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [createModalData, setCreateModalData] = useState(null); 
     const [createModalMode, setCreateModalMode] = useState('create') // 'create', 'edit'
@@ -101,31 +71,31 @@ const Calendario = () => {
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
+    // datos de la bd
     const [eventos, setEventos] = useState({});
     const [professionalTopics, setProfessionalTopics] = useState({});
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
         // Abrir modal en EDITAR si hay evento
+        const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
-            console.log(evento)
-            console.log(toISO8601(hora))
             setCreateModalData({
                 start: `${evento.start}.000Z`,
                 end: `${evento.end}.000Z`,
                 topics: evento.topics,
                 avaliableTopics: professionalTopics,
-                day: evento.day,
+                day: evento.day ? evento.day : diaStr, //si es recurrente envio el dia en que se clickea para la generacion de excepciones
                 week_day: evento.week_day,
                 recurrent: evento.type === 'recurrent',
                 selectedHour: toISO8601(hora),
+                tipo: evento.type
             });
             setCreateModalMode('edit')
             setCreateModalOpen(true);
         }
         // Abrir modal en CREAR si no hay evento
         else {
-            const diaStr = format(dia, 'yyyy-MM-dd')
             setCreateModalData({
                 start: toISO8601(hora),
                 end: toISO8601(hora + 1),
@@ -146,15 +116,13 @@ const Calendario = () => {
         setCreateModalData(null);
     };
 
-    // --- guardo nueva tarea (modal de CREATE) ---------------------------------------------------
+    // --- guardo nueva tarea ---------------------------------------------------------------------
     const handleSaveNewTask = async (newTask) => {
-      console.log(newTask)
       try {
-        if (newTask.recurrent) {
-          await postRecurrent(prof_id, newTask)
-        }
+        if (newTask.recurrent)
+          postRecurrent(prof_id, newTask);
         else {
-          await postSpecific(prof_id, newTask)
+          postSpecific(prof_id, newTask);
         }
         setCreateModalOpen(false);
         setCreateModalData(null);
@@ -165,94 +133,77 @@ const Calendario = () => {
       await cargarEventos(prof_id);
     };
 
+    // --- edito una tarea ------------------------------------------------------------------------
+    const handleEditTask = async (oldTask, updatedTask) => {
+      try {
+        switch (oldTask.tipo) {
+          case 'recurrent':
+            data = {
+              week_day: oldTask.week_day,
+              start: oldTask.start,
+              Nweek_day: updatedTask.week_day,
+              Nstart: updatedTask.start,
+              Nend: updatedTask.end,
+              topics: updatedTask.topics
+            }
+            putRecurrent(prof_id, data)
+            break
+          case 'specific':
+            data = {
+              day: oldTask.day,
+              start: oldTask.start,
+              Nday: updatedTask.day,
+              Nstart: updatedTask.start,
+              Nend: updatedTask.end,
+              topics: updatedTask.topics
+            }
+            putSpecific(prof_id, data)
+            break
+          case 'exception':
+            data = {
+              day: oldTask.day,
+              start: oldTask.start,
+              Nday: updatedTask.day,
+              Nstart: updatedTask.start,
+              Nend: updatedTask.end
+            }
+            putException(prof_id, data)
+            break
+        }
+      } catch (error) {
+        console.error('Error al editar la tarea:', error);
+      }
+      await cargarEventos(prof_id);
+    }
 
-    // --- edito una tarea (modal de EDIT) --------------------------------------------------------
-    const handleSaveEditTask = (updatedEvent) => {
-      // console.log(updatedEvent)
-      // let data = {}
-      // if (updatedEvent.type == 'recurrent') {
-        
-      // }
-      // else {
-      //   data = {
-      //     day: updatedEvent.day_actual,
-      //     start: formatTimeUndefined(updatedEvent.start_actual),
-      //     Nday: formatTimeUndefined(updatedEvent.day),
-      //     Nstart: formatTimeUndefined(updatedEvent.start),
-      //     Nend: formatTimeUndefined(updatedEvent.end),
-      //     topics: updatedEvent.topics
-      //   }
-      //   console.log(data)
-      // }
-
-        // TODO : guardar en back y recargar
-
-
-
-            // setEventos((prev) => {
-            //    const tipo = updatedEvent.extendedProps?.category === 'recurrent' ? 'recurrent' : 'specific';
-
-            //     const actualizados = prev[tipo].map((ev) =>
-            //         ev.id === updatedEvent.id ? { ...ev, ...updatedEvent } : ev
-            //     );
-
-            //     return { ...prev, [tipo]: actualizados };
-            // });
-            // handleCloseEditModal();
+    // --- borro una tarea ------------------------------------------------------------------------
+    const handleDeleteTask = async (eventToDelete) => {
+      try {
+        switch (eventToDelete.tipo) {
+          case 'recurrent':
+            deleteRecurrent(prof_id, eventToDelete)
+            break
+          case 'specific':
+            deleteSpecific(prof_id, eventToDelete)
+            break
+          case 'exception':
+            deleteException(prof_id, data)
+            break
+        }
+      } catch (error) {
+        console.error('Error al borrar la tarea:', error);
+      }
+      await cargarEventos(prof_id);
     };
 
-    // --- borro una tarea (modal de EDIT) --------------------------------------------------------
-    const handleDeleteTask = async (eventToDelete) => {
-      let data = {}
+    // --- cancelo tarea por unica vez ------------------------------------------------------------
+    const handleCancelOneOccurrence = async (eventToCancel) => {
       try {
-        if (eventToDelete.type == 'recurrent') {
-          const week_day = eventToDelete.week_day
-          const start = formatTimeUndefined(eventToDelete.start)
-          await deleteRecurrent(prof_id, week_day, start)
-        }
-        else if (eventToDelete.type == 'specific') {
-          data = {
-            day: eventToDelete.day,
-            start: formatTimeUndefined(eventToDelete.start)
-          }
-          await deleteSpecific(prof_id, data)
-        }
-
-        setCreateModalOpen(false);
-        setCreateModalData(null);
-
-        await cargarEventos(prof_id);
+        postException(prof_id, eventToCancel);
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
-
-        
-            // setEventos((prev) => {
-            //     const tipo = eventToDelete.extendedProps?.category === 'recurrent' ? 'recurrent' : 'specific';
-
-            //     const filtrados = prev[tipo].filter((ev) => ev.id !== eventToDelete.id);
-
-            //     return { ...prev, [tipo]: filtrados };
-            // });
-
-            // handleCloseEditModal();
-    };
-
-    // --- cancelo tarea por unica vez (modal de EDIT) --------------------------------------------
-    const handleCancelOneOccurrence = (eventToCancel) => {
-
-        // TODO : guardar en back y recargar
-
-            // console.log("Cancelar solo una ocurrencia:", eventToCancel);
-            // // Aquí decides: ¿creas una "excepción"? ¿O lo eliminas de la vista?
-            // // Ejemplo sencillo: lo eliminamos visualmente:
-            // setEventos((prev) => {
-            //     const tipo = 'specific'; // Lo tratarías como evento específico a partir de ahora
-            //     const nuevos = [...prev[tipo], { ...eventToCancel, cancelled: true }];
-            //     return { ...prev, [tipo]: nuevos };
-            // });
-
-            // handleCloseEditModal();
+      await cargarEventos(prof_id);
     };
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
@@ -266,6 +217,7 @@ const Calendario = () => {
             console.error("Error cargando eventos:", error);
         }
     };
+
     useEffect(() => {
         cargarEventos(prof_id);
     }, [semanaInicio]);
@@ -327,9 +279,11 @@ const Calendario = () => {
           open={createModalOpen}
           onClose={handleCloseCreateModal}
           taskData={createModalData}
-          onCancelTask={handleCloseCreateModal}
           onSaveTask={handleSaveNewTask}
+          onEditTask={handleEditTask}
           mode={createModalMode}
+          onDeleteTask={handleDeleteTask}
+          onCancelOneOccurrence={handleCancelOneOccurrence}
       />
 
     </div>

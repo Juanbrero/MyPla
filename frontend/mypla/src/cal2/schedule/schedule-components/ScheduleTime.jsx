@@ -6,35 +6,45 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 export default function ScheduleTime({ value, onChange, isEditable }) {
   const { start, end } = value || {};
 
-  // Helper para parsear string 'HH:mm' a Date
+  // Helper para parsear string 'HH:MM:00:000Z' a Date
   const parseTime = (timeStr) => {
     if (!timeStr) return null;
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date;
+    try {
+      // Asumimos formato 'HH:mm:00.000' (sin Z)
+      const [hours, minutes] = timeStr.split(':');
+      const now = new Date();
+      return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        parseInt(hours, 10),
+        parseInt(minutes, 10),
+        0,
+        0
+      );
+    } catch {
+      return null;
+    }
   };
 
-  // Helper para formatear Date a 'HH:mm'
   const formatTime = (date) => {
     if (!(date instanceof Date) || isNaN(date)) return '';
-    return date.toTimeString().slice(0, 5); // HH:mm
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}:00.000Z`;  // **Sin la Z**
   };
 
   const handleStartChange = (newValue) => {
     onChange?.({
       ...value,
-      start: formatTime(newValue)
+      start: newValue ? formatTime(newValue) : '',
     });
   };
 
   const handleEndChange = (newValue) => {
     onChange?.({
       ...value,
-      end: formatTime(newValue)
+      end: newValue ? formatTime(newValue) : '',
     });
   };
 
