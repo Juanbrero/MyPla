@@ -153,7 +153,7 @@ export default function ScheduleModal({
 
           {/* Botones */}
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
-            {!isEditable && localTaskData.recurrent === true && (
+            {localTaskData.recurrent === true && !isEditable && (
               <Button color="error" variant="contained" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
                 Cancelar solo por esta vez
               </Button>

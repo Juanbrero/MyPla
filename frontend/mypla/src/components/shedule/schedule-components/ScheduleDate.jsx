@@ -28,7 +28,7 @@ export default function ScheduleDate({ type, value, onChange, isEditable }) {
           <Typography variant="subtitle1">
             <strong>{type === 'recurrent' ? 'Día' : 'Fecha'}:</strong>{' '}
             {type === 'recurrent'
-              ? DAYS[value?.week_day ?? 0]
+              ? DAYS[value?.week_day  ?? 0]
               : value?.date
                 ? format(parseISO(value.date), 'dd-MM-yyyy')
                 : '--/--/----'}
@@ -42,7 +42,7 @@ export default function ScheduleDate({ type, value, onChange, isEditable }) {
         <FormControl fullWidth margin="normal">
           <InputLabel>Día</InputLabel>
           <Select
-            value={DAYS[value?.week_day ?? 0]}
+            value={DAYS[value?.week_day  ?? 0]}
             onChange={handleDayChange}
             label="Día"
           >

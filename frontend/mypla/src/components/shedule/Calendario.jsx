@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './CeldaHora.jsx';
 import { prof_id } from "../../utils/testData.js";
-import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent, getProfessionalTopics, postException, putSpecific, putRecurrent } from '../service.js';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
 import { es } from 'date-fns/locale';
 import './calendario.css';
 import ScheduleCreate from './ScheduleModal.jsx';
+import { getAvailableProfessional } from '../../services/available/available-professional.service.js';
+import { postSpecific, putSpecific, deleteSpecific } from '../../services/specific/specific.service';
+import { postRecurrent, putRecurrent, deleteRecurrent } from '../../services/recurrent/recurrent.service';
+import { postException, putException, deleteException } from '../../services/exception/exception.service';
+import { getProfessionalTopics } from '../../services/professionals-topic/professionals-topic.service.js';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -45,7 +49,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
     // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
     const recurrentesDelDia = recurrent.filter(e => {
-        const esElDia = getDay(dia) === e.week_day;
+        const esElDia = getDay(dia) === e.week_day % 7;
         const horaEv = horaNumero(parseHora(e.start));
         const tieneExcepcion = excepcionesDelDia.some(exc => {
             const horaInicioRecurrente = parseHora(e.start);
@@ -86,7 +90,7 @@ const Calendario = () => {
                 topics: evento.topics,
                 avaliableTopics: professionalTopics,
                 day: evento.day ? evento.day : diaStr, //si es recurrente envio el dia en que se clickea para la generacion de excepciones
-                week_day: evento.week_day,
+                week_day: evento.week_day % 7,
                 recurrent: evento.type === 'recurrent',
                 selectedHour: toISO8601(hora),
                 tipo: evento.type
@@ -119,25 +123,31 @@ const Calendario = () => {
     // --- guardo nueva tarea ---------------------------------------------------------------------
     const handleSaveNewTask = async (newTask) => {
       try {
-        if (newTask.recurrent)
-          postRecurrent(prof_id, newTask);
-        else {
-          postSpecific(prof_id, newTask);
+        if (newTask.recurrent) {
+          if (newTask.week_day == 0) newTask.week_day = 7
+          await postRecurrent(prof_id, newTask);
         }
+        else {
+          await postSpecific(prof_id, newTask);
+        }
+
         setCreateModalOpen(false);
         setCreateModalData(null);
-
+        await cargarEventos(prof_id);
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
-      await cargarEventos(prof_id);
     };
 
     // --- edito una tarea ------------------------------------------------------------------------
     const handleEditTask = async (oldTask, updatedTask) => {
       try {
+        let data = {}
+        console.log(oldTask)
         switch (oldTask.tipo) {
           case 'recurrent':
+            if (updatedTask.week_day == 0) updatedTask.week_day = 7
+            if (oldTask.week_day == 0) oldTask.week_day = 7
             data = {
               week_day: oldTask.week_day,
               start: oldTask.start,
@@ -146,7 +156,7 @@ const Calendario = () => {
               Nend: updatedTask.end,
               topics: updatedTask.topics
             }
-            putRecurrent(prof_id, data)
+            await putRecurrent(prof_id, data)
             break
           case 'specific':
             data = {
@@ -157,7 +167,7 @@ const Calendario = () => {
               Nend: updatedTask.end,
               topics: updatedTask.topics
             }
-            putSpecific(prof_id, data)
+            await putSpecific(prof_id, data)
             break
           case 'exception':
             data = {
@@ -167,13 +177,14 @@ const Calendario = () => {
               Nstart: updatedTask.start,
               Nend: updatedTask.end
             }
-            putException(prof_id, data)
+            await putException(prof_id, data)
             break
-        }
+          default: console.error('Invalid task type')
+          }
+          await cargarEventos(prof_id);
       } catch (error) {
         console.error('Error al editar la tarea:', error);
       }
-      await cargarEventos(prof_id);
     }
 
     // --- borro una tarea ------------------------------------------------------------------------
@@ -181,29 +192,30 @@ const Calendario = () => {
       try {
         switch (eventToDelete.tipo) {
           case 'recurrent':
-            deleteRecurrent(prof_id, eventToDelete)
+            if (eventToDelete.week_day == 0) eventToDelete.week_day = 7
+            await deleteRecurrent(prof_id, eventToDelete)
             break
           case 'specific':
-            deleteSpecific(prof_id, eventToDelete)
+            await deleteSpecific(prof_id, eventToDelete)
             break
           case 'exception':
-            deleteException(prof_id, data)
+            await deleteException(prof_id, data)
             break
         }
+        await cargarEventos(prof_id);
       } catch (error) {
         console.error('Error al borrar la tarea:', error);
       }
-      await cargarEventos(prof_id);
     };
 
     // --- cancelo tarea por unica vez ------------------------------------------------------------
     const handleCancelOneOccurrence = async (eventToCancel) => {
       try {
-        postException(prof_id, eventToCancel);
+        await postException(prof_id, eventToCancel);
+        await cargarEventos(prof_id);
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
-      await cargarEventos(prof_id);
     };
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
