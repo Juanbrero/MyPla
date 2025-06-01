@@ -74,8 +74,7 @@ export default function ScheduleCreate({
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
       return;
     }
-    console.log(localTaskData)
-    // onSaveTask?.(localTaskData);
+    onSaveTask?.(localTaskData);
   };
 
   return (

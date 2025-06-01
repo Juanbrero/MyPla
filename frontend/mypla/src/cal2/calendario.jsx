@@ -150,34 +150,21 @@ const Calendario = () => {
 
     // --- guardo nueva tarea (modal de CREATE) ---------------------------------------------------
     const handleSaveNewTask = async (newTask) => {
-      let data = {}
+      console.log(newTask)
       try {
-        if (newTask.category == 'recurrent') {
-          data = {
-            week_day: new Date(newTask.day).getDay() + 1,
-            start: typeof newTask.start === 'string' ? formatTimeUndefined(newTask.start) : getRawTimeString(newTask.start),
-            end: typeof newTask.end === 'string' ? formatTimeUndefined(newTask.end) : getRawTimeString(newTask.end),
-            topics: newTask.topics
-          }
-          await postRecurrent(prof_id, data)
+        if (newTask.recurrent) {
+          await postRecurrent(prof_id, newTask)
         }
         else {
-          data = {
-            day: newTask.day,
-            start: typeof newTask.start === 'string' ? formatTimeUndefined(newTask.start) : getRawTimeString(newTask.start),
-            end: typeof newTask.end === 'string' ? formatTimeUndefined(newTask.end) : getRawTimeString(newTask.end),
-            topics: newTask.topics
-          }
-          await postSpecific(prof_id, data)
+          await postSpecific(prof_id, newTask)
         }
-
         setCreateModalOpen(false);
         setCreateModalData(null);
 
-        await cargarEventos(prof_id);
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
+      await cargarEventos(prof_id);
     };
 
 
@@ -345,7 +332,6 @@ const Calendario = () => {
           onCancelTask={handleCloseCreateModal}
           onSaveTask={handleSaveNewTask}
       />
-
 
       <ScheduleEdit
           open={editModalOpen}
