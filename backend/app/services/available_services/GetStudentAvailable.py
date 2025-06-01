@@ -31,7 +31,7 @@ class GetStudentAvailable():
 
              
         # Recorre desde el mes ingresado hasta el siguiente
-        while day_recurrent.month <= (month + 1):
+        while day_recurrent.month <= (month + 1) and day_recurrent.year == date.today().year:
             
             # Recorre el recurrent y genera los horarios
             # 
