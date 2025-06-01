@@ -2,52 +2,32 @@ import * as React from 'react';
 import {
   Box, Typography, Checkbox, FormControlLabel
 } from '@mui/material';
-import { useEffect } from 'react'
 
-export default function ScheduleTime(props) {
-   
-    const { taskData, clickedEvent, isEditable, onChangeData } = props;
+export default function ScheduleRecurrent({ value = false, onChange, isEditable }) {
+  const handleChange = (event) => {
+    onChange?.(event.target.checked);
+  };
 
-    const [isRecurring, setIsRecurring] = React.useState(taskData?.category === "recurrent");
-    const [editRecurrent, setEditRecurrent] = React.useState(clickedEvent?.extendedProps?.category === "recurrent");
-    
-
-    useEffect(() => {
-      
-        setIsRecurring(taskData?.category === "recurrent");  
-        setEditRecurrent(clickedEvent?.extendedProps?.category === "recurrent");  
-    
-    }, [taskData?.category, clickedEvent?.extendedProps?.category]);
-    
-
-    const handleRecurrentChange = (event) => {
-        const { target: { checked } } = event;
-        setIsRecurring(checked)
-        onChangeData?.({ category : checked ? "recurrent" : clickedEvent?.extendedProps?.category});
-        // onChangeData?.({ recurrent : checked});
-    };
-
+  if (!isEditable) {
     return (
-        <>
-        {!isEditable ? (
-            <Box>
-                <Typography variant="subtitle1">
-                    <strong>Es recurrente:</strong> {editRecurrent ? 'Sí' : 'No'}
-                </Typography>
-            </Box>
-        ) : (
-            <FormControlLabel
-               control={
-                    <Checkbox
-                       checked={isRecurring}
-                       onChange={handleRecurrentChange}
-                    />
-                }
-                label="Repetir semanalmente"
-               sx={{ mt: 2 }}
-            />
-           )}
-        </>
-    )
+      <Box>
+        <Typography variant="subtitle1">
+          <strong>Es recurrente:</strong> {value ? 'Sí' : 'No'}
+        </Typography>
+      </Box>
+    );
+  }
 
+  return (
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={value}
+          onChange={handleChange}
+        />
+      }
+      label="Repetir semanalmente"
+      sx={{ mt: 2 }}
+    />
+  );
 }

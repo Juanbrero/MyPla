@@ -21,6 +21,13 @@ const horaNumero = (horaStr) => {
     return parseInt(horaStr.slice(0, 2), 10);
 };
 
+function dateToStr(fecha) {
+  const year = fecha.getFullYear();
+  const month = String(fecha.getMonth() + 1).padStart(2, '0');
+  const day = String(fecha.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getRawTimeString(date) {
   const horas = String(date.getHours()).padStart(2, '0');
   const minutos = String(date.getMinutes()).padStart(2, '0');
@@ -114,12 +121,16 @@ const Calendario = () => {
             const startDateTime = setMinutes(setHours(dia, hora), 0);
             const endDateTime = setMinutes(setHours(dia, hora + 1), 0); // 1 hora más tarde
             setCreateModalData({
-                start: startDateTime,
-                end: endDateTime,
+                // start: startDateTime,
+                // end: endDateTime,
+                start: `${String(hora).padStart(2, '0')}:00:00.000Z`,
+                end: `${String(hora + 1).padStart(2, '0')}:00:00.000Z`,
                 topics: [],
                 day: format(dia, 'yyyy-MM-dd'),
                 recurrent: false,
             });
+            console.log("anterior: ", hora)
+            console.log("anterior: ", `${String(hora).padStart(2, '0')}:00:00.000Z`)
             setCreateModalOpen(true);
         }
     };

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Box, Button, Typography, Modal } from '@mui/material';
+import {
+  Box, Button, Typography, Modal
+} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale';
@@ -7,6 +9,7 @@ import Topics from './schedule/scheduleInfo/Topics';
 import ScheduleDate from './schedule/scheduleInfo/ScheduleDate';
 import ScheduleTime from './schedule/scheduleInfo/ScheduleTime';
 import Recurrent from './schedule/scheduleInfo/Recurrent';
+
 
 const style = {
   position: 'absolute',
@@ -22,12 +25,6 @@ const style = {
   color: 'text.primary',
 };
 
-// taskData = {
-//   topics: ['Matematica', 'Lengua'],
-//   start: '2025-06-01T12:00:00Z',
-//   end: '2025-06-01T13:00:00Z',
-//   category: 'recurrent' // o 'specific'
-// };
 
 export default function ScheduleCreate({
   open,
@@ -37,15 +34,18 @@ export default function ScheduleCreate({
   onSaveTask,
 }) {
 
-  if (!taskData) return null;
+  // LOADING .....
+  if (!taskData) {
+      return null;
+  }
 
   const [localTaskData, setLocalTaskData] = React.useState(taskData);
+  
 
   React.useEffect(() => {
     if (open) setLocalTaskData(taskData);
-    console.log(localTaskData)
   }, [open, taskData]);
-
+    
   const handleTaskDataChange = (partialUpdate) => {
     setLocalTaskData((prev) => ({
       ...prev,
@@ -59,14 +59,17 @@ export default function ScheduleCreate({
 
   const handleSaveTask = () => {
     const { topics, start, end } = localTaskData;
+
     if (!topics?.length || !start || !end) {
       alert('Por favor complete todos los campos');
       return;
     }
+  
     if (start >= end) {
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
       return;
     }
+
     onSaveTask?.(localTaskData);
   };
 
@@ -76,39 +79,28 @@ export default function ScheduleCreate({
         <Box sx={style}>
           <Typography variant="h6" mb={2}>Crear Horario</Typography>
 
-          <Topics
-            value={localTaskData.topics || []}
-            onChange={(newTopics) => handleTaskDataChange({ topics: newTopics })}
+          <Topics 
+            taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />
-
-          <ScheduleDate
-            type={localTaskData.recurrent ? 'recurrent' : 'specific'}
-            value={{ week_day: localTaskData.week_day, date: localTaskData.day }}
-            onChange={(newVal) => {
-              // newVal puede tener { week_day } o { date }
-              if (newVal.week_day !== undefined) {
-                handleTaskDataChange({ week_day: newVal.week_day, recurrent: true });
-              } else if (newVal.date) {
-                handleTaskDataChange({ day: newVal.date, recurrent: false });
-              }
-            }}
+          <ScheduleDate 
+            taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />
-
-
           <ScheduleTime
-            value={{ start: localTaskData.start, end: localTaskData.end }}
-            onChange={(newTimes) => handleTaskDataChange(newTimes)}
+            taskData={taskData}
             isEditable={true}
-          />
-
+            onChangeData={handleTaskDataChange}
+          />          
           <Recurrent
-            value={localTaskData.recurrent || 'false'}
-            onChange={(newRecurrent) => handleTaskDataChange({ recurrent: newRecurrent })}
+            taskData={taskData}
             isEditable={true}
+            onChangeData={handleTaskDataChange}
           />
-
+         
+          {/* Botones */}
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
             <Button color="error" variant="contained" onClick={handleCancelTask} fullWidth sx={{ p: 2 }}>
               Cancelar
