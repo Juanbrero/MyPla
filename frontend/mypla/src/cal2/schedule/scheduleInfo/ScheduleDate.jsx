@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { Box, Typography, MenuItem, Select, FormControl, InputLabel, TextField } from '@mui/material';
+import { Box, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { format, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -15,7 +17,7 @@ export default function ScheduleDate({ type, value, onChange, isEditable }) {
 
   const handleDateChange = (newValue) => {
     if (!(newValue instanceof Date) || isNaN(newValue)) return;
-    const formatted = newValue.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+    const formatted = format(newValue, 'yyyy-MM-dd'); // en tu zona horaria
     onChange?.({ date: formatted });
   };
 
@@ -27,7 +29,9 @@ export default function ScheduleDate({ type, value, onChange, isEditable }) {
             <strong>{type === 'recurrent' ? 'Día' : 'Fecha'}:</strong>{' '}
             {type === 'recurrent'
               ? DAYS[value?.week_day ?? 0]
-              : value?.date ?? '--/--/----'}
+              : value?.date
+                ? format(parseISO(value.date), 'dd-MM-yyyy')
+                : '--/--/----'}
           </Typography>
         </Box>
       );
@@ -52,11 +56,19 @@ export default function ScheduleDate({ type, value, onChange, isEditable }) {
 
     // specific
     return (
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
         <DatePicker
           label="Fecha"
-          value={value?.date ? new Date(value.date) : null}
+          value={
+            value?.date
+              ? (() => {
+                  const [year, month, day] = value.date.split('-');
+                  return new Date(year, month - 1, day);
+                })()
+              : null
+          }
           onChange={handleDateChange}
+          inputFormat="dd-MM-yyyy"
           slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
         />
       </LocalizationProvider>

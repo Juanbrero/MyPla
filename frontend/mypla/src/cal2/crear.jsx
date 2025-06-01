@@ -8,6 +8,20 @@ import ScheduleDate from './schedule/scheduleInfo/ScheduleDate';
 import ScheduleTime from './schedule/scheduleInfo/ScheduleTime';
 import Recurrent from './schedule/scheduleInfo/Recurrent';
 
+
+// RECIBE Y DEVUELVE:
+
+// taskData = {
+//   start: `HH:MM:00.000Z`,
+//   end: `HH:MM:00.000Z`,
+//   topics: ['Matematica', 'Lengua'],
+//   avaliableTopics: ['Matematica', 'Lengua', 'Programacion'],
+//   day: "2025-05-31",
+//   week_day: 1, (lunes)
+//   recurrent: false,
+// };
+
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -21,13 +35,6 @@ const style = {
   p: 4,
   color: 'text.primary',
 };
-
-// taskData = {
-//   topics: ['Matematica', 'Lengua'],
-//   start: '2025-06-01T12:00:00Z',
-//   end: '2025-06-01T13:00:00Z',
-//   category: 'recurrent' // o 'specific'
-// };
 
 export default function ScheduleCreate({
   open,
@@ -67,7 +74,8 @@ export default function ScheduleCreate({
       alert('La hora de inicio no puede ser mayor o igual que la de fin');
       return;
     }
-    onSaveTask?.(localTaskData);
+    console.log(localTaskData)
+    // onSaveTask?.(localTaskData);
   };
 
   return (
@@ -88,15 +96,14 @@ export default function ScheduleCreate({
             value={{ week_day: localTaskData.week_day, date: localTaskData.day }}
             onChange={(newVal) => {
               // newVal puede tener { week_day } o { date }
-              if (newVal.week_day !== undefined) {
-                handleTaskDataChange({ week_day: newVal.week_day, recurrent: true });
-              } else if (newVal.date) {
-                handleTaskDataChange({ day: newVal.date, recurrent: false });
+              if (localTaskData.recurrent) {
+                handleTaskDataChange({ week_day: newVal.week_day });
+              } else {
+                handleTaskDataChange({ day: newVal.date });
               }
             }}
             isEditable={true}
           />
-
 
           <ScheduleTime
             value={{ start: localTaskData.start, end: localTaskData.end }}

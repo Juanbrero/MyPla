@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import CeldaHora from './celdaHora.jsx';
 import { prof_id } from "../utils/testData";
 import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent, getProfessionalTopics } from './service.js';
-import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays } from 'date-fns';
+import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
+import { es } from 'date-fns/locale';
 import './calendario.css';
 import ScheduleCreate from './crear';
 import ScheduleEdit from './edit.jsx';
@@ -21,12 +22,15 @@ const horaNumero = (horaStr) => {
     return parseInt(horaStr.slice(0, 2), 10);
 };
 
-function dateToStr(fecha) {
-  const year = fecha.getFullYear();
-  const month = String(fecha.getMonth() + 1).padStart(2, '0');
-  const day = String(fecha.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+const obtenerDiaDeLaSemana = (fecha) => {
+  const [anio, mes, dia] = fecha.split('-');
+  const date = new Date(Date.UTC(anio, mes - 1, dia));
+  return date.getUTCDay();
+};
+
+const toISO8601 = (hora, minutos = '00') => {
+  return `${String(hora).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:00.000Z`;
+};
 
 function getRawTimeString(date) {
   const horas = String(date.getHours()).padStart(2, '0');
@@ -106,7 +110,7 @@ const Calendario = () => {
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
-        // Abrir modal de edición si hay evento
+        // Abrir modal de EDITAR si hay evento
         if (evento) {
             const updatedEvento = {
                 ...evento,          
@@ -116,19 +120,16 @@ const Calendario = () => {
             setEditModalData(updatedEvento);
             setEditModalOpen(true);
         }
-        // Abrir modal de crear si no hay evento
+        // Abrir modal de CREAR si no hay evento
         else {
-            // Crear datos iniciales para el modal: start y end a la hora seleccionada
-            const startDateTime = setMinutes(setHours(dia, hora), 0);
-            const endDateTime = setMinutes(setHours(dia, hora + 1), 0); // 1 hora más tarde
+            const diaStr = format(dia, 'yyyy-MM-dd')
             setCreateModalData({
-                // start: startDateTime,
-                // end: endDateTime,
-                start: `${String(hora).padStart(2, '0')}:00:00.000Z`,
-                end: `${String(hora + 1).padStart(2, '0')}:00:00.000Z`,
+                start: toISO8601(hora),
+                end: toISO8601(hora + 1),
                 topics: [],
                 avaliableTopics: professionalTopics,
-                day: format(dia, 'yyyy-MM-dd'),
+                day: diaStr,
+                week_day: obtenerDiaDeLaSemana(diaStr),
                 recurrent: false,
             });
             setCreateModalOpen(true);
@@ -276,8 +277,6 @@ const Calendario = () => {
             setEventos(data);
             const topics = await getProfessionalTopics(profId);
             setProfessionalTopics(topics);
-            console.log(data)
-            console.log(topics)
         } catch (error) {
             console.error("Error cargando eventos:", error);
         }
@@ -316,7 +315,7 @@ const Calendario = () => {
         <div className="grid-dias">
           {diasSemana.map((dia, idxDia) => (
             <div key={`header-${idxDia}`} className="header-dia">
-              {format(dia, 'EEE dd/MM')}
+              {format(dia, 'EEE dd/MM', {locale: es})}
             </div>
           ))}
 
