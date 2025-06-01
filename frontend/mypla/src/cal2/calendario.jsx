@@ -6,7 +6,6 @@ import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, se
 import { es } from 'date-fns/locale';
 import './calendario.css';
 import ScheduleCreate from './crear';
-import ScheduleEdit from './edit.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -94,13 +93,10 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
 const Calendario = () => {
 
-    // estados modal crear
+    // estados modal
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [createModalData, setCreateModalData] = useState(null); // Datos que le paso al modal
-
-    // estados modal edit
-    const [editModalOpen, setEditModalOpen] = useState(false);
-    const [editModalData, setEditModalData] = useState(null);
+    const [createModalData, setCreateModalData] = useState(null); 
+    const [createModalMode, setCreateModalMode] = useState('create') // 'create', 'edit'
 
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -110,17 +106,24 @@ const Calendario = () => {
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
-        // Abrir modal de EDITAR si hay evento
+        // Abrir modal en EDITAR si hay evento
         if (evento) {
-            const updatedEvento = {
-                ...evento,          
-                start_actual: evento.start, 
-                day_actual: evento.day
-            };
-            setEditModalData(updatedEvento);
-            setEditModalOpen(true);
+            console.log(evento)
+            console.log(toISO8601(hora))
+            setCreateModalData({
+                start: `${evento.start}.000Z`,
+                end: `${evento.end}.000Z`,
+                topics: evento.topics,
+                avaliableTopics: professionalTopics,
+                day: evento.day,
+                week_day: evento.week_day,
+                recurrent: evento.type === 'recurrent',
+                selectedHour: toISO8601(hora),
+            });
+            setCreateModalMode('edit')
+            setCreateModalOpen(true);
         }
-        // Abrir modal de CREAR si no hay evento
+        // Abrir modal en CREAR si no hay evento
         else {
             const diaStr = format(dia, 'yyyy-MM-dd')
             setCreateModalData({
@@ -132,20 +135,15 @@ const Calendario = () => {
                 week_day: obtenerDiaDeLaSemana(diaStr),
                 recurrent: false,
             });
+            setCreateModalMode('create')
             setCreateModalOpen(true);
         }
     };
 
-    // --- cierro el (modal de CREATE) --------------------------------------------------------------
+    // --- cierro el modal ------------------------------------------------------------------------
     const handleCloseCreateModal = () => {
         setCreateModalOpen(false);
         setCreateModalData(null);
-    };
-
-    // --- cierro el (modal de EDIT) --------------------------------------------------------------
-    const handleCloseEditModal = () => {
-        setEditModalOpen(false);
-        setEditModalData(null);
     };
 
     // --- guardo nueva tarea (modal de CREATE) ---------------------------------------------------
@@ -331,17 +329,7 @@ const Calendario = () => {
           taskData={createModalData}
           onCancelTask={handleCloseCreateModal}
           onSaveTask={handleSaveNewTask}
-      />
-
-      <ScheduleEdit
-          open={editModalOpen}
-          onClose={handleCloseEditModal}
-          clickedEvent={editModalData}
-          taskData={editModalData}
-          onCancelTask={handleCloseEditModal}
-          onSaveEditTask={handleSaveEditTask}
-          onDeleteTask={handleDeleteTask}
-          onCancelOneOccurrence={handleCancelOneOccurrence}
+          mode={createModalMode}
       />
 
     </div>
