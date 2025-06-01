@@ -108,3 +108,28 @@ export const deleteRecurrent = async (prof_id, week_day, start) => {
       error,
   };
 };
+
+export const getProfessionalTopics = async (prof_id) => {
+
+    const config = {
+    url: `${apiServerUrl}/professionals-topic?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "GET",
+    headers: {
+        "content-type": "application/json",
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    if (error) {
+      console.error("Error al obtener datos:", error);
+      throw error;
+    }
+
+    const topics = Array.isArray(data)
+        ? data.map(item => item.topic_name)
+        : [];
+
+
+    return topics;
+};

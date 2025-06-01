@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './celdaHora.jsx';
 import { prof_id } from "../utils/testData";
-import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent } from './service.js';
+import { getAvailableProfessional, postSpecific, postRecurrent, deleteSpecific, deleteRecurrent, getProfessionalTopics } from './service.js';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays } from 'date-fns';
 import './calendario.css';
 import ScheduleCreate from './crear';
@@ -91,17 +91,18 @@ const filtrarEventosPorDia = (eventos, dia) => {
 const Calendario = () => {
 
     // estados modal crear
-    const [createModalOpen, setCreateModalOpen] = React.useState(false);
-    const [createModalData, setCreateModalData] = React.useState(null); // Datos que le paso al modal
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [createModalData, setCreateModalData] = useState(null); // Datos que le paso al modal
 
     // estados modal edit
-    const [editModalOpen, setEditModalOpen] = React.useState(false);
-    const [editModalData, setEditModalData] = React.useState(null);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editModalData, setEditModalData] = useState(null);
 
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
     const [eventos, setEventos] = useState({});
+    const [professionalTopics, setProfessionalTopics] = useState({});
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
@@ -126,11 +127,10 @@ const Calendario = () => {
                 start: `${String(hora).padStart(2, '0')}:00:00.000Z`,
                 end: `${String(hora + 1).padStart(2, '0')}:00:00.000Z`,
                 topics: [],
+                avaliableTopics: professionalTopics,
                 day: format(dia, 'yyyy-MM-dd'),
                 recurrent: false,
             });
-            console.log("anterior: ", hora)
-            console.log("anterior: ", `${String(hora).padStart(2, '0')}:00:00.000Z`)
             setCreateModalOpen(true);
         }
     };
@@ -274,6 +274,10 @@ const Calendario = () => {
         try {
             const data = await getAvailableProfessional(profId);
             setEventos(data);
+            const topics = await getProfessionalTopics(profId);
+            setProfessionalTopics(topics);
+            console.log(data)
+            console.log(topics)
         } catch (error) {
             console.error("Error cargando eventos:", error);
         }

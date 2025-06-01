@@ -78,6 +78,7 @@ export default function ScheduleCreate({
 
           <Topics
             value={localTaskData.topics || []}
+            topicsList={localTaskData.avaliableTopics}
             onChange={(newTopics) => handleTaskDataChange({ topics: newTopics })}
             isEditable={true}
           />
@@ -104,7 +105,7 @@ export default function ScheduleCreate({
           />
 
           <Recurrent
-            value={localTaskData.recurrent || 'false'}
+            value={localTaskData.recurrent || false}
             onChange={(newRecurrent) => handleTaskDataChange({ recurrent: newRecurrent })}
             isEditable={true}
           />
