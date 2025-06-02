@@ -28,43 +28,47 @@ const eventoEnHora = (eventos, dia, hora) => {
       const inicioHora = inicio.getHours();
       const finHora = fin.getHours();
 
-      // Consideramos las celdas de cada hora completa del evento
       if (hora >= inicioHora && hora < finHora) {
-        return ev;
+        let posicion = 'middle';
+        if (hora === inicioHora) posicion = 'start';
+        if (hora === finHora - 1) posicion = 'end';
+
+        return { evento: ev, posicion };
       }
     }
   }
-  return null;
+  return { evento: null, posicion: null };
 };
 
+
 const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
-  const { recurrent = [], specific = [] } = eventosDelDia || {};
-  const todosEventos = [...recurrent, ...specific];
+  const { recurrent = [], specific = [], exception = [] } = eventosDelDia || {};
+  const todosEventos = [...recurrent, ...specific, ...exception];
 
-  // const { recurrent = [], specific = [], exceptions = [] } = eventosDelDia || {};
-  // const todosEventos = [...recurrent, ...specific, exceptions];
+  const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 
-  const evento = eventoEnHora(todosEventos, dia, hora);
-  
-  let claseCelda = 'celda-hora'
-  
+  let claseCelda = 'celda-hora';
+
   if (evento) {
-    claseCelda += ' celda-hora-ocupada'
+    claseCelda += ' celda-hora-ocupada';
     if (evento.type == 'recurrent') {
-      claseCelda += ' celda-recurrent'
+      claseCelda += ' celda-recurrent';
+    } else if (evento.type == 'specific') {
+      claseCelda += ' celda-specific';
+    } else if (evento.type == 'exception') {
+      claseCelda += ' celda-exception';
     }
-    else if (evento.type == 'specific') {
-      claseCelda += ' celda-specific'
-    }
-    else if (evento.type == 'exception') {
-      claseCelda += ' celda-exception'
+
+    if (posicion === 'start') {
+      claseCelda += ' celda-inicio';
+    } else if (posicion === 'end') {
+      claseCelda += ' celda-fin';
     }
   }
-  // const claseCelda = evento ? 'celda-hora-ocupada' : 'celda-hora';
-  
+
   return (
     <div className={claseCelda} onClick={() => onClick(dia, hora, evento)}>
-      {evento ? (
+      {evento && posicion === 'start'  ? (
         <span title={evento.topics ? evento.topics.join(', ') : 'Evento'}>
           {evento.start ? parseHora(evento.start) : ''}
           {evento.topics ? ` - ${evento.topics.join(', ')}` : ''}
@@ -75,5 +79,6 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
     </div>
   );
 };
+
 
 export default CeldaHora;

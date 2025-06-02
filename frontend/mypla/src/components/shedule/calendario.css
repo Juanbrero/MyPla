@@ -1,6 +1,6 @@
 .calendario-controles {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Contenedor principal del calendario: flex horizontal */
@@ -71,21 +71,44 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.grid-dias .celda-hora span {
+  max-height: 100%;
+  overflow-y: hidden;
+  text-overflow: ellipsis;
 }
 
 .grid-dias .celda-hora:hover {
   background-color: #ddd;
+  border-color: #ddd;
 }
 
-.celda-specific {
+.celda-hora.celda-specific {
   background-color: #50e3c2;
+  border-color: #50e3c2;
 }
 
-.celda-recurrent {
+.celda-hora.celda-recurrent {
   background-color: #4a90e2;
+  border-color: #4a90e2;
 }
 
-.celda-exception {
-  background-color: red;
+.celda-hora.celda-exception {
+  background-color: #ff6d13;
+  border-color: #ff6d13;
+}
+
+.celda-hora.celda-inicio {
+  border-top-color: #ddd;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.celda-hora.celda-fin {
+  border-bottom-color: #ddd;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }

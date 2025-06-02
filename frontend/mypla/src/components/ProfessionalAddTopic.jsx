@@ -1,9 +1,9 @@
 import { getTopics } from '../services/topics/topics.service';
-import { getProfessionalsTopic, postProfessionalsTopic } from '../services/professionals-topic/professionals-topic.service'
+import { getProfessionalTopics, postProfessionalTopics } from '../services/professionals-topic/professionals-topic.service.js'
 
 import React, { useEffect, useState } from 'react';
 import { Button, Box, Typography } from '@mui/material';
-import Topics from './schedule/scheduleInfo/Topics';
+import ScheduleTopics from './shedule/schedule-components/ScheduleTopics';
 
 
 export default function ProfessionalAddTopic({ professionalId }) {
@@ -23,7 +23,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
         return;
       }
 
-      const { data: professionalTopics, error: professionalError } = await getProfessionalsTopic(professionalId);
+      const { data: professionalTopics, error: professionalError } = await getProfessionalTopics(professionalId);
       if (professionalError) {
         console.error('Error al obtener tópicos del profesional:', professionalError);
         setStatusMessage('Error al obtener los tópicos del profesional');
@@ -48,7 +48,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
   }, [professionalId]);
 
   const handleChangeTopics = (data) => {
-    setSelectedTopics(data.topics || []);
+    setSelectedTopics(data);
   };
 
   const handleAddTopics = async () => {
@@ -62,7 +62,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
       setStatusMessage('');
 
       for (const topic of selectedTopics) {
-        const { data, error } = await postProfessionalsTopic(topic);
+        const { data, error } = await postProfessionalTopics(topic);
         if (error) {
           console.error(`Error al agregar el tópico ${topic}:`, error);
           setStatusMessage(`Error al agregar el tópico ${topic}`);
@@ -95,11 +95,11 @@ export default function ProfessionalAddTopic({ professionalId }) {
             </Typography>
           ) : (
             <>
-              <Topics
-                taskData={{ topics: selectedTopics }}
+              <ScheduleTopics
+                value={selectedTopics}
                 isEditable={true}
-                onChangeData={handleChangeTopics}
-                topicsListFromParent={availableTopics}
+                onChange={handleChangeTopics}
+                topicsList={availableTopics}
               />
 
               <Button

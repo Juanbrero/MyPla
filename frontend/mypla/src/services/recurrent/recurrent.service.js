@@ -1,11 +1,8 @@
 import { callExternalApi } from "../external-api.service";
-import { dateFormater } from "../../utils/dateFormater"
-import { prof_id } from "../../utils/testData";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
-const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-export const getRecurrent = async (token) => {
+export const getRecurrent = async (prof_id) => {
 
     const config = {
     url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
@@ -24,94 +21,67 @@ export const getRecurrent = async (token) => {
     };
 };
 
-export const putRecurrent = async (token, newRecurrent, oldRecurrent) => {
-
-    const oldStartISO = dateFormater(oldRecurrent.start);
-    const newStartISO = newRecurrent.start ? dateFormater(newRecurrent.start) : "";
-    const newEndISO = newRecurrent.end ? dateFormater(newRecurrent.end) : "";
-    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
-    const week_day_index = indice == 0 ? 7 : indice
-
-    const config = {
+export const putRecurrent = async (prof_id, body) => {
+  const config = {
     url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
     method: "PUT",
     headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     data: {
-        week_day: week_day_index,
-        start   : oldStartISO,
-        Nstart  : newStartISO,
-        Nend    : newEndISO,
-        topics  : newRecurrent.extendedProps.eventTopics ? newRecurrent.extendedProps.eventTopics : [],
+      week_day: body.week_day,
+      start: body.start,
+      Nweek_day: body.Nweek_day,
+      Nstart: body.Nstart,
+      Nend: body.Nend,
+      topics: body.topics
     }
-    };
+  };
 
-    const { data, error } = await callExternalApi({ config });
+  const { data, error } = await callExternalApi({ config });
 
-    return {
-        data: data,
-        error,
-    };
-};
+  return {
+      data: data,
+      error,
+  };
+}
 
-export const postRecurrent = async (token, recurrent) => {
-
-    const startISO = dateFormater(recurrent.start);
-    const endISO = dateFormater(recurrent.end);
-
-    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
-    const week_day_index = indice == 0 ? 7 : indice
-
-    const config = {
+export const postRecurrent = async (prof_id, body) => {
+  const config = {
     url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
     method: "POST",
     headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     data: {
-        week_day: week_day_index,
-        start   : startISO,
-        end     : endISO,
-        topics  : recurrent.extendedProps.eventTopics,
+      week_day: body.week_day,
+      start: body.start,
+      end: body.end,
+      topics: body.topics
     }
-    };
+  };
 
-    const { data, error } = await callExternalApi({ config });
+  const { data, error } = await callExternalApi({ config });
 
-    return {
-        data: data,
-        error,
-    };
-};
+  return {
+      data: data,
+      error,
+  };
+}
 
-export const deleteRecurrent = async (token, recurrent) => {
-  
-    const startISO = dateFormater(recurrent.start);
+export const deleteRecurrent = async (prof_id, body) => {
+  const config = {
+    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}&week_day=${encodeURIComponent(body.week_day)}&start=${encodeURIComponent(body.start)}`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  };
 
-    const indice = dias.indexOf(oldRecurrent.extendedProps.day)
-    const week_day_index = indice == 0 ? 7 : indice
+  const { data, error } = await callExternalApi({ config });
 
-    const url = `${apiServerUrl}/recurrent`
-                + `?prof_id=${encodeURIComponent(prof_id)}`
-                + `&week_day=${encodeURIComponent(week_day)}`
-                + `&start=${encodeURIComponent(startISO)}`;
-
-    const config = {
-        url,
-        method: "DELETE",
-        headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
-        },
-    };
-
-    const { data, error } = await callExternalApi({ config });
-
-    return {
-        data: data,
-        error,
-    };
+  return {
+      data: data,
+      error,
+  };
 };
