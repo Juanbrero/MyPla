@@ -13,6 +13,7 @@ export const ProfilePage = ({token}) => {
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
   // Obtengo la metadata de user
+  console.log(user)
   const metadata = user?.[import.meta.env.VITE_NAMESPACE];
 
   useEffect(() => {

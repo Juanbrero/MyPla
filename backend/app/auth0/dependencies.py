@@ -6,10 +6,9 @@ from app.bd.repositories.UserRepository import UserRepository
 from app.config.database import get_db
 from sqlalchemy.orm import Session
 from app.utils.errors import NotFound
-
+from os import getenv
 
 def validate_token(token: str = Depends(get_bearer_token)):
-    print("ACA LLEGA?")
     return JsonWebToken(token).validate()
 
 
@@ -26,7 +25,7 @@ class PermissionsValidator:
             raise PermissionDeniedException
 
 class RolesValidator:
-    def __init__(self, required_roles: list[str], roles_claim: str = "https://miplasip.publicvm.com/roles"):
+    def __init__(self, required_roles: list[str], roles_claim: str = (getenv("NAMESPACE") if getenv("NAMESPACE") else 'https://miapp.local/user_metadata') + "/roles"):
         self.required_roles = required_roles
         self.roles_claim = roles_claim
 

@@ -44,7 +44,6 @@ export default function ProfessionalAddTopic({token}) {
   };
 
   useEffect(() => {
-    console.log(token, "TOKENN")
     if (token) fetchTopicsData();
   }, [token]);
 

@@ -35,7 +35,7 @@ const App = () => {
           <Route path="/calendar" element={<CalendarPage />} />
           <Route 
             path="/c2" 
-            element={<AuthenticationGuard Component={Calendario} />} 
+            element={<AuthenticationGuard Component={Calendario} roles={["Profesional"]} />} 
           />
           <Route
             path="/profile"
