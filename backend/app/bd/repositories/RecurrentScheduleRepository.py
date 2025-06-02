@@ -75,9 +75,8 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
             .where(
                 RecurrentSchedule.week_day == exception['week'],
                 RecurrentSchedule.prof_id == exception['prof_id'],
-                RecurrentSchedule.start >= exception['start'],
-                RecurrentSchedule.end <= exception['end']
+                RecurrentSchedule.start <= exception['start'],
+                RecurrentSchedule.end >= exception['end']
             )
         )
-
         return self.session.execute(stm).scalars().all()
