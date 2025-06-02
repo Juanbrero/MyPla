@@ -41,6 +41,7 @@ class ExceptionController():
             db = self.db, 
             exceptionS = exceptionS, 
             exceptionR = self.exceptionR, 
+            recurrentR = self.recurrentR,
             meetingR = self.meetingR
         )
 
