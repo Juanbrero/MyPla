@@ -68,7 +68,7 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
 
   return (
     <div className={claseCelda} onClick={() => onClick(dia, hora, evento)}>
-      {evento ? (
+      {evento && posicion === 'start'  ? (
         <span title={evento.topics ? evento.topics.join(', ') : 'Evento'}>
           {evento.start ? parseHora(evento.start) : ''}
           {evento.topics ? ` - ${evento.topics.join(', ')}` : ''}

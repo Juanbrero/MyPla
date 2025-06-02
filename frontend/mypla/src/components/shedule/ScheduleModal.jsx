@@ -191,7 +191,7 @@ export default function ScheduleModal({
                     </Button>
                   </>
                 )}
-                {(mode === 'edit' || mode === 'create') && !isEditable && (
+                {(mode === 'edit' || mode === 'create') && (
                   <Button color="primary" variant="contained" onClick={handleSaveTask} fullWidth sx={{ p: 2 }}>
                     Guardar
                   </Button>
