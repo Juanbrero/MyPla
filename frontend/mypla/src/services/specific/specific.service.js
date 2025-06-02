@@ -1,10 +1,8 @@
 import { callExternalApi } from "../external-api.service";
-import { dateFormater } from "../../utils/dateFormater"
-import { prof_id } from "../../utils/testData";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getSpecific = async (token) => {
+export const getSpecific = async (prof_id) => {
 
     const config = {
     url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
@@ -23,86 +21,71 @@ export const getSpecific = async (token) => {
     };
 };
 
-export const putSpecific = async (token, newSpecific, oldSpecific) => {
-
-    const oldStartISO = dateFormater(oldSpecific.start);
-    const newStartISO = newSpecific.start ? dateFormater(newSpecific.start) : "";
-    const newEndISO = newSpecific.end ? dateFormater(newSpecific.end) : "";
-
-    const config = {
+export const putSpecific = async (prof_id, body) => {
+  const config = {
     url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
     method: "PUT",
     headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     data: {
-        day     : oldSpecific.extendedProps.date,
-        start   : oldStartISO,
-        Nday    : newSpecific.extendedProps.day ? newSpecific.extendedProps.day : "",
-        Nstart  : newStartISO,
-        Nend    : newEndISO,
-        topics  : newSpecific.extendedProps.eventTopics ? newSpecific.extendedProps.eventTopics : [],
+      day: body.day,
+      start: body.start,
+      Nday: body.Nday,
+      Nstart: body.Nstart,
+      Nend: body.Nend,
+      topics: body.topics
     }
-    };
+  };
 
-    const { data, error } = await callExternalApi({ config });
+  const { data, error } = await callExternalApi({ config });
 
-    return {
-        data: data,
-        error,
-    };
+  return {
+      data: data,
+      error,
+  };
 };
 
-export const postSpecific = async (token, specific) => {
-
-    const startISO = dateFormater(specific.start);
-    const endISO = dateFormater(specific.end);
-
-    const config = {
+export const postSpecific = async (prof_id, body) => {
+  const config = {
     url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
     method: "POST",
     headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     data: {
-        day     : specific.extendedProps.date,
-        start   : startISO,
-        end     : endISO,
-        topics  : specific.extendedProps.eventTopics,
+      day: body.day,
+      start: body.start,
+      end: body.end,
+      topics: body.topics
     }
-    };
+  };
 
-    const { data, error } = await callExternalApi({ config });
+  const { data, error } = await callExternalApi({ config });
 
-    return {
-        data: data,
-        error,
-    };
+  return {
+      data: data,
+      error,
+  };
 };
 
-export const deleteSpecific = async (token, specific) => {
-  
-    const startISO = dateFormater(specific.start);
+export const deleteSpecific = async (prof_id, body) => {
+  const config = {
+    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+      day: body.day,
+      start: body.start
+    }
+  };
 
-    const config = {
-        url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
-        method: "DELETE",
-        headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
-        },
-        data: {
-        day: specific.extendedProps.date,
-        start: startISO,
-        },
-    };
+  const { data, error } = await callExternalApi({ config });
 
-    const { data, error } = await callExternalApi({ config });
-
-    return {
-        data: data,
-        error,
-    };
+  return {
+      data: data,
+      error,
+  };
 };

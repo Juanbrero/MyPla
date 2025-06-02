@@ -1,60 +1,36 @@
-import { dateFormaterReverse } from "../../utils/dateFormater";
-import { prof_id } from "../../utils/testData";
 import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
-const dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-const colores = {
-    'recurrent': 'blue',
-    'specific': 'light_blue',
-    'exception': 'red',
-    // 'event': 'orange',
-    'class_': 'gray',
-}
 
-export const getAvailableProfessional = async (token) => {
-
-    const config = {
+export const getAvailableProfessional = async (prof_id) => {
+  const config = {
     url: `${apiServerUrl}/available/professionals?prof_id=${encodeURIComponent(prof_id)}`,
     method: "GET",
     headers: {
-        "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  const { data, error } = await callExternalApi({ config });
+
+  if (error) {
+    console.error("Error al obtener datos:", error);
+    throw error;
+  }
+
+  // Procesar la respuesta para agregar el campo 'type' a cada objeto, manteniendo la estructura original
+  const result = {};
+
+  for (const [key, items] of Object.entries(data)) {
+    if (Array.isArray(items)) {
+      result[key] = items.map((item) => ({
+        ...item,
+        type: key, // Agregar el campo 'type' con el nombre de la clave
+      }));
+    } else {
+      result[key] = items;
     }
-    };
+  }
 
-    const { data, error } = await callExternalApi({ config });
-
-    if (data) {
-        for (const category in data) {
-            if (data.hasOwnProperty(category)) {
-                data[category] = data[category].map(item => {
-                    const fecha = new Date(item.day)
-                    const diaSemana = fecha.getDay()
-                    return {
-                        // id        :   arg.event.id,
-                        // groupId   :   arg.event?.groupId,
-                        // title     :   arg.event.title,
-                        color     :   colores[category],
-                        start     :   dateFormaterReverse(item.day, item.start),
-                        end       :   dateFormaterReverse(item.day, item.end),
-                        extendedProps: {
-                            day         : item.week_day ? dias[item.week_day] : dias[diaSemana],
-                            date        : item.day ? item.day : '',
-                            // recurrent   : category == 'recurrent',
-                            category    : category,
-                            eventTopics : item.topics ? item.topics : [],
-                        }
-                    };
-                });
-            }
-        }
-    }
-
-    console.log(data)
-        
-    return {
-        data: data,
-        error,
-    };
+  return result;
 };
