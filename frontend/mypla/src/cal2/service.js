@@ -4,12 +4,13 @@ import { callExternalApi } from "../services/external-api.service";
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
 
-export const getAvailableProfessional = async (prof_id) => {
+export const getAvailableProfessional = async (token) => {
   const config = {
-    url: `${apiServerUrl}/available/professionals?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/available/professionals`,
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      'Authorization': 'Bearer ' + token
     },
   };
 
@@ -37,12 +38,13 @@ export const getAvailableProfessional = async (prof_id) => {
   return result;
 };
 
-export const postSpecific = async (prof_id, body) => {
+export const postSpecific = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/specific`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      'Authorization': 'Bearer ' + token
     },
     data: body,
   };
@@ -55,12 +57,13 @@ export const postSpecific = async (prof_id, body) => {
   };
 };
 
-export const postRecurrent = async (prof_id, body) => {
+export const postRecurrent = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/recurrent`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      'Authorization': 'Bearer ' + token
     },
     data: body,
   };
@@ -73,12 +76,13 @@ export const postRecurrent = async (prof_id, body) => {
   };
 };
 
-export const deleteSpecific = async (prof_id, body) => {
+export const deleteSpecific = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/specific`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      'Authorization': 'Bearer ' + token
     },
     data: body,
   };
@@ -92,12 +96,13 @@ export const deleteSpecific = async (prof_id, body) => {
 };
 
 
-export const deleteRecurrent = async (prof_id, week_day, start) => {
+export const deleteRecurrent = async (token, week_day, start) => {
   const config = {
-    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}&week_day=${encodeURIComponent(week_day)}&start=${encodeURIComponent(start)}`,
+    url: `${apiServerUrl}/recurrent?week_day=${encodeURIComponent(week_day)}&start=${encodeURIComponent(start)}`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      'Authorization': 'Bearer ' + token
     }
   };
 

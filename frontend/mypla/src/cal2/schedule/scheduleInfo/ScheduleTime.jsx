@@ -6,9 +6,11 @@ import {
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { format, isValid as isDateValid } from 'date-fns';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function ScheduleTime(props) {
   const { taskData, isEditable, onChangeData } = props;
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0()
 
   const [startTime, setStartTime] = React.useState(null);
   const [endTime, setEndTime] = React.useState(null);

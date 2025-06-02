@@ -6,7 +6,7 @@ import { Button, Box, Typography } from '@mui/material';
 import Topics from './schedule/scheduleInfo/Topics';
 
 
-export default function ProfessionalAddTopic({ professionalId }) {
+export default function ProfessionalAddTopic({token}) {
   const [availableTopics, setAvailableTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
         return;
       }
 
-      const { data: professionalTopics, error: professionalError } = await getProfessionalsTopic(professionalId);
+      const { data: professionalTopics, error: professionalError } = await getProfessionalsTopic(token);
       if (professionalError) {
         console.error('Error al obtener tópicos del profesional:', professionalError);
         setStatusMessage('Error al obtener los tópicos del profesional');
@@ -44,8 +44,9 @@ export default function ProfessionalAddTopic({ professionalId }) {
   };
 
   useEffect(() => {
-    fetchTopicsData();
-  }, [professionalId]);
+    console.log(token, "TOKENN")
+    if (token) fetchTopicsData();
+  }, [token]);
 
   const handleChangeTopics = (data) => {
     setSelectedTopics(data.topics || []);
@@ -62,7 +63,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
       setStatusMessage('');
 
       for (const topic of selectedTopics) {
-        const { data, error } = await postProfessionalsTopic(topic);
+        const { data, error } = await postProfessionalsTopic(token, topic);
         if (error) {
           console.error(`Error al agregar el tópico ${topic}:`, error);
           setStatusMessage(`Error al agregar el tópico ${topic}`);

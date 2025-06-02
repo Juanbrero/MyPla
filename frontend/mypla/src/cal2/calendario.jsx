@@ -6,6 +6,7 @@ import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, se
 import './calendario.css';
 import ScheduleCreate from './crear';
 import ScheduleEdit from './edit.jsx';
+import { useAuth0 } from "@auth0/auth0-react";
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -83,13 +84,16 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
 const Calendario = () => {
 
-    // estados modal crear
+  // estados modal crear
     const [createModalOpen, setCreateModalOpen] = React.useState(false);
     const [createModalData, setCreateModalData] = React.useState(null); // Datos que le paso al modal
 
     // estados modal edit
     const [editModalOpen, setEditModalOpen] = React.useState(false);
     const [editModalData, setEditModalData] = React.useState(null);
+
+    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const [accessToken, setAccessToken] = useState(null);
 
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -147,7 +151,7 @@ const Calendario = () => {
             end: typeof newTask.end === 'string' ? formatTimeUndefined(newTask.end) : getRawTimeString(newTask.end),
             topics: newTask.topics
           }
-          await postRecurrent(prof_id, data)
+          await postRecurrent(accessToken, data)
         }
         else {
           data = {
@@ -156,13 +160,13 @@ const Calendario = () => {
             end: typeof newTask.end === 'string' ? formatTimeUndefined(newTask.end) : getRawTimeString(newTask.end),
             topics: newTask.topics
           }
-          await postSpecific(prof_id, data)
+          await postSpecific(accessToken, data)
         }
 
         setCreateModalOpen(false);
         setCreateModalData(null);
 
-        await cargarEventos(prof_id);
+        await cargarEventos();
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
@@ -211,20 +215,20 @@ const Calendario = () => {
         if (eventToDelete.type == 'recurrent') {
           const week_day = eventToDelete.week_day
           const start = formatTimeUndefined(eventToDelete.start)
-          await deleteRecurrent(prof_id, week_day, start)
+          await deleteRecurrent(accessToken, week_day, start)
         }
         else if (eventToDelete.type == 'specific') {
           data = {
             day: eventToDelete.day,
             start: formatTimeUndefined(eventToDelete.start)
           }
-          await deleteSpecific(prof_id, data)
+          await deleteSpecific(accessToken, data)
         }
 
         setCreateModalOpen(false);
         setCreateModalData(null);
 
-        await cargarEventos(prof_id);
+        await cargarEventos();
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
@@ -259,17 +263,36 @@ const Calendario = () => {
     };
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
-    const cargarEventos = async (profId) => {
-        try {
-            const data = await getAvailableProfessional(profId);
-            setEventos(data);
-        } catch (error) {
-            console.error("Error cargando eventos:", error);
-        }
-    };
+    
+
     useEffect(() => {
-        cargarEventos(prof_id);
-    }, [semanaInicio]);
+      const obtenerToken = async () => {
+        if (isAuthenticated) {
+          const token = await getAccessTokenSilently({
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          });
+          setAccessToken(token);
+        }
+      };
+      obtenerToken();
+    }, [isAuthenticated]);
+    
+    useEffect(() => {
+      const cargarEventos = async () => {
+        try {
+          if (accessToken) {
+            const data = await getAvailableProfessional(accessToken);
+            setEventos(data);
+          }
+        } catch (error) {
+          console.error("Error cargando eventos:", error);
+        }
+      };
+    
+      if (accessToken) {
+        cargarEventos();
+      }
+    }, [accessToken, semanaInicio]);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
     const anteriorSemana = () => setSemanaInicio(addDays(semanaInicio, -7));
