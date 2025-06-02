@@ -5,10 +5,11 @@ import { prof_id } from "../../utils/testData";
 export const getProfessionalTopics = async (prof_id) => {
 
     const config = {
-    url: `${apiServerUrl}/professionals-topic?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/professionals-topic`,
     method: "GET",
     headers: {
         "content-type": "application/json",
+        "Authorization": `Bearer ${token}`,
     }
     };
 
@@ -27,14 +28,14 @@ export const getProfessionalTopics = async (prof_id) => {
     return topics;
 };
 
-export const postProfessionalTopics = async (topic) => {
+export const postProfessionalTopics = async (token, topic) => {
 
     const config = {
-    url: `${apiServerUrl}/professionals-topic?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/professionals-topic`,
     method: "POST",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`,
     },
     data: {
         topic_name: topic,

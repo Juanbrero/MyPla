@@ -31,22 +31,29 @@ const App = () => {
         </TutorialProvider>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/c2" element={<Calendario />} />
+          <Route 
+            path="/calendar" 
+            element={<AuthenticationGuard Component={Calendario} roles={["Profesional"]} />} 
+          />
           <Route
             path="/profile"
-            element={<AuthenticationGuard component={ProfilePage} />}
+            element={<AuthenticationGuard Component={ProfilePage} />}
           />
           <Route
             path="/callback"
-            element={<AuthenticationGuard component={CallbackPage} />}
+            element={<AuthenticationGuard Component={CallbackPage} />}
           />
           <Route
             path="/protected"
-            element={<AuthenticationGuard component={ProtectedPage} />}
+            element={<AuthenticationGuard Component={ProtectedPage} />}
           />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
           {/* <Route path="/test" element={<ScheduleManager />} /> */}
-          <Route path="/test-auth" element={<TestAuth />} />
+          <Route path="/test" element={<ScheduleManager />} />
+          <Route 
+            path="/test-auth" 
+            element={<AuthenticationGuard Component={TestAuth} />} 
+          />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
       </>
