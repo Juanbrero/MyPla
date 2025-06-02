@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './CeldaHora.jsx';
-import { prof_id } from "../../utils/testData.js";
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
 import { es } from 'date-fns/locale';
 import './calendario.css';
@@ -66,7 +65,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
     };
 };
 
-const Calendario = () => {
+const Calendario = ({token}) => {
     // estados del modal
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [createModalData, setCreateModalData] = useState(null); 
@@ -136,15 +135,15 @@ const Calendario = () => {
       try {
         if (newTask.recurrent) {
           if (newTask.week_day == 0) newTask.week_day = 7
-          await postRecurrent(prof_id, newTask);
+          await postRecurrent(token, newTask);
         }
         else {
-          await postSpecific(prof_id, newTask);
+          await postSpecific(token, newTask);
         }
 
         setCreateModalOpen(false);
         setCreateModalData(null);
-        await cargarEventos(prof_id);
+        await cargarEventos(token);
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
       }
@@ -167,7 +166,7 @@ const Calendario = () => {
               Nend: updatedTask.end,
               topics: updatedTask.topics
             }
-            await putRecurrent(prof_id, data)
+            await putRecurrent(token, data)
             break
           case 'specific':
             data = {
@@ -178,7 +177,7 @@ const Calendario = () => {
               Nend: updatedTask.end,
               topics: updatedTask.topics
             }
-            await putSpecific(prof_id, data)
+            await putSpecific(token, data)
             break
           case 'exception':
             data = {
@@ -188,11 +187,11 @@ const Calendario = () => {
               Nstart: updatedTask.start,
               Nend: updatedTask.end
             }
-            await putException(prof_id, data)
+            await putException(token, data)
             break
           default: console.error('Invalid task type')
           }
-          await cargarEventos(prof_id);
+          await cargarEventos(token);
       } catch (error) {
         console.error('Error al editar la tarea:', error);
       }
@@ -204,16 +203,16 @@ const Calendario = () => {
         switch (eventToDelete.tipo) {
           case 'recurrent':
             if (eventToDelete.week_day == 0) eventToDelete.week_day = 7
-            await deleteRecurrent(prof_id, eventToDelete)
+            await deleteRecurrent(token, eventToDelete)
             break
           case 'specific':
-            await deleteSpecific(prof_id, eventToDelete)
+            await deleteSpecific(token, eventToDelete)
             break
           case 'exception':
-            await deleteException(prof_id, data)
+            await deleteException(token, data)
             break
         }
-        await cargarEventos(prof_id);
+        await cargarEventos(token);
       } catch (error) {
         console.error('Error al borrar la tarea:', error);
       }
@@ -222,8 +221,8 @@ const Calendario = () => {
     // --- cancelo tarea por unica vez ------------------------------------------------------------
     const handleCreateException = async (eventToCancel) => {
       try {
-        await postException(prof_id, eventToCancel);
-        await cargarEventos(prof_id);
+        await postException(token, eventToCancel);
+        await cargarEventos(token);
       } catch (error) {
         console.error('Error al guardar la excepcion:', error);
       }
@@ -231,8 +230,8 @@ const Calendario = () => {
 
     const handleDeleteException = async (exceptionToCancel) => {
       try {
-        await deleteException(prof_id, exceptionToCancel);
-        await cargarEventos(prof_id);
+        await deleteException(token, exceptionToCancel);
+        await cargarEventos(token);
         } catch (error) {
           console.error('Error al borrar la excepcion:', error);
       }
@@ -251,7 +250,7 @@ const Calendario = () => {
     };
 
     useEffect(() => {
-        cargarEventos(prof_id);
+        cargarEventos(token);
     }, [semanaInicio]);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
