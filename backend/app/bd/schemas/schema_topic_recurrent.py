@@ -99,7 +99,7 @@ class TopicRecurrentUp(TopicRecurrentWeekS):
     """
     Nstart: Optional[time]
     Nend: Optional[time]
-    Nweek_day: int
+    Nweek_day: Optional[int]
     topics: Optional[list[str]]
 
 class TopicRecurrentUpdate(TopicRecurrentUp, ProfessionalID):
