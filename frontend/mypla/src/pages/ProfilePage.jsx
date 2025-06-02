@@ -3,22 +3,27 @@ import { useAuth0 } from "@auth0/auth0-react";
 import ProfessionalProfile from '../components/ProfessionalProfile.jsx'
 import { prof_id } from "../utils/testData";
 import { LinkCalendar } from "../components/LinkCalendar.jsx";
+import {
+  Button
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom'
 
-export const ProfilePage = () => {
-  const { user, getAccessTokenSilently, isLoading } = useAuth0();
+export const ProfilePage = ({token}) => {
+  const { user, logout } = useAuth0();
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
   // Obtengo la metadata de user
+  console.log(user)
   const metadata = user?.[import.meta.env.VITE_NAMESPACE];
 
   useEffect(() => {
     // para acceder a la metadata del user (ver username, rol, etc) hay que pegarle a la management API de auth0. PENDIENTE
     if (metadata?.tipo_usuario) {
       setTipoUsuario(metadata.tipo_usuario);
+      console.log(metadata)
     }
+    console.log(metadata)
   }, [user]);
-
-  if (isLoading) return <p>Cargando perfil...</p>;
 
   // console.log("tipo usuario: " + metadata?.tipo_usuario);
   // console.log("USER", user);
@@ -33,7 +38,7 @@ export const ProfilePage = () => {
       <p><strong>Nombre:</strong> {user.name}</p>
       <p><strong>Email:</strong> {user.email}</p>
       <div className="prof-topics">
-        <ProfessionalProfile prof_id={prof_id}></ProfessionalProfile>
+        <ProfessionalProfile token={token}></ProfessionalProfile>
       </div>
 
       {tipoUsuario ? (
@@ -50,6 +55,14 @@ export const ProfilePage = () => {
       <div className="link-agenda">
         <LinkCalendar></LinkCalendar>
       </div>
+      <Button
+          variant="contained"
+          color="primary"
+          onClick={() => logout({returnTo: window.location.origin})}
+          sx={{ marginTop: 2 }}
+        >
+          Logout
+        </Button>
     </div>
   );
 };

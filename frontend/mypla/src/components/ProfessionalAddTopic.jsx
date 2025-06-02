@@ -6,7 +6,7 @@ import { Button, Box, Typography } from '@mui/material';
 import ScheduleTopics from './shedule/schedule-components/ScheduleTopics';
 
 
-export default function ProfessionalAddTopic({ professionalId }) {
+export default function ProfessionalAddTopic({token}) {
   const [availableTopics, setAvailableTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
         return;
       }
 
-      const { data: professionalTopics, error: professionalError } = await getProfessionalTopics(professionalId);
+      const { data: professionalTopics, error: professionalError } = await getProfessionalTopics(token);
       if (professionalError) {
         console.error('Error al obtener tópicos del profesional:', professionalError);
         setStatusMessage('Error al obtener los tópicos del profesional');
@@ -44,8 +44,8 @@ export default function ProfessionalAddTopic({ professionalId }) {
   };
 
   useEffect(() => {
-    fetchTopicsData();
-  }, [professionalId]);
+    if (token) fetchTopicsData();
+  }, [token]);
 
   const handleChangeTopics = (data) => {
     setSelectedTopics(data);
@@ -62,7 +62,7 @@ export default function ProfessionalAddTopic({ professionalId }) {
       setStatusMessage('');
 
       for (const topic of selectedTopics) {
-        const { data, error } = await postProfessionalTopics(topic);
+        const { data, error } = await postProfessionalTopics(token, topic);
         if (error) {
           console.error(`Error al agregar el tópico ${topic}:`, error);
           setStatusMessage(`Error al agregar el tópico ${topic}`);
