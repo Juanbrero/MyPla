@@ -12,6 +12,7 @@ import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
 import Calendario from "./cal2/calendario"
 import { TestAuth } from "./pages/TestAuth"
+import { HeaderComponent } from './components/header/HeaderComponent.jsx'
 
 
 const App = () => {
@@ -27,6 +28,8 @@ const App = () => {
 
     return (
       <>
+        <HeaderComponent/>
+        
         <TutorialProvider>
           <TutorialGuide />
         </TutorialProvider>

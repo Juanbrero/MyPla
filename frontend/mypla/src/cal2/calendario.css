@@ -1,6 +1,7 @@
 .calendario-controles {
     display: flex;
     justify-content: space-between;
+    padding-top: 120px;
 }
 
 /* Contenedor principal del calendario: flex horizontal */
