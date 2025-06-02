@@ -84,33 +84,44 @@ const Calendario = () => {
         // Abrir modal en EDITAR si hay evento
         const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
+          if (evento.type === 'recurrent' || evento.type === 'specific') {
             setCreateModalData({
-                start: `${evento.start}.000Z`,
-                end: `${evento.end}.000Z`,
-                topics: evento.topics,
-                avaliableTopics: professionalTopics,
-                day: evento.day ? evento.day : diaStr, //si es recurrente envio el dia en que se clickea para la generacion de excepciones
-                week_day: evento.week_day % 7,
-                recurrent: evento.type === 'recurrent',
-                selectedHour: toISO8601(hora),
-                tipo: evento.type
+              start: `${evento.start}.000Z`,
+              end: `${evento.end}.000Z`,
+              topics: evento.topics,
+              avaliableTopics: professionalTopics,
+              day: evento.day ? evento.day : diaStr, //si es recurrente envio el dia en que se clickea para la generacion de excepciones
+              week_day: evento.week_day % 7,
+              recurrent: evento.type === 'recurrent',
+              selectedHour: toISO8601(hora),
+              tipo: evento.type
             });
             setCreateModalMode('edit')
             setCreateModalOpen(true);
+          }
+          else if (evento.type === 'exception') {
+            setCreateModalData({
+              start: `${evento.start}.000Z`,
+              end: `${evento.end}.000Z`,
+              day: evento.day,
+            })
+            setCreateModalMode('exception')
+            setCreateModalOpen(true);
+          }
         }
         // Abrir modal en CREAR si no hay evento
         else {
-            setCreateModalData({
-                start: toISO8601(hora),
-                end: toISO8601(hora + 1),
-                topics: [],
-                avaliableTopics: professionalTopics,
-                day: diaStr,
-                week_day: obtenerDiaDeLaSemana(diaStr),
-                recurrent: false,
-            });
-            setCreateModalMode('create')
-            setCreateModalOpen(true);
+          setCreateModalData({
+            start: toISO8601(hora),
+            end: toISO8601(hora + 1),
+            topics: [],
+            avaliableTopics: professionalTopics,
+            day: diaStr,
+            week_day: obtenerDiaDeLaSemana(diaStr),
+            recurrent: false,
+          });
+          setCreateModalMode('create')
+          setCreateModalOpen(true);
         }
     };
 
@@ -209,14 +220,23 @@ const Calendario = () => {
     };
 
     // --- cancelo tarea por unica vez ------------------------------------------------------------
-    const handleCancelOneOccurrence = async (eventToCancel) => {
+    const handleCreateException = async (eventToCancel) => {
       try {
         await postException(prof_id, eventToCancel);
         await cargarEventos(prof_id);
       } catch (error) {
-        console.error('Error al guardar la tarea:', error);
+        console.error('Error al guardar la excepcion:', error);
       }
     };
+
+    const handleDeleteException = async (exceptionToCancel) => {
+      try {
+        await deleteException(prof_id, exceptionToCancel);
+        await cargarEventos(prof_id);
+        } catch (error) {
+          console.error('Error al borrar la excepcion:', error);
+      }
+    }
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (profId) => {
@@ -295,7 +315,8 @@ const Calendario = () => {
           onEditTask={handleEditTask}
           mode={createModalMode}
           onDeleteTask={handleDeleteTask}
-          onCancelOneOccurrence={handleCancelOneOccurrence}
+          onCreateException={handleCreateException}
+          onDeleteException={handleDeleteException}
       />
 
     </div>

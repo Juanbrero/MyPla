@@ -45,7 +45,8 @@ export default function ScheduleModal({
   onSaveTask,
   onEditTask,
   onDeleteTask,
-  onCancelOneOccurrence,
+  onCreateException,
+  onDeleteException,
   mode = 'create', // 'create' o 'edit'
 }) {
   if (!taskData) return null;
@@ -99,12 +100,18 @@ export default function ScheduleModal({
   // BORRAR
   const handleDeleteTask = () => {
     onDeleteTask?.(taskData);
+    onClose?.()
   }
 
   // GENERAR EXCEPCION
-  const handleCancelOneOccurrence = () => {
-    console.log(taskData)
-    onCancelOneOccurrence?.(taskData)
+  const handleCreateException = () => {
+    onCreateException?.(taskData)
+    onClose?.()
+  }
+
+  const handleDeleteException = () => {
+    onDeleteException?.(taskData)
+    onClose?.()
   }
 
   return (
@@ -112,15 +119,18 @@ export default function ScheduleModal({
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
         <Box sx={style}>
           <Typography variant="h6" mb={2}>
-            {mode === 'edit' ? 'Información del Horario' : 'Crear Horario'}
+            {mode === 'edit' ? 'Información del Horario' : 
+            mode === 'crear' ? 'Crear Horario' : 'Excepcion'}
           </Typography>
 
-          <ScheduleTopics
-            value={localTaskData.topics || []}
-            topicsList={localTaskData.avaliableTopics}
-            onChange={(newTopics) => handleTaskDataChange({ topics: newTopics })}
-            isEditable={isEditable}
-          />
+          {(mode === 'edit' || mode === 'create') && (
+            <ScheduleTopics
+              value={localTaskData.topics || []}
+              topicsList={localTaskData.avaliableTopics}
+              onChange={(newTopics) => handleTaskDataChange({ topics: newTopics })}
+              isEditable={isEditable}
+            />
+          )}
 
           <ScheduleDate
             type={localTaskData.recurrent ? 'recurrent' : 'specific'}
@@ -141,26 +151,28 @@ export default function ScheduleModal({
             isEditable={isEditable}
           />
 
-          <ScheduleRecurrent
-            value={localTaskData.recurrent || false}
-            onChange={(newRecurrent) => {
-              if (mode === 'create') {
-                handleTaskDataChange({ recurrent: newRecurrent });
-              }
-            }}
-            isEditable={mode === 'create'} // solo editable en creación
-          />
+          {(mode === 'edit' || mode === 'create') && (
+            <ScheduleRecurrent
+              value={localTaskData.recurrent || false}
+              onChange={(newRecurrent) => {
+                if (mode === 'create') {
+                  handleTaskDataChange({ recurrent: newRecurrent });
+                }
+              }}
+              isEditable={mode === 'create'} // solo editable en creación
+            />
+          )}
 
           {/* Botones */}
           <Box display="flex" justifyContent="flex-end" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mt={3}>
-            {localTaskData.recurrent === true && !isEditable && (
-              <Button color="error" variant="contained" onClick={handleCancelOneOccurrence} fullWidth sx={{ p: 2 }}>
-                Cancelar solo por esta vez
-              </Button>
-            )}
             {(mode === 'create' || !isEditable) && (
               <Button color="secondary" variant="outlined" onClick={() => onClose?.()} fullWidth sx={{ p: 2 }}>
                 Volver
+              </Button>
+            )}
+            {localTaskData.recurrent === true && !isEditable && (
+              <Button color="warning" variant="contained" onClick={handleCreateException} fullWidth sx={{ p: 2 }}>
+                Cancelar solo por esta vez
               </Button>
             )}
             {mode === 'edit' && !isEditable ? (
@@ -171,17 +183,24 @@ export default function ScheduleModal({
               <>
                 {mode === 'edit' && (
                   <>
-                    <Button color="error" variant="contained" onClick={handleDeleteTask} fullWidth sx={{ p: 2 }}>
-                      Borrar tarea
-                    </Button>
                     <Button color="secondary" variant="outlined" onClick={handleCancelarCambios} fullWidth sx={{ p: 2 }}>
                       Cancelar cambios
                     </Button>
+                    <Button color="error" variant="contained" onClick={handleDeleteTask} fullWidth sx={{ p: 2 }}>
+                      Borrar tarea
+                    </Button>
                   </>
                 )}
-                <Button color="primary" variant="contained" onClick={handleSaveTask} fullWidth sx={{ p: 2 }}>
-                  Guardar
-                </Button>
+                {(mode === 'edit' || mode === 'create') && !isEditable && (
+                  <Button color="primary" variant="contained" onClick={handleSaveTask} fullWidth sx={{ p: 2 }}>
+                    Guardar
+                  </Button>
+                )}
+                {mode === 'exception' && !isEditable && (
+                  <Button color="warning" variant="contained" onClick={handleDeleteException} fullWidth sx={{ p: 2 }}>
+                    Cancelar Excepcion
+                  </Button>
+                )}
               </>
             )}
           </Box>
