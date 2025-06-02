@@ -10,3 +10,4 @@ data:
   DB_USER: myuser
   PAYPAL_API_URL: https://api-m.sandbox.paypal.com # cambiar entorno sandbox / produccion
   CLIENT_ORIGIN_URL: https://miplasip.publicvm.com/
+  VITE_NAMESPACE: https://miapp.local/user_metadata
