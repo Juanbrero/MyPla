@@ -18,13 +18,13 @@ class UpRecurrent():
         topic_recurrentR: Repository[TopicRecurrent]
         ):
         
-        if not recurrentS.week_day in range(1, 8):
+        if not recurrentS.week_day in range(0, 7):
             raise ValueError('Week value is invalid')
         
         if not (recurrentS.Nstart or recurrentS.Nend or recurrentS.topics or recurrentS.Nweek_day):
             raise ValidationError('Not update information')
         
-        if recurrentS.Nweek_day is not None and not recurrentS.Nweek_day in range(1, 8):
+        if recurrentS.Nweek_day is not None and not recurrentS.Nweek_day in range(0, 7):
             raise ValueError('New Week value is invalid')
         
         recurrentS.start = strip_time_hour_minute(recurrentS.start)

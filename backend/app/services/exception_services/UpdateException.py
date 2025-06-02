@@ -58,7 +58,7 @@ class UpdateExceptions():
         recurrent = recurrentR.getException(
             {
                 'prof_id': exceptionS.prof_id,
-                'week': day.isoweekday(),
+                'week': day.weekday(),
                 'start': start,
                 'end': end
             }

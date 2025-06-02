@@ -37,7 +37,7 @@ class CreateException:
         recurrent = recurrentR.getException(
             {
                 'prof_id': exceptionS.prof_id,
-                'week': exceptionS.day.isoweekday(),
+                'week': exceptionS.day.weekday(),
                 'start': exceptionS.start,
                 'end': exceptionS.end
             }
