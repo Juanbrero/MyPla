@@ -28,7 +28,11 @@ from icecream import install
 install()
 ic.configureOutput(contextAbsPath=False, includeContext=True)
 
-app = FastAPI(docs_url="/api/docs")
+app = FastAPI(
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
+)
 
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")
@@ -42,7 +46,18 @@ app.add_middleware(
 )
 
 # seguridad
-csp = secure.ContentSecurityPolicy().default_src("'self'").frame_ancestors("'none'")
+
+#produccion
+# csp = secure.ContentSecurityPolicy().default_src("'self'").frame_ancestors("'none'")
+
+#dev
+csp = secure.ContentSecurityPolicy() \
+    .default_src("'self'") \
+    .style_src("'self'", "https://cdn.jsdelivr.net") \
+    .script_src("'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'") \
+    .img_src("'self'", "https://fastapi.tiangolo.com")
+
+#ambas
 hsts = secure.StrictTransportSecurity().max_age(31536000).include_subdomains()
 referrer = secure.ReferrerPolicy().no_referrer()
 cache_value = secure.CacheControl().no_cache().no_store().max_age(0).must_revalidate()
@@ -62,8 +77,8 @@ async def set_secure_headers(request, call_next):
     response = await call_next(request)
     # If que permite evitar las cabeceras seguras para los paths descriptos,
     # Debe eliminarse el if cuando se pase a produccion
-    if not any(request.url.path.startswith(path) for path in ["/docs", "/redoc", "/openapi.json"]):
-        secure_headers.framework.fastapi(response)
+    # if not any(request.url.path.startswith(path) for path in ["/docs", "/redoc", "/openapi.json"]):
+    secure_headers.framework.fastapi(response)
     return response
 
 
@@ -75,13 +90,13 @@ async def http_exception_handler(request, exc):
 
 
 
-def run_migrations():
-    """
-    Function read files of alembic and upgrade or create models
-    """
-    base_dir = os.path.dirname(__file__)
-    alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
-    command.upgrade(alembic_cfg, "head")
+# def run_migrations():
+#     """
+#     Function read files of alembic and upgrade or create models
+#     """
+#     base_dir = os.path.dirname(__file__)
+#     alembic_cfg = Config(os.path.join(base_dir, '..', 'alembic.ini'))
+#     command.upgrade(alembic_cfg, "head")
 
 def addRoute(app, routes_path):
     for filename in os.listdir(routes_path):
@@ -112,6 +127,6 @@ if os.getenv('PORT') is None:
 addRoute(app, "app/routes")
 
 if __name__ == "__main__":
-    run_migrations()
+    # run_migrations()
     uvicorn.run("app.main:app", host="0.0.0.0", port=8002, reload=True)
     

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import ScheduleEdit from '../components/ScheduleEdit';
 import ScheduleCreate from '../components/ScheduleCreate';
 import FullCalendar from "@fullcalendar/react";
@@ -6,6 +6,11 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { DateTime } from "luxon";
+import { useAuth0 } from "@auth0/auth0-react";
+import { postSpecific }  from "../services/specific/specific.service";
+import { getAvailableProfessional } from "../services/available/available-professional.service";
+import { dateObjToLocalTime } from "../utils/dateFormater";
+import './calendar.css';
 
 
 function Calendar() {
@@ -13,7 +18,6 @@ function Calendar() {
   const [isCreated, setCreated] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [calendarRange, setCalendarRange] = useState({ start: null, end: null });
-
   const [selectedTask, setSelectedTask] = useState({
       id: '',
       groupId: '',
@@ -22,18 +26,51 @@ function Calendar() {
       start: '',
       end: '',
       topics: [],
-      recurrent: true,
+      // recurrent: true,
+      category: "",
   });
-
   const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [events, setEvents] = useState([]);
 
+  // const [specifics, setSpecifics] = useState([]);
+  const [dbEvents, setDbEvents] = useState([]);
+
   const [clickedEvent, setClickedEvent] = useState(null);
+
+  // const [message, setMessage] = useState("");
+  // const { getAccessTokenSilently } = useAuth0();
+  
+  useEffect(() => {
+    const fetchProfessional = async () => {
+
+      const { data, error } = await getAvailableProfessional();
+
+      if (error) {
+        console.log(error);
+      } else {
+
+        const specific = data.specific;
+        const recurrent = data.recurrent;
+        const exception = data.exception;
+
+        // const clase = data.class_;
+        // setDbEvents([...specific, ...recurrent, ...exception, ...class_]);
+
+        setDbEvents([...specific, ...recurrent, ...exception]);
+
+      }
+    };
+
+    fetchProfessional();
+  }, [refreshTrigger]);
 
 
   const handleSelect = (info) => {
  
+    console.log("dbEvents: ", dbEvents);
+
     setCreated(false);
     const start = DateTime.fromISO(info.startStr);
     const end = DateTime.fromISO(info.endStr);
@@ -44,7 +81,8 @@ function Calendar() {
       date: start.toFormat("yyyy-MM-dd"),
       start: start.toFormat("HH:mm"),
       end: end.toFormat("HH:mm"),
-      recurrent: false,
+      category: 'specific',
+      // recurrent: false,
     })
     setModalOpen(true);
   };
@@ -59,21 +97,36 @@ function Calendar() {
 
   const handleEventClick = (arg) => {
     
+    const event = arg.event;
+    const startFormateado = dateObjToLocalTime(event.start);
+
+    let evFound = {};
+
+    if (event.extendedProps.category !== "recurrent") {
+      evFound = dbEvents.find(ev => {
+        return (ev.extendedProps.day === event.extendedProps.day) && (ev.start === startFormateado);
+      });
+
+      // console.log("specifics: ", specifics);
+      // console.log("speFound: ", evFound);
+    }
+
     let evento = {
       id        :   arg.event.id,
       groupId   :   arg.event?.groupId,
       title     :   arg.event.title,
       color     :   arg.event.color,
-      start     :   arg.event.start,
-      end       :   arg.event.end,
+      start     :   evFound.start,
+      end       :   evFound.end,
       extendedProps: {
-          day         : arg.event.extendedProps.day,
-          date        : arg.event.extendedProps.date,
-          recurrent   : arg.event.extendedProps.recurrent,
-          eventTopics : arg.event.extendedProps.eventTopics,
+          day         : evFound.extendedProps.day,
+          date        : evFound.extendedProps.date,
+          category    : evFound.extendedProps.category,
+          eventTopics : evFound.extendedProps.eventTopics,
       }
     };
 
+    console.log("evento: ", evento);
     setClickedEvent(evento);
     // console.log("arg.event.id: ", arg.event.id);
     // console.log("arg.event?.groupId: ", arg.event.groupId);
@@ -85,13 +138,12 @@ function Calendar() {
     // console.log("arg.event.end: ", arg.event.end);
     // console.log("arg.event.extendedProps.recurrent: ", arg.event.extendedProps.recurrent);
     // console.log("arg.event.extendedProps.eventTopics: ", arg.event.extendedProps.eventTopics);
-    console.log("evento: ", evento);
 
     setCreated(true);
     setModalOpen(true);
   };
 
-  const handleSaveTask = (taskName) => {
+  const handleSaveTask = async (taskName) => {
     
     const startToCheck = combinarFechaYHora(taskName?.date, taskName.start);
     const endToCheck = combinarFechaYHora(taskName?.date, taskName.end);
@@ -108,15 +160,16 @@ function Calendar() {
 
     if (!haySolapamiento) {
  
-      if (taskName.recurrent) {
-        createRecurrentEvent(taskName);
+      if (taskName.category === "recurrent") {
+        await createRecurrentEvent(taskName);
       }
       else {
-        createEvent(taskName);
+        await createEvent(taskName);
       }
 
       handleCloseModal();
       // return true;
+      setRefreshTrigger(prev => prev + 1);
     }
     else {
       alert("Error al crear evento, el rango horario ya contiene eventos.")
@@ -203,7 +256,7 @@ function Calendar() {
 
   };
 
-  const createEvent = (taskName) => {
+  const createEvent = async (taskName) => {
     
     const newEvent = {
       id      :     `${crypto.randomUUID()}`,
@@ -215,18 +268,20 @@ function Calendar() {
       extendedProps : {
         day         : taskName.day,
         date        : taskName.date,
-        recurrent   : taskName.recurrent,
+        // recurrent   : taskName.recurrent,
+        category    : taskName.category,
         eventTopics : taskName.topics,
       },
     }
 
-    setEvents([...events, 
-      newEvent
-    ]);
+    // setEvents([...events, 
+    //   newEvent
+    // ]);
     
+    await postSpecific("token", newEvent);
   }
 
-  const createRecurrentEvent = (taskName) => {
+  const createRecurrentEvent =  async (taskName) => {
 
     const current = new Date(calendarRange.start);
     const originalStart = taskName.start;
@@ -280,17 +335,20 @@ function Calendar() {
     <div>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
+        initialView="timeGridWeek"
         headerToolbar={{
           start: "today prev,next",
           center: "title",
-          end: "dayGridMonth,timeGridWeek,timeGridDay",
+          end: "dayGridMonth,timeGridWeek",
         }}
+        slotDuration="01:00:00"
+        allDaySlot={false}
         selectable={true}
         select={handleSelect}
         eventClick={handleEventClick}
-        events={events}
+        events={Object.values(dbEvents).flat()}
         height={"90vh"}
+        expandRows={true}
         datesSet={ (info) => {
           setCalendarRange( {
             start : new Date(info.startStr),

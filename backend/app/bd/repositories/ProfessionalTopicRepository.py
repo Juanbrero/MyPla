@@ -33,3 +33,9 @@ class ProfessionalTopicRepository(Repository[ProfessionalTopic]):
         )
         result = self.session.execute(stm).scalars().all()
         return result
+    
+    def get_all(self):
+        stm =(
+            select(ProfessionalTopic).order_by(ProfessionalTopic.prof_id.asc())
+        )
+        return self.session.execute(stm).scalars().all()

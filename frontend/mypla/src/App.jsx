@@ -5,9 +5,12 @@ import CallbackPage from "./pages/CallbackPage"
 import { ProtectedPage } from "./pages/ProtectedPage"
 import OAuthCallback from "./OAuthCallback"
 import { useAuth0 } from "@auth0/auth0-react"
-import CalendarPage from "./pages/CalendarPage"
-import ScheduleManager from './components/ScheduleManager';
+// import ScheduleManager from './components/ScheduleManager';
 import Home from "./pages/Home"
+import TutorialGuide from "./components/TutorialGuide"
+import { TutorialProvider } from "./components/TutorialContext"
+import Calendario from "./components/shedule/Calendario"
+import { TestAuth } from "./pages/TestAuth"
 
 
 const App = () => {
@@ -22,9 +25,13 @@ const App = () => {
     }
 
     return (
+      <>
+        <TutorialProvider>
+          <TutorialGuide />
+        </TutorialProvider>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/c2" element={<Calendario />} />
           <Route
             path="/profile"
             element={<AuthenticationGuard component={ProfilePage} />}
@@ -38,9 +45,11 @@ const App = () => {
             element={<AuthenticationGuard component={ProtectedPage} />}
           />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
-          <Route path="/test" element={<ScheduleManager />} />
+          {/* <Route path="/test" element={<ScheduleManager />} /> */}
+          <Route path="/test-auth" element={<TestAuth />} />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
+      </>
     )
 }
 

@@ -1,7 +1,7 @@
 from app.utils.errors import handle_errors, ValidationError, NotFound
 from sqlalchemy.orm import Session
 from app.bd.repositories.Repository import Repository
-from app.models import SpecificSchedule, Meeting
+from app.models import SpecificSchedule, Meeting, RecurrentSchedule
 from fastapi.responses import JSONResponse
 from fastapi import status
 from app.bd.schemas import schema_exception
@@ -15,11 +15,14 @@ class UpdateExceptions():
         db : Session, 
         exceptionS : schema_exception.ExceptionUpdate,
         exceptionR : Repository[SpecificSchedule], 
+        recurrentR: Repository[RecurrentSchedule],
         meetingR : Repository[Meeting]
     ):
         #si no hay nada para actualizar
         if not (exceptionS.Nday or exceptionS.Nend or exceptionS.Nstart):
             raise NotFound('Not update information')
+        
+        exceptionS.start = strip_time_hour_minute(exceptionS.start)
         
         old_exception = exceptionR.get_by({
             "day": exceptionS.day,
@@ -28,7 +31,7 @@ class UpdateExceptions():
         })
         
         if (len(old_exception) <= 0):
-            raise NotFound("Exception disponibility not exist")
+            raise NotFound("Exception not exist")
         
                
         start = exceptionS.Nstart if exceptionS.Nstart else exceptionS.start
@@ -49,8 +52,23 @@ class UpdateExceptions():
         if start >= end:
             raise ValidationError("The range hour is invalid")
         
+        """
+        Recuperar recurrente y ver que siga ocupando <-
+        """
+        recurrent = recurrentR.getException(
+            {
+                'prof_id': exceptionS.prof_id,
+                'week': day.isoweekday(),
+                'start': start,
+                'end': end
+            }
+        )
+        if len(recurrent) == 0:
+            raise NotFound('Recurrent day not found')
         
-        exceptions = exceptionR.getexceptionsToRange(exceptionS.prof_id, day, start, end)
+        
+        
+        exceptions = exceptionR.getSpecificsToRange(exceptionS.prof_id, day, start, end) 
         # Valido si existe otro exception en el rango, en caso de que haya uno deberia chequear si no es el mismo que envio el usuario 
         if len(exceptions) > 1 or (len(exceptions) == 1 and (exceptionS.day != exceptions[0].day or exceptionS.start != exceptions[0].start)):
             raise ValidationError("In hour you have hour specific to disponibility or exception")

@@ -7,6 +7,7 @@ from app.bd.schemas import schema_prof
 import app.models as models
 from app.bd.cruds import crud_prof
 from app.bd.bd_utils import Errors, Info
+from app.auth0.dependencies import RolesValidator
 
 router = APIRouter(prefix="/api/professionals",tags=["Professionals"])
 
@@ -26,7 +27,7 @@ async def get_all_prof(db : Session = Depends(get_db)):
 
 
 @router.get("/{prof_id}", response_model=Union[schema_prof.Professional, Errors])
-async def find_prof(prof_id: str, db: Session = Depends(get_db)):
+async def find_prof( db: Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
     """
     Retorna un profesional
     Args:
@@ -37,12 +38,12 @@ async def find_prof(prof_id: str, db: Session = Depends(get_db)):
         Errors
 
     """
-    response = crud_prof.get_prof_id(db, prof_id)       
+    response = crud_prof.get_prof_id(db, user_info["user_id"])       
     return response
 
 
 @router.delete("/{prof_id}",response_model=Union[Info, Errors])
-def del_user(prof_id:str, db:Session = Depends(get_db)):
+def del_user(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
     """
     Eliminar un profesional
 
@@ -53,7 +54,7 @@ def del_user(prof_id:str, db:Session = Depends(get_db)):
         Info
         Errors
     """
-    return crud_prof.del_prof(db, prof_id)
+    return crud_prof.del_prof(db, user_info["user_id"])
 
 
 #Para Desarrollo

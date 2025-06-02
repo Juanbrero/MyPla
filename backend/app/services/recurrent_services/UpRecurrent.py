@@ -21,8 +21,11 @@ class UpRecurrent():
         if not recurrentS.week_day in range(1, 8):
             raise ValueError('Week value is invalid')
         
-        if not (recurrentS.Nstart or recurrentS.Nend or recurrentS.topics):
+        if not (recurrentS.Nstart or recurrentS.Nend or recurrentS.topics or recurrentS.Nweek_day):
             raise ValidationError('Not update information')
+        
+        if recurrentS.Nweek_day is not None and not recurrentS.Nweek_day in range(1, 8):
+            raise ValueError('New Week value is invalid')
         
         recurrentS.start = strip_time_hour_minute(recurrentS.start)
 
@@ -42,7 +45,8 @@ class UpRecurrent():
         
         update = {
             'start': strip_time_hour_minute(nstart) if (nstart := recurrentS.Nstart) is not None else obj_to_update[0].start,
-            'end': strip_time_hour_minute(nend) if (nend := recurrentS.Nend) is not None else obj_to_update[0].end
+            'end': strip_time_hour_minute(nend) if (nend := recurrentS.Nend) is not None else obj_to_update[0].end,
+            'week_day': week_day if (week_day := recurrentS.Nweek_day) is not None else obj_to_update[0].week_day
         }
         
         if update['start'].minute != update['end'].minute:
@@ -55,10 +59,16 @@ class UpRecurrent():
         if update['start'] >= update['end']:
             raise ValueError('The range hour is invalid')
         
-        
-        list_week = recurrentR.getOmmit(
-            query
-        )
+        if recurrentS.Nweek_day:
+            list_week = recurrentR.get_by({
+                'prof_id': recurrentS.prof_id,
+                'start': update['start'],
+                'week_day': update['week_day']
+            })
+        else:
+            list_week = recurrentR.getOmmit(
+                query
+            )
 
         for r in list_week:
             if not(update['end'] <= r.start or update['start'] >= r.end):
@@ -88,7 +98,7 @@ class UpRecurrent():
                 topic_recurrentR.delete(
                     {
                        'prof_id':recurrentS.prof_id,
-                        'week_day':recurrentS.week_day,
+                        'week_day':update['week_day'],
                         'start':update['start'],
                         'topic_name': topic 
                     }
@@ -97,7 +107,7 @@ class UpRecurrent():
             for topic in topic_add:
                 topic_recurrentR.create({
                     'prof_id': recurrentS.prof_id,
-                    'week_day': recurrentS.week_day,
+                    'week_day': update['week_day'],
                     'start': update['start'],
                     'topic_name':topic  }
                     
