@@ -49,10 +49,6 @@ const App = () => {
           />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
           {/* <Route path="/test" element={<ScheduleManager />} /> */}
-<<<<<<< HEAD
-          
-=======
->>>>>>> main
           <Route 
             path="/test-auth" 
             element={<AuthenticationGuard Component={TestAuth} />} 
