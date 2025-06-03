@@ -7,7 +7,7 @@ export const LinkCalendar = () => {
     const navigate = useNavigate()
 
     const link = () => {
-      navigate('/c2')
+      navigate('/calendar')
     };
     
     return (

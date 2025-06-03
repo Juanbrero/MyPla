@@ -30,8 +30,10 @@ const eventoEnHora = (eventos, dia, hora) => {
 
       if (hora >= inicioHora && hora < finHora) {
         let posicion = 'middle';
-        if (hora === inicioHora) posicion = 'start';
-        if (hora === finHora - 1) posicion = 'end';
+        if (hora === inicioHora) {
+          posicion = hora === finHora - 1 ? 'only' : 'start';
+        }
+        else if (hora === finHora - 1) posicion = 'end';
 
         return { evento: ev, posicion };
       }
@@ -63,12 +65,14 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
       claseCelda += ' celda-inicio';
     } else if (posicion === 'end') {
       claseCelda += ' celda-fin';
+    } else if (posicion === 'only') {
+      claseCelda += ' celda-unica';
     }
   }
 
   return (
     <div className={claseCelda} onClick={() => onClick(dia, hora, evento)}>
-      {evento && posicion === 'start'  ? (
+      {evento && posicion === 'start' || evento && posicion === 'only'  ? (
         <span title={evento.topics ? evento.topics.join(', ') : 'Evento'}>
           {evento.start ? parseHora(evento.start) : ''}
           {evento.topics ? ` - ${evento.topics.join(', ')}` : ''}

@@ -67,9 +67,9 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
 const Calendario = ({token}) => {
     // estados del modal
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [createModalData, setCreateModalData] = useState(null); 
-    const [createModalMode, setCreateModalMode] = useState('create') // 'create', 'edit'
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalData, setModalData] = useState(null); 
+    const [modalMode, setModalMode] = useState('create') // 'create', 'edit', 'exception'
 
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -84,7 +84,7 @@ const Calendario = ({token}) => {
         const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
           if (evento.type === 'recurrent' || evento.type === 'specific') {
-            setCreateModalData({
+            setModalData({
               start: `${evento.start}.000Z`,
               end: `${evento.end}.000Z`,
               topics: evento.topics,
@@ -95,22 +95,22 @@ const Calendario = ({token}) => {
               selectedHour: toISO8601(hora),
               tipo: evento.type
             });
-            setCreateModalMode('edit')
-            setCreateModalOpen(true);
+            setModalMode('edit')
+            setModalOpen(true);
           }
           else if (evento.type === 'exception') {
-            setCreateModalData({
+            setModalData({
               start: `${evento.start}.000Z`,
               end: `${evento.end}.000Z`,
               day: evento.day,
             })
-            setCreateModalMode('exception')
-            setCreateModalOpen(true);
+            setModalMode('exception')
+            setModalOpen(true);
           }
         }
         // Abrir modal en CREAR si no hay evento
         else {
-          setCreateModalData({
+          setModalData({
             start: toISO8601(hora),
             end: toISO8601(hora + 1),
             topics: [],
@@ -119,15 +119,15 @@ const Calendario = ({token}) => {
             week_day: obtenerDiaDeLaSemana(diaStr),
             recurrent: false,
           });
-          setCreateModalMode('create')
-          setCreateModalOpen(true);
+          setModalMode('create')
+          setModalOpen(true);
         }
     };
 
     // --- cierro el modal ------------------------------------------------------------------------
-    const handleCloseCreateModal = () => {
-        setCreateModalOpen(false);
-        setCreateModalData(null);
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setModalData(null);
     };
 
     // --- guardo nueva tarea ---------------------------------------------------------------------
@@ -141,8 +141,8 @@ const Calendario = ({token}) => {
           await postSpecific(token, newTask);
         }
 
-        setCreateModalOpen(false);
-        setCreateModalData(null);
+        setModalOpen(false);
+        setModalData(null);
         await cargarEventos(token);
       } catch (error) {
         console.error('Error al guardar la tarea:', error);
@@ -238,12 +238,13 @@ const Calendario = ({token}) => {
     }
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
-    const cargarEventos = async (profId) => {
+    const cargarEventos = async (_token) => {
         try {
-            const data = await getAvailableProfessional(profId);
+            const data = await getAvailableProfessional(_token);
             setEventos(data);
-            const topics = await getProfessionalTopics(profId);
+            const topics = await getProfessionalTopics(_token);
             setProfessionalTopics(topics);
+console.log(topics)
         } catch (error) {
             console.error("Error cargando eventos:", error);
         }
@@ -307,12 +308,12 @@ const Calendario = ({token}) => {
       </div>
 
       <ScheduleCreate
-          open={createModalOpen}
-          onClose={handleCloseCreateModal}
-          taskData={createModalData}
+          open={modalOpen}
+          onClose={handleCloseModal}
+          taskData={modalData}
           onSaveTask={handleSaveNewTask}
           onEditTask={handleEditTask}
-          mode={createModalMode}
+          mode={modalMode}
           onDeleteTask={handleDeleteTask}
           onCreateException={handleCreateException}
           onDeleteException={handleDeleteException}
