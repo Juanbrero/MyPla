@@ -5,7 +5,6 @@ import CallbackPage from "./pages/CallbackPage"
 import { ProtectedPage } from "./pages/ProtectedPage"
 import OAuthCallback from "./OAuthCallback"
 import { useAuth0 } from "@auth0/auth0-react"
-// import ScheduleManager from './components/ScheduleManager';
 import Home from "./pages/Home"
 import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
@@ -32,6 +31,7 @@ const App = () => {
         <TutorialProvider>
           <TutorialGuide />
         </TutorialProvider>
+        
         <Routes>
           <Route path="/" element={<Home />} />
           <Route 
