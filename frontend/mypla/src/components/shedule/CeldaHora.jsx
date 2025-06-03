@@ -45,7 +45,7 @@ const eventoEnHora = (eventos, dia, hora) => {
 
 const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
   const { recurrent = [], specific = [], exception = [] } = eventosDelDia || {};
-  const todosEventos = [...recurrent, ...specific, ...exception];
+  const todosEventos = [...exception, ...recurrent, ...specific];
 
   const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 

@@ -55,7 +55,8 @@ const filtrarEventosPorDia = (eventos, dia) => {
             const horaInicioExcepcion = parseHora(exc.start);
             return esElDia && horaInicioRecurrente === horaInicioExcepcion;
         });
-        return esElDia && !tieneExcepcion;
+        return esElDia;
+        // return esElDia && !tieneExcepcion;
     });
 
     return {
@@ -244,7 +245,6 @@ const Calendario = ({token}) => {
             setEventos(data);
             const topics = await getProfessionalTopics(_token);
             setProfessionalTopics(topics);
-console.log(topics)
         } catch (error) {
             console.error("Error cargando eventos:", error);
         }
