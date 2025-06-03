@@ -48,7 +48,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
     // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
     const recurrentesDelDia = recurrent.filter(e => {
-        const esElDia = getDay(dia) === e.week_day % 7;
+        const esElDia = getDay(dia) === e.week_day;
         const horaEv = horaNumero(parseHora(e.start));
         const tieneExcepcion = excepcionesDelDia.some(exc => {
             const horaInicioRecurrente = parseHora(e.start);
@@ -91,7 +91,7 @@ const Calendario = ({token}) => {
               topics: evento.topics,
               avaliableTopics: professionalTopics,
               day: evento.day ? evento.day : diaStr, //si es recurrente envio el dia en que se clickea para la generacion de excepciones
-              week_day: evento.week_day % 7,
+              week_day: evento.week_day,
               recurrent: evento.type === 'recurrent',
               selectedHour: toISO8601(hora),
               tipo: evento.type

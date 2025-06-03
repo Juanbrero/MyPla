@@ -87,7 +87,7 @@ export default function ScheduleModal({
   onDeleteTask,
   onCreateException,
   onDeleteException,
-  mode = 'create', // 'create' o 'edit'
+  mode = 'create', // 'create', 'edit', 'exception'
 }) {
   if (!taskData) return null;
 

@@ -35,7 +35,7 @@
 .columna-horas .hora {
   height: 45px;
   line-height: 40px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ccc;
   width: 100%;
   text-align: center;
   font-size: 0.9rem;
@@ -73,6 +73,7 @@
   align-items: center;
   transition: background-color 0.2s ease, border-color 0.2s ease;
   font-size: 0.8rem;
+  max-width: 15em;
 }
 
 .grid-dias .celda-hora span {
@@ -99,6 +100,21 @@
 .celda-hora.celda-exception {
   background-color: #ff6d13;
   border-color: #ff6d13;
+}
+
+.celda-hora.celda-specific:hover {
+  background-color: #50e3c3a0;
+  border-color: #50e3c2a0;
+}
+
+.celda-hora.celda-recurrent:hover {
+  background-color: #4a90e2a0;
+  border-color: #4a90e2a0;
+}
+
+.celda-hora.celda-exception:hover {
+  background-color: #ff6d13a0;
+  border-color: #ff6d13a0;
 }
 
 .celda-hora.celda-inicio {
