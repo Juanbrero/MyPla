@@ -16,7 +16,7 @@ class DelRecurrent():
         recurrentS: schema_topic_recurrent.TopicRecurrentSchema,
         recurrentR: Repository[RecurrentSchedule] 
     ):
-        if not recurrentS.week_day in range(1, 8):
+        if not recurrentS.week_day in range(0, 7):
             raise ValueError('Week value is invalid')
         
         recurrentS.start = strip_time_hour_minute(recurrentS.start)

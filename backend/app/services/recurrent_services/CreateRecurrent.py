@@ -22,7 +22,7 @@ class CreateRecurrent():
         
     ):
         
-        if not recurrentS.week_day in range(1, 8):
+        if not recurrentS.week_day in range(0, 7):
             raise ValueError('Week value is invalid')
         
         
