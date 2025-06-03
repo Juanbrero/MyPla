@@ -48,10 +48,11 @@ export const putException = async (token, body) => {
 
 export const postException = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       day: body.day,
