@@ -10,7 +10,7 @@ from datetime import datetime
 class RecurrentSchedule(Base):
     __tablename__ = "recurrentschedule"
     __table_args__ = (
-        CheckConstraint("week_day BETWEEN 1 AND 7 ", name="check_week_valid"),
+        CheckConstraint("week_day BETWEEN 0 AND 6 ", name="check_week_valid"),
     )
 
     week_day: Mapped[int] = mapped_column(primary_key= True)
