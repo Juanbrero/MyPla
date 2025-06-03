@@ -1,17 +1,15 @@
 import { callExternalApi } from "../external-api.service";
-import { dateFormater } from "../../utils/dateFormater"
-import { prof_id } from "../../utils/testData";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
 export const getException = async (token) => {
 
     const config = {
-    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception`,
     method: "GET",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`,
     }
     };
 
@@ -23,12 +21,13 @@ export const getException = async (token) => {
     };
 };
 
-export const putException = async (prof_id, body) => {
+export const putException = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception`,
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       day: body.day,
@@ -47,7 +46,7 @@ export const putException = async (prof_id, body) => {
   };
 };
 
-export const postException = async (prof_id, body) => {
+export const postException = async (token, body) => {
   const config = {
     url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
     method: "POST",
@@ -69,12 +68,13 @@ export const postException = async (prof_id, body) => {
   };
 };
 
-export const deleteException = async (prof_id, body) => {
+export const deleteException = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/exception?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/exception`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       day: body.day,

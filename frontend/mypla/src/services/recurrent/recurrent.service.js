@@ -2,14 +2,14 @@ import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getRecurrent = async (prof_id) => {
+export const getRecurrent = async () => {
 
     const config = {
-    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/recurrent`,
     method: "GET",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`,
     }
     };
 
@@ -21,12 +21,13 @@ export const getRecurrent = async (prof_id) => {
     };
 };
 
-export const putRecurrent = async (prof_id, body) => {
+export const putRecurrent = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/recurrent`,
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       week_day: body.week_day,
@@ -46,12 +47,13 @@ export const putRecurrent = async (prof_id, body) => {
   };
 }
 
-export const postRecurrent = async (prof_id, body) => {
+export const postRecurrent = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/recurrent`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       week_day: body.week_day,
@@ -69,12 +71,13 @@ export const postRecurrent = async (prof_id, body) => {
   };
 }
 
-export const deleteRecurrent = async (prof_id, body) => {
+export const deleteRecurrent = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/recurrent?prof_id=${encodeURIComponent(prof_id)}&week_day=${encodeURIComponent(body.week_day)}&start=${encodeURIComponent(body.start)}`,
+    url: `${apiServerUrl}/recurrent?week_day=${encodeURIComponent(body.week_day)}&start=${encodeURIComponent(body.start)}`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     }
   };
 

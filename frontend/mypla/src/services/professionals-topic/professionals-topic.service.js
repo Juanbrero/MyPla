@@ -1,8 +1,7 @@
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 import { callExternalApi } from "../external-api.service";
-import { prof_id } from "../../utils/testData";
 
-export const getProfessionalTopics = async (prof_id) => {
+export const getProfessionalTopics = async (token) => {
 
     const config = {
     url: `${apiServerUrl}/professionals-topic`,
@@ -14,6 +13,9 @@ export const getProfessionalTopics = async (prof_id) => {
     };
 
     const { data, error } = await callExternalApi({ config });
+
+    console.log(data)
+    console.log(error)
 
     if (error) {
       console.error("Error al obtener datos:", error);

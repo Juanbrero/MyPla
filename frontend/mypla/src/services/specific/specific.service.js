@@ -2,14 +2,14 @@ import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getSpecific = async (prof_id) => {
+export const getSpecific = async (token) => {
 
     const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/specific`,
     method: "GET",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`,
     }
     };
 
@@ -21,12 +21,13 @@ export const getSpecific = async (prof_id) => {
     };
 };
 
-export const putSpecific = async (prof_id, body) => {
+export const putSpecific = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/specific`,
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       day: body.day,
@@ -46,12 +47,13 @@ export const putSpecific = async (prof_id, body) => {
   };
 };
 
-export const postSpecific = async (prof_id, body) => {
+export const postSpecific = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/specific`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       day: body.day,
@@ -69,12 +71,13 @@ export const postSpecific = async (prof_id, body) => {
   };
 };
 
-export const deleteSpecific = async (prof_id, body) => {
+export const deleteSpecific = async (token, body) => {
   const config = {
-    url: `${apiServerUrl}/specific?prof_id=${encodeURIComponent(prof_id)}`,
+    url: `${apiServerUrl}/specific`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
     data: {
       day: body.day,
