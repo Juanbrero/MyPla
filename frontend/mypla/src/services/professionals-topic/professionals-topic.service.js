@@ -14,9 +14,6 @@ export const getProfessionalTopics = async (token) => {
 
     const { data, error } = await callExternalApi({ config });
 
-    console.log(data)
-    console.log(error)
-
     if (error) {
       console.error("Error al obtener datos:", error);
       throw error;
@@ -44,8 +41,6 @@ export const postProfessionalTopics = async (token, topic) => {
         price_class: 1.1,
     },
     };
-
-    console.log(config)
     
     const { data, error } = await callExternalApi({ config });
 
