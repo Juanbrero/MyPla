@@ -38,7 +38,7 @@
 }
 
 .header-container header nav ul li a:hover {
-    color: #1cb698;
+    color: #aaf3e4;
 }
 
 .nav-responsive {
@@ -48,4 +48,32 @@
     border-radius: 5px;
     cursor: pointer;
     display: none;
+}
+
+@media screen and (max-width:900px) {
+    nav {
+        display: none;
+    }
+
+    .nav-responsive {
+        display: block;
+    }
+
+    nav.responsive {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 75px;
+        background-color: #252a2e;
+        width: 180px;
+    }
+
+    nav.responsive ul {
+        display: block !important;
+    }
+
+    nav.responsive ul li {
+        border-bottom: 1px solid #fff;
+        padding: 10px;
+    }
 }

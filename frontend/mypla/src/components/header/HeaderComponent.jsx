@@ -7,12 +7,23 @@ const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
 export const HeaderComponent = () => {
 
-    const select = () => {
+    let menuVisible = false;
 
+    const showHideMenu = () =>  {
+
+        if(menuVisible) {
+            document.getElementById("nav").classList = "";
+            menuVisible = false;  
+        }
+        else {
+            document.getElementById("nav").classList = "responsive";
+            menuVisible = true;  
+        }
     }
 
-    const showHideMenu = () => {
-
+    const select = () => {
+        document.getElementById("nav").classList = "";
+        menuVisible = false;
     }
 
     return (
@@ -21,11 +32,11 @@ export const HeaderComponent = () => {
                 <div className="logo">
                     <Link to="/">MiPla</Link>
                 </div>
-                <nav>
+                <nav id="nav">
                     <ul className="nav-list">
-                        <li><Link to="/">Inicio</Link></li>
-                        <li><Link to="/profile">Perfil</Link></li>
-                        <li><Link to="/c2">Mi agenda</Link></li>
+                        <li><Link to="/" onClick={select}>Inicio</Link></li>
+                        <li><Link to="/profile" onClick={select}>Perfil</Link></li>
+                        <li><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
                     </ul>
                 </nav>
                 <div className="nav-responsive" onClick={showHideMenu}>
