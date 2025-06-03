@@ -135,13 +135,11 @@ const Calendario = ({token}) => {
     const handleSaveNewTask = async (newTask) => {
       try {
         if (newTask.recurrent) {
-          if (newTask.week_day == 0) newTask.week_day = 7
           await postRecurrent(token, newTask);
         }
         else {
           await postSpecific(token, newTask);
         }
-
         setModalOpen(false);
         setModalData(null);
         await cargarEventos(token);
@@ -154,11 +152,8 @@ const Calendario = ({token}) => {
     const handleEditTask = async (oldTask, updatedTask) => {
       try {
         let data = {}
-        console.log(oldTask)
         switch (oldTask.tipo) {
           case 'recurrent':
-            if (updatedTask.week_day == 0) updatedTask.week_day = 7
-            if (oldTask.week_day == 0) oldTask.week_day = 7
             data = {
               week_day: oldTask.week_day,
               start: oldTask.start,
@@ -203,7 +198,6 @@ const Calendario = ({token}) => {
       try {
         switch (eventToDelete.tipo) {
           case 'recurrent':
-            if (eventToDelete.week_day == 0) eventToDelete.week_day = 7
             await deleteRecurrent(token, eventToDelete)
             break
           case 'specific':
