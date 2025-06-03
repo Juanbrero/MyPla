@@ -144,6 +144,7 @@ const TutorialGuide = () => {
   );
 
   return ReactDOM.createPortal(content, document.body);
+
 };
 
 export default TutorialGuide;

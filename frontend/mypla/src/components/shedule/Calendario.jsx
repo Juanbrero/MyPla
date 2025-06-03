@@ -266,7 +266,7 @@ const Calendario = ({token}) => {
     }, {});
 
     return (
-    <div className="p-4 calendario">
+    <div className="p-4-calendario">
       <div className="calendario-controles">
         <button className="direccion" onClick={anteriorSemana}>⬅️ Anterior</button>
         <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>

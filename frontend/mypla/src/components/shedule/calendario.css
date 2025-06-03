@@ -1,7 +1,12 @@
+.p-4-calendario {
+  position: relative;
+  top: 9rem;
+}
+
 .calendario-controles {
     display: flex;
     justify-content: space-between;
-    padding-top: 120px;
+    /* padding-top: 120px; */
 }
 
 /* Contenedor principal del calendario: flex horizontal */
