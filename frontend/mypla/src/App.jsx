@@ -11,6 +11,7 @@ import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
 import Calendario from "./components/shedule/Calendario"
 import { TestAuth } from "./pages/TestAuth"
+import { HeaderComponent } from './components/header/HeaderComponent.jsx'
 
 
 const App = () => {
@@ -26,6 +27,8 @@ const App = () => {
 
     return (
       <>
+        <HeaderComponent/>
+        
         <TutorialProvider>
           <TutorialGuide />
         </TutorialProvider>
