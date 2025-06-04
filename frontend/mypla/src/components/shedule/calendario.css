@@ -37,9 +37,13 @@
   width: 100%;
 }
 
+.hora, .celda-hora {
+  box-sizing: border-box;
+}
+
 /* Cada hora */
 .columna-horas .hora {
-  height: 45px;
+  height: 44px;
   line-height: 40px;
   border-bottom: 1px solid #ccc;
   width: 100%;
