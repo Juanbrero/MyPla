@@ -1,7 +1,4 @@
-import { Box, Button, Typography, Modal } from '@mui/material';
-import ScheduleTopics from '../shedule/schedule-components/ScheduleTopics';
-import ScheduleDate from '../shedule/schedule-components/ScheduleDate';
-import ScheduleTime from '../shedule/schedule-components/ScheduleTime';
+import { Modal } from '@mui/material';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import ReservationStep from './reservation-steps/ReservationStep';

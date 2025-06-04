@@ -14,20 +14,13 @@ export default function SelectStep({ taskData, onClose, onChange, onNext, style}
 
 
     const handleTaskDataChange = (partialUpdate) => {
-        // const updated = {
-        // ...localTaskData,
-        // ...partialUpdate,
-        // };
-        // setLocalTaskData(updated);
-        // onChange?.(updated);
+
         setLocalTaskData(partialUpdate);
         onChange?.(partialUpdate);
     };
 
     const toggleSelectedHour = (hour) => {
-        // const newSelected = selectedHour === hour ? null : hour;
-        // setSelectedHour(newSelected);
-        // handleTaskDataChange({ selectedHour: newSelected });
+
         const newStart = selectedHour === hour ? null : hour;
         setSelectedHour(newStart);
 
