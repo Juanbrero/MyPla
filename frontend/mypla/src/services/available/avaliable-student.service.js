@@ -1,50 +1,58 @@
-import { dateFormaterReverse } from "../../utils/dateFormater";
 import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
-const dias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-export const getAvailableProfessional = async (token) => {
+export const getAvailableStudent = async (token, prof_id, dia) => {
+  // const config = {
+  //   url: `${apiServerUrl}/available/student?prof_id=${encodeURIComponent(prof_id)}&day=${encodeURIComponent(dia)}`,
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     "Authorization": `Bearer ${token}`,
+  //   },
+  // };
 
-    const config = {
-    url: `${apiServerUrl}/available/student`,
-    method: "GET",
-    headers: {
-        "content-type": "application/json",
-        "Authorization": `Bearer ${token}`,
+  // const { data, error } = await callExternalApi({ config });
+
+  // if (error) {
+  //   console.error("Error al obtener datos:", error);
+  //   throw error;
+  // }
+
+  const data = {
+    "avaible": [
+      {
+        "day": "2025-06-04",
+        "start": "18:00:00.000Z",
+        "end": "20:00:00.000Z",
+        "topics": [
+          "string"
+        ]
+      }
+    ],
+    "exception": [
+      {
+        "prof_id": "string",
+        "day": "2025-06-03",
+        "start": "18:00:00.000Z",
+        "end": "20:00:00.000Z"
+      }
+    ]
+  }
+
+  // Procesar la respuesta para agregar el campo 'type' a cada objeto, manteniendo la estructura original
+  const result = {};
+
+  for (const [key, items] of Object.entries(data)) {
+    if (Array.isArray(items)) {
+      result[key] = items.map((item) => ({
+        ...item,
+        type: key, // Agregar el campo 'type' con el nombre de la clave
+      }));
+    } else {
+      result[key] = items;
     }
-    };
+  }
 
-    const { data, error } = await callExternalApi({ config });
-
-    if (data) {
-        for (const category in data) {
-            if (data.hasOwnProperty(category)) {
-                data[category] = data[category].map(item => {
-                    const fecha = new Date(item.day)
-                    const diaSemana = fecha.getDay()
-                    return {
-                        // id        :   arg.event.id,
-                        // groupId   :   arg.event?.groupId,
-                        // title     :   arg.event.title,
-                        // color     :   arg.event.color,
-                        start     :   dateFormaterReverse(item.day, item.start),
-                        end       :   dateFormaterReverse(item.day, item.end),
-                        extendedProps: {
-                            day         : item.week_day ? dias[item.week_day] : dias[diaSemana],
-                            date        : item.day ? item.day : '',
-                            // recurrent   : category == 'recurrent',
-                            category    : category,
-                            eventTopics : item.topics ? item.topics : [],
-                        }
-                    };
-                });
-            }
-        }
-    }
-        
-    return {
-        data: data,
-        error,
-    };
+  return result;
 };

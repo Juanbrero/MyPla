@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import CeldaHora from './CeldaHora.jsx';
+import CeldaHora from '../shedule/CeldaHora.jsx';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
 import { es } from 'date-fns/locale';
-import './calendario.css';
-import ScheduleCreate from './ScheduleModal.jsx';
-import { getAvailableProfessional } from '../../services/available/available-professional.service.js';
-import { postSpecific, putSpecific, deleteSpecific } from '../../services/specific/specific.service';
-import { postRecurrent, putRecurrent, deleteRecurrent } from '../../services/recurrent/recurrent.service';
-import { postException, putException, deleteException } from '../../services/exception/exception.service';
-import { getProfessionalTopics } from '../../services/professionals-topic/professionals-topic.service.js';
+import { getAvailableStudent } from '../../services/available/avaliable-student.service.js';
+import ReservationModal from '../reservation/ReservationModal.jsx';
+import { prof_id } from '../../utils/testData.js';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -36,52 +32,51 @@ const toISO8601 = (hora, minutos = '00') => {
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
-     if (!eventos) return { recurrent: [], specific: [], exception: [] };
+    if (!eventos) return { avaible: [], exception: [] };
 
-     const { recurrent = [], specific = [], exception = [] } = eventos;
+    const { avaible = [], exception = [] } = eventos;
 
     // Filtrar específicos para el día
-    const especificosDelDia = specific.filter(e => isSameDay(parseISO(e.day), dia));
+    const availabeDelDia = avaible.filter(e => isSameDay(parseISO(e.day), dia));
 
     // Filtrar excepciones para el día
     const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
 
-    // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
-    const recurrentesDelDia = recurrent.filter(e => {
-        const esElDia = getDay(dia) === e.week_day;
-        const horaEv = horaNumero(parseHora(e.start));
-        const tieneExcepcion = excepcionesDelDia.some(exc => {
-            const horaInicioRecurrente = parseHora(e.start);
-            const horaInicioExcepcion = parseHora(exc.start);
-            return esElDia && horaInicioRecurrente === horaInicioExcepcion;
-        });
-        return esElDia;
-        // return esElDia && !tieneExcepcion;
-    });
+    // // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
+    // const recurrentesDelDia = recurrent.filter(e => {
+    //     const esElDia = getDay(dia) === e.week_day;
+    //     const horaEv = horaNumero(parseHora(e.start));
+    //     const tieneExcepcion = excepcionesDelDia.some(exc => {
+    //         const horaInicioRecurrente = parseHora(e.start);
+    //         const horaInicioExcepcion = parseHora(exc.start);
+    //         return esElDia && horaInicioRecurrente === horaInicioExcepcion;
+    //     });
+    //     return esElDia;
+    //     // return esElDia && !tieneExcepcion;
+    // });
 
+    console.log(availabeDelDia)
+    console.log(excepcionesDelDia)
     return {
-        recurrent: recurrentesDelDia,
-        specific: especificosDelDia,
+        available: availabeDelDia,
         exception: excepcionesDelDia,
     };
 };
 
-const Calendario = ({token}) => {
+const StudentCalendar = ({token}) => {
     useEffect(() => {
-      document.title = "Mipla - Calendario";
+        document.title = "MiPla - Calendario";
     }, []);
 
     // estados del modal
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null); 
-    const [modalMode, setModalMode] = useState('create') // 'create', 'edit', 'exception'
 
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
     // datos de la bd
     const [eventos, setEventos] = useState({});
-    const [professionalTopics, setProfessionalTopics] = useState({});
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
@@ -152,97 +147,11 @@ const Calendario = ({token}) => {
       }
     };
 
-    // --- edito una tarea ------------------------------------------------------------------------
-    const handleEditTask = async (oldTask, updatedTask) => {
-      try {
-        let data = {}
-        switch (oldTask.tipo) {
-          case 'recurrent':
-            data = {
-              week_day: oldTask.week_day,
-              start: oldTask.start,
-              Nweek_day: updatedTask.week_day,
-              Nstart: updatedTask.start,
-              Nend: updatedTask.end,
-              topics: updatedTask.topics
-            }
-            await putRecurrent(token, data)
-            break
-          case 'specific':
-            data = {
-              day: oldTask.day,
-              start: oldTask.start,
-              Nday: updatedTask.day,
-              Nstart: updatedTask.start,
-              Nend: updatedTask.end,
-              topics: updatedTask.topics
-            }
-            await putSpecific(token, data)
-            break
-          case 'exception':
-            data = {
-              day: oldTask.day,
-              start: oldTask.start,
-              Nday: updatedTask.day,
-              Nstart: updatedTask.start,
-              Nend: updatedTask.end
-            }
-            await putException(token, data)
-            break
-          default: console.error('Invalid task type')
-          }
-          await cargarEventos(token);
-      } catch (error) {
-        console.error('Error al editar la tarea:', error);
-      }
-    }
-
-    // --- borro una tarea ------------------------------------------------------------------------
-    const handleDeleteTask = async (eventToDelete) => {
-      try {
-        switch (eventToDelete.tipo) {
-          case 'recurrent':
-            await deleteRecurrent(token, eventToDelete)
-            break
-          case 'specific':
-            await deleteSpecific(token, eventToDelete)
-            break
-          case 'exception':
-            await deleteException(token, data)
-            break
-        }
-        await cargarEventos(token);
-      } catch (error) {
-        console.error('Error al borrar la tarea:', error);
-      }
-    };
-
-    // --- cancelo tarea por unica vez ------------------------------------------------------------
-    const handleCreateException = async (eventToCancel) => {
-      try {
-        await postException(token, eventToCancel);
-        await cargarEventos(token);
-      } catch (error) {
-        console.error('Error al guardar la excepcion:', error);
-      }
-    };
-
-    const handleDeleteException = async (exceptionToCancel) => {
-      try {
-        await deleteException(token, exceptionToCancel);
-        await cargarEventos(token);
-        } catch (error) {
-          console.error('Error al borrar la excepcion:', error);
-      }
-    }
-
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (_token) => {
         try {
-            const data = await getAvailableProfessional(_token);
+            const data = await getAvailableStudent(_token, prof_id, semanaInicio);
             setEventos(data);
-            const topics = await getProfessionalTopics(_token);
-            setProfessionalTopics(topics);
         } catch (error) {
             console.error("Error cargando eventos:", error);
         }
@@ -305,20 +214,14 @@ const Calendario = ({token}) => {
         </div>
       </div>
 
-      <ScheduleCreate
+      <ReservationModal
           open={modalOpen}
           onClose={handleCloseModal}
           taskData={modalData}
-          onSaveTask={handleSaveNewTask}
-          onEditTask={handleEditTask}
-          mode={modalMode}
-          onDeleteTask={handleDeleteTask}
-          onCreateException={handleCreateException}
-          onDeleteException={handleDeleteException}
       />
 
     </div>
   );
 };
 
-export default Calendario;
+export default StudentCalendar;
