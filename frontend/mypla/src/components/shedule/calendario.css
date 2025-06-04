@@ -1,6 +1,9 @@
 .p-4-calendario {
   position: relative;
   top: 9rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendario-controles {
