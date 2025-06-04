@@ -1,14 +1,13 @@
-import { Box, Button, Typography, Modal } from '@mui/material';
-import ScheduleTopics from '../shedule/schedule-components/ScheduleTopics';
-import ScheduleDate from '../shedule/schedule-components/ScheduleDate';
-import ScheduleTime from '../shedule/schedule-components/ScheduleTime';
+import { Modal } from '@mui/material';
 import { useEffect, useState } from 'react';
+import React from 'react';
 import ReservationStep from './reservation-steps/ReservationStep';
 import PaymentStep from './reservation-steps/PaymentStep';
 import ConfirmStep from './reservation-steps/ConfirmStep';
+import SelectStep from './reservation-steps/SelectStep';
 
 
-const steps = ["RESERVATION", "PAYMENT", "CONFIRMATION"];
+const steps = ["SELECT", "RESERVATION", "PAYMENT", "CONFIRMATION"];
 
 const style = {
   position: 'absolute',
@@ -33,6 +32,11 @@ export default function ReservationModal({
 }) {
 
     const [step, setStep] = useState(steps[0]);
+    const [localTaskData, setLocalTaskData] = React.useState(taskData);
+
+    useEffect (() => {
+        setLocalTaskData(taskData);
+    }, [taskData])
 
     const goToStep = (nextStep) => {
         setStep(nextStep);
@@ -43,22 +47,36 @@ export default function ReservationModal({
         setStep(steps[0]);
     };
 
+    const handleTaskDataChange = (partialUpdate) => {
+        setLocalTaskData((prev) => ({
+        ...prev,
+        ...partialUpdate,
+        }));
+    };
+
     const renderStep = (step) => {
         switch (step) {
-            case "RESERVATION":
-                return <ReservationStep 
+            case "SELECT":
+                return <SelectStep
                             taskData={taskData} 
                             onClose={handleClose}
+                            onChange={handleTaskDataChange}
                             onNext={() => goToStep(steps[1])}
+                            style={style} />
+            case "RESERVATION":
+                return <ReservationStep 
+                            taskData={localTaskData} 
+                            onClose={handleClose}
+                            onNext={() => goToStep(steps[2])}
                             style={style} />;
             case "PAYMENT":
                 return <PaymentStep 
                             onClose={handleClose}
-                            onNext={() => goToStep(steps[2])}
+                            onNext={() => goToStep(steps[3])}
                             style={style} />;
             case "CONFIRMATION": 
                 return <ConfirmStep 
-                            taskData={taskData} 
+                            taskData={localTaskData} 
                             onClose={handleClose}
                             style={style} />;
         }

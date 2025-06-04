@@ -11,13 +11,11 @@ function Home() {
   const taskData= {
     start: `11:00:00.000Z`,
     end: `14:00:00.000Z`,
-    topics: ["ESTRATEGIA, PROGRAMACION, VENTAS"],
-    avaliableTopics: ["ESTRATEGIA, PROGRAMACION"],
+    topics: ["ESTRATEGIA", "PROGRAMACION"],
+    avaliableTopics: ["ESTRATEGIA", "PROGRAMACION"],
     day: "2025-05-31", //si es recurrente envio el dia en que se clickea para la generacion de excepciones
     week_day: 6,
     recurrent: false,
-    // selectedHour: toISO8601(hora),
-    // tipo: evento.type
   }
 
   const closeModal = () => {
