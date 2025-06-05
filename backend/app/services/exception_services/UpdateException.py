@@ -5,7 +5,7 @@ from app.models import SpecificSchedule, Meeting, RecurrentSchedule
 from fastapi.responses import JSONResponse
 from fastapi import status
 from app.bd.schemas import schema_exception
-from app.bd.bd_utils import strip_time_hour_minute
+from app.bd.bd_utils import strip_time_hour_minute, week_convert
 from datetime import time
 
 
@@ -58,7 +58,7 @@ class UpdateExceptions():
         recurrent = recurrentR.getException(
             {
                 'prof_id': exceptionS.prof_id,
-                'week': day.weekday(),
+                'week': week_convert(day.isoweekday()),
                 'start': start,
                 'end': end
             }
