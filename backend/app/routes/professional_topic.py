@@ -44,7 +44,7 @@ def update_price_professional(topic: schema_prof_topic.ProfessionalTopicCreate, 
     return ProfessionalTopicController(db= db).updatePrice(prof_topicS)
 
 @router.get('/topics', tags=['Prof Topic'])
-def get_professionals_topic(topic_name: str,db: Session = Depends(get_db), user_info= Depends(RolesValidator(["Alumno"]))):
+def get_professionals_topic(topic_name: str, db: Session = Depends(get_db)):
     """
     - Estudiante recibe todos los profesionales de un topico particulas
 
