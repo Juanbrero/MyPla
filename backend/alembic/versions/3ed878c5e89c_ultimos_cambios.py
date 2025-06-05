@@ -1,8 +1,8 @@
-"""Cambiar datos de reserva
+"""Ultimos cambios
 
-Revision ID: d7c3eaa1edd6
+Revision ID: 3ed878c5e89c
 Revises: 
-Create Date: 2025-06-05 16:00:28.091014
+Create Date: 2025-06-05 17:06:15.399991
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd7c3eaa1edd6'
+revision: str = '3ed878c5e89c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -72,7 +72,7 @@ def upgrade() -> None:
     sa.Column('start', sa.Time(), nullable=False),
     sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('end', sa.Time(), nullable=False),
-    sa.CheckConstraint('week_day BETWEEN 1 AND 7 ', name='check_week_valid'),
+    sa.CheckConstraint('week_day BETWEEN 0 AND 6 ', name='check_week_valid'),
     sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('week_day', 'start', 'prof_id')
     )
