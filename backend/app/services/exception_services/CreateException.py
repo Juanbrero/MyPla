@@ -3,7 +3,7 @@ from app.bd.schemas import schema_exception
 from sqlalchemy.orm import Session
 from app.models import Meeting, SpecificSchedule, RecurrentSchedule
 from app.bd.repositories.Repository import Repository
-from app.bd.bd_utils import strip_time_hour_minute
+from app.bd.bd_utils import strip_time_hour_minute, week_convert
 from fastapi.responses import JSONResponse
 from fastapi import status
 from datetime import time
@@ -37,7 +37,7 @@ class CreateException:
         recurrent = recurrentR.getException(
             {
                 'prof_id': exceptionS.prof_id,
-                'week': exceptionS.day.weekday(),
+                'week': week_convert(exceptionS.day.isoweekday()),
                 'start': exceptionS.start,
                 'end': exceptionS.end
             }

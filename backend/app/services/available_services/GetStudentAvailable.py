@@ -6,6 +6,7 @@ from app.bd.schemas import schema_response
 from fastapi.responses import JSONResponse
 from fastapi import status
 from datetime import timedelta, date
+from app.bd.bd_utils import week_convert
 
 class GetStudentAvailable():
     @handle_errors
@@ -32,11 +33,11 @@ class GetStudentAvailable():
              
         # Recorre desde el mes ingresado hasta el siguiente
         while day_recurrent.month <= (month + 1) and day_recurrent.year == date.today().year:
-            
+        
             # Recorre el recurrent y genera los horarios
             # 
             for schedule in all_recurrents:
-                if schedule.week_day == day_recurrent.isoweekday():
+                if week_convert(schedule.week_day) == day_recurrent.isoweekday():
                     item ={
                     "prof_id": schedule.prof_id,
                     "day": day_recurrent.isoformat(),
@@ -45,7 +46,7 @@ class GetStudentAvailable():
                     "topics": [topic.topic_name for topic in schedule.topic_recurrents]
                     }
                     data_recurrent.append(item)
-                if schedule.week_day > day_recurrent.isoweekday():
+                if week_convert(schedule.week_day) > day_recurrent.isoweekday():
                     break
             day_recurrent += timedelta( days= 1 )    
 
@@ -134,7 +135,7 @@ class GetStudentAvailable():
 
         response = {
             'available': data_available,
-            'exception': data_exception
+            'reserv': data_exception
         }
 
         
