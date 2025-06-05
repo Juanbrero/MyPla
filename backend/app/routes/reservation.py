@@ -13,9 +13,9 @@ router = APIRouter(prefix="/api/reservation")
 
 #Reserva una clase en un horario en base a la agenda del profesor
 @router.post('/start-class',tags=["Reservation"], response_model=Union[schema_reservation.ReservationClassIn, Errors])
-def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session = Depends(get_db)): #user_info = Depends(RolesValidator(["Alumno"]))):
+def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
     """
     Creacion de una clase
     """
-    reservationS = schema_reservation.ReservationClassIn(**class_.dict(), student_id= 'ca001156-679d-46cc-a890-c538f735ffff')
+    reservationS = schema_reservation.ReservationClassIn(**class_.dict(), student_id= user_info["user_id"])
     return ReservationController(db=db).createReservation(reservationS)
