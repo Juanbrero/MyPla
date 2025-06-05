@@ -11,29 +11,25 @@ class GetTopicProf:
     """
     Return
        - { 'prof_id': str,
-            'topics': list[str] 
+            'price_class': float 
         }
     """
     @handle_errors
     def run(
         db: Session,
+        topic_name:str,
         professional_topicR: Repository[ProfessionalTopic]
     ):
         
-        professionals = professional_topicR.get_all()
+        professionals = professional_topicR.get_by({'topic_name':topic_name})
 
         data_professional = []
-        
-        prof = 0
-        while prof <= len(professionals) - 1:
-            topics = []
-            prof_id= professionals[prof].prof_id
-            while prof <= len(professionals) - 1 and prof_id == professionals[prof].prof_id:
-                topics.append(professionals[prof].topic_name)
-                prof += 1
-            data_professional.append({
-                'pro_id': prof_id,
-                'topics': topics})             
+        for prof in professionals:
+            data_professional.append(
+                {'prof_id':prof.prof_id,
+                 'price_class': prof.price_class
+                 }
+            )         
             
         
 

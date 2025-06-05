@@ -46,8 +46,9 @@ class ProfessionalTopicController:
             professional_topicR= self.professional_topicR
         )
     
-    def getTopicProf(self):
+    def getTopicProf(self, topic_name: str):
         return GetTopicProf.run(
             db = self.db,
+            topic_name= topic_name,
             professional_topicR= self.professional_topicR
         )
