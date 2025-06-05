@@ -6,6 +6,7 @@ from app.bd.schemas import schema_response
 from fastapi.responses import JSONResponse
 from fastapi import status
 from datetime import timedelta, date
+from app.bd.bd_utils import week_convert
 
 class GetStudentAvailable():
     @handle_errors
@@ -134,7 +135,7 @@ class GetStudentAvailable():
 
         response = {
             'available': data_available,
-            'exception': data_exception
+            'reserv': data_exception
         }
 
         
