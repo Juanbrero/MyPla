@@ -3,7 +3,12 @@ import PayPalButton from '../paymentButtons/PayPalButton';
 import MPButton from '../paymentButtons/MPButton';
 
 
-export default function PaymentStep({ onClose, onNext, style}) {
+export default function PaymentStep({ onClose, onNext, style, reservationInfo}) {
+
+    console.log(reservationInfo);
+
+    // guardar reservationInfo en bd con una tabla temporal
+
 
     return (    
         <Box sx={style}>

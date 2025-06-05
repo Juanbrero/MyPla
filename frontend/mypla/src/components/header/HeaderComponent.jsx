@@ -1,7 +1,11 @@
 import './headerStyle.css'; // si tenés estilos para el header
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
@@ -26,11 +30,30 @@ export const HeaderComponent = () => {
         menuVisible = false;
     }
 
+    const navigate = useNavigate();
+
+    const searchProfs = async () => {
+        const topic = $("#searchTopic").val();
+        return navigate(`/ProfessionalsList?topic=${encodeURIComponent(topic)}`);
+    }
+
+
+
     return (
         <div className="header-container">
             <header>
                 <div className="logo">
                     <Link to="/">MiPla</Link>
+                </div>
+                <div className="search-container">
+                    <div className="search-icon">
+                        <button id='search-button' onClick={() => searchProfs()}>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
+                        </button>
+                    </div>
+                    <div className="search-input">
+                        <input id="searchTopic" type="text" placeholder='Buscar topicos...' />
+                    </div>
                 </div>
                 <nav id="nav">
                     <ul className="nav-list">

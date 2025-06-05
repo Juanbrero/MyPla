@@ -7,7 +7,6 @@ import ReservationModal from '../components/reservation/ReservationModal'
 function Home() {
   const [count, setCount] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-  
   const taskData= {
     start: `11:00:00.000Z`,
     end: `14:00:00.000Z`,
@@ -16,6 +15,7 @@ function Home() {
     day: "2025-05-31", //si es recurrente envio el dia en que se clickea para la generacion de excepciones
     week_day: 6,
     recurrent: false,
+    price: 1,
   }
 
   const closeModal = () => {
