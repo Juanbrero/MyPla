@@ -1,0 +1,24 @@
+from ..bd.repositories.MeetingRepository import MeetingRepository
+from ..bd.repositories.ProfessionalTopicRepository import ProfessionalTopicRepository
+from ..bd.repositories.ReservationRepository import ReservationRepository
+from ..bd.repositories.TopicSpecificRepository import TopicSpecificRepository
+from sqlalchemy.orm import Session
+from ..services.pay_services.PayInitialService import PayInitialService
+
+class PayController:
+    def __init__ (self, db: Session):
+        self.db = db
+        self.reservationR = ReservationRepository(db)
+        self.meetingR = MeetingRepository(db)
+        self.professional_topicR = ProfessionalTopicRepository(db)
+        self.topic_specificR = TopicSpecificRepository(db)
+    
+    def initialPay (self, student_id: str, method: str):
+        return PayInitialService.run(
+            db = self.db, 
+            reservationR = self.reservationR,
+            meetingR = self.meetingR,
+            classR = self.classR,
+            student_id = student_id,
+            method = method 
+        )

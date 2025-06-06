@@ -27,25 +27,33 @@ class CreateReservation ():
         end = (reservationS.day_hour + timedelta(hours=1)).time()
         topic = reservationS.topic
 
-        if start.day != end.day:
-            raise ValidationError('Change of day')
-
         schedule_class = Schedule(start=start, end=end)
+        
+        reservation = reservationR.get_by({
+            "day_hour": reservationS.day_hour,
+            "student_id": reservationS.student_id,
+            "prof_id": reservationS.prof_id,
+            "state": 'pending'
+        })
+        
+        if (len(reservation) > 0):
+            raise ValidationError("You have a pay pending")
 
         if start.minute != 0 and start.minute != 30 and valid_time(schedule_class):
-            raise ValidationError('el horario no tiene un formato correcto')
+            raise ValidationError('Format to hour is incorrect')
         
         exception= specificR.getExceptionToClass(reservationS.prof_id, reservationS.day_hour)
 
         if len(exception) > 0:
-            raise NotFound("El profesional no esta disponible en ese momento")
+            raise NotFound("The professional is not available at the moment")
         
         specific= specificR.getSpecificToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
 
         if len(specific) <= 0:
             recurrent= recurrentR.getRecurrentToClass(reservationS.prof_id, reservationS.topic, reservationS.day_hour)
+            print(recurrent)
             if len(recurrent) <= 0:
-                raise NotFound("El profesional no tiene horario para esa clase")
+                raise NotFound("The professional does not have a schedule for this class")
         
         meetings = meetingR.get_by(
             {
@@ -55,7 +63,7 @@ class CreateReservation ():
             }
         )
         if not (meetings is None) and len(meetings) > 0:
-            raise ValidationError("El profesional tiene una reunion en ese momento")
+            raise ValidationError("The professional has a meeting at that time")
         
         topic = professional_topicR.get_by(
             {
@@ -65,7 +73,7 @@ class CreateReservation ():
         )
         
         if topic is None or len(topic) == 0:
-            raise ValueError("No se encontró el precio para ese profesor y tema.")
+            raise ValueError("No price was found for that teacher and subject.")
         
         topic = topic[0]
         
@@ -97,7 +105,7 @@ class CreateReservation ():
             }
         )
         db.commit()
-        return JSONResponse(status_code=status.HTTP_201_CREATED, content="Clase creada")
+        return JSONResponse(status_code=status.HTTP_201_CREATED, content="Start class reservation")
     
     #def insert_reservation_class (db: Session, reservationS: schema_reservation.ReservationClassIn):
         

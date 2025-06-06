@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Float, TIMESTAMP, CheckConstraint, PrimaryKeyConstraint, ForeignKeyConstraint
+from sqlalchemy import Column, ForeignKey, Float, TIMESTAMP, CheckConstraint, func, PrimaryKeyConstraint, ForeignKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from datetime import datetime

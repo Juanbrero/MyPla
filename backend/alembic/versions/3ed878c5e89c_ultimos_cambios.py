@@ -1,8 +1,8 @@
-"""Cambiar datos de usuario
+"""Ultimos cambios
 
-Revision ID: 6d9bc9d71e54
+Revision ID: 3ed878c5e89c
 Revises: 
-Create Date: 2025-05-28 17:31:59.065891
+Create Date: 2025-06-05 17:06:15.399991
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6d9bc9d71e54'
+revision: str = '3ed878c5e89c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -72,7 +72,7 @@ def upgrade() -> None:
     sa.Column('start', sa.Time(), nullable=False),
     sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('end', sa.Time(), nullable=False),
-    sa.CheckConstraint('week_day BETWEEN 1 AND 7 ', name='check_week_valid'),
+    sa.CheckConstraint('week_day BETWEEN 0 AND 6 ', name='check_week_valid'),
     sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('week_day', 'start', 'prof_id')
     )
@@ -100,7 +100,10 @@ def upgrade() -> None:
     sa.Column('day_hour', sa.TIMESTAMP(), nullable=False),
     sa.Column('prof_id', sa.String(), nullable=False),
     sa.Column('student_id', sa.String(length=36), nullable=False),
+    sa.Column('create', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('cancel', sa.Boolean(), server_default=sa.text('false'), nullable=False),
+    sa.Column('state', sa.String(length=10), server_default='pending', nullable=False),
+    sa.CheckConstraint("state IN ('pending', 'finished')", name='check_reservation_state'),
     sa.ForeignKeyConstraint(['day_hour', 'prof_id'], ['meeting.day_hour', 'meeting.prof_id'], name='fk_class_meeting', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['student_id'], ['student.student_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('day_hour', 'prof_id', 'student_id', name='pk_reservation')

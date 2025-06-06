@@ -44,7 +44,7 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
                 RecurrentSchedule.week_day == target_day,
                 RecurrentSchedule.start <= target_time,
                 cast(
-                    func.cast(RecurrentSchedule.end, Time) - func.cast('01:00:00', Time),
+                    func.cast(RecurrentSchedule.end, Time) - func.cast("01:00:00", Time),
                     Time
                 ) >= target_time
             )
