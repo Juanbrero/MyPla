@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import ProfessionalTopic
+from app.models import ProfessionalTopic, Professional
 from app.bd.repositories.Repository import Repository
 from fastapi.responses import JSONResponse
 from fastapi import status
@@ -18,16 +18,21 @@ class GetTopicProf:
     def run(
         db: Session,
         topic_name:str,
-        professional_topicR: Repository[ProfessionalTopic]
+        professional_topicR: Repository[ProfessionalTopic],
+        professionalR: Repository[Professional]
     ):
         
         professionals = professional_topicR.get_by({'topic_name':topic_name})
+        # Join con users para traer datos, salvo score
 
         data_professional = []
         for prof in professionals:
+            user_data, score = professionalR.getInfo(prof.prof_id)
             data_professional.append(
                 {'prof_id':prof.prof_id,
-                 'price_class': prof.price_class
+                 'price_class': prof.price_class,
+                 'username': user_data.username,
+                 'score': score
                  }
             )         
             
