@@ -5,7 +5,7 @@ from app.auth0.dependencies import RolesValidator
 from ..controllers.PayController import PayController
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/api/pay/")
+router = APIRouter(prefix="/api/pay")
 
 @router.post("/initial-mp")
 def get_preferenceId(db: Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
