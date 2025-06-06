@@ -11,6 +11,7 @@ import { TutorialProvider } from "./components/TutorialContext"
 import CalendarioWrapper from "./components/wrappers/CalendarioWrapper.jsx"
 import { TestAuth } from "./pages/TestAuth"
 import { HeaderComponent } from './components/header/HeaderComponent.jsx'
+import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
 
 
 const App = () => {
@@ -34,6 +35,10 @@ const App = () => {
         
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route
+             path="/calendar/:prof_id" 
+             element={<AuthenticationGuard Component={StudentCalendar} roles={["Alumno"]} />}
+          />
           <Route 
             path="/calendar" 
             element={<AuthenticationGuard Component={CalendarioWrapper} roles={["Profesional", "Alumno"]} />} 

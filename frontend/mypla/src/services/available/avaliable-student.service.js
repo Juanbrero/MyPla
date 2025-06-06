@@ -3,42 +3,44 @@ import { callExternalApi } from "../external-api.service";
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
 export const getAvailableStudent = async (token, prof_id, dia) => {
-  // const config = {
-  //   url: `${apiServerUrl}/available/student?prof_id=${encodeURIComponent(prof_id)}&day=${encodeURIComponent(dia)}`,
-  //   method: "GET",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     "Authorization": `Bearer ${token}`,
-  //   },
-  // };
-
-  // const { data, error } = await callExternalApi({ config });
-
-  // if (error) {
-  //   console.error("Error al obtener datos:", error);
-  //   throw error;
-  // }
-
-  const data = {
-    "avaible": [
-      {
-        "day": "2025-06-04",
-        "start": "18:00:00.000Z",
-        "end": "20:00:00.000Z",
-        "topics": [
-          "string"
-        ]
-      }
-    ],
-    "exception": [
-      {
-        "prof_id": "string",
-        "day": "2025-06-03",
-        "start": "18:00:00.000Z",
-        "end": "20:00:00.000Z"
-      }
-    ]
+  const config = {
+    url: `${apiServerUrl}/available/student?prof_id=${encodeURIComponent(prof_id)}&day=${encodeURIComponent(dia)}`,
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
   }
+  const { data, error } = await callExternalApi({ config })
+  console.log(data)
+  if (error) {
+    console.error("Error al obtener datos:", error);
+    throw error;
+  }
+
+  data.avaible = data.available
+  delete data.available
+
+  //const data = {
+  //  "avaible": [
+  //    {
+  //      "day": "2025-06-04",
+  //      "start": "18:00:00.000Z",
+  //      "end": "20:00:00.000Z",
+  //      "topics": [
+  //        "string"
+  //      ]
+  //    }
+  //  ],
+  //  "exception": [
+  //    {
+  //      "prof_id": "string",
+  //      "day": "2025-06-03",
+  //      "start": "18:00:00.000Z",
+  //      "end": "20:00:00.000Z"
+  //    }
+  //  ]
+  //}
 
   // Procesar la respuesta para agregar el campo 'type' a cada objeto, manteniendo la estructura original
   const result = {};

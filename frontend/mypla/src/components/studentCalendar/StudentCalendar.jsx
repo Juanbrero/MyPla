@@ -4,8 +4,8 @@ import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, se
 import { es } from 'date-fns/locale';
 import { getAvailableStudent } from '../../services/available/avaliable-student.service.js';
 import ReservationModal from '../reservation/ReservationModal.jsx';
-import { prof_id } from '../../utils/testData.js';
-
+//import { prof_id } from '../../utils/testData.js';
+import { useParams } from 'react-router-dom';
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
 
@@ -64,6 +64,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
 };
 
 const StudentCalendar = ({token}) => {
+    const { prof_id } = useParams() 
     useEffect(() => {
         document.title = "MiPla - Calendario";
     }, []);
@@ -150,7 +151,7 @@ const StudentCalendar = ({token}) => {
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (_token) => {
         try {
-            const data = await getAvailableStudent(_token, prof_id, semanaInicio);
+            const data = await getAvailableStudent(_token, prof_id, format(semanaInicio, 'yyyy-MM-dd'));
             setEventos(data);
         } catch (error) {
             console.error("Error cargando eventos:", error);
@@ -159,7 +160,7 @@ const StudentCalendar = ({token}) => {
 
     useEffect(() => {
         cargarEventos(token);
-    }, [semanaInicio]);
+    }, [semanaInicio, prof_id]);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
     const anteriorSemana = () => setSemanaInicio(addDays(semanaInicio, -7));
