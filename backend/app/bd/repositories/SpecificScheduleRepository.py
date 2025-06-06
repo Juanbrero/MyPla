@@ -93,7 +93,7 @@ class SpecificScheduleRepository(Repository[SpecificSchedule]):
         print(values)
         return len(values)
     
-    def getHourDay(self, prof_id:str, day: date):
+    def getHourDay(self, prof_id:str, day_init: date, day_end: date):
         """
         Recupera todas especifico en base a un mes y hasta el siguiente
         """
@@ -102,9 +102,8 @@ class SpecificScheduleRepository(Repository[SpecificSchedule]):
             .join(SpecificSchedule.topic_specifics)
             .where(
                 SpecificSchedule.prof_id == prof_id,
-                extract('month', SpecificSchedule.day) >= day.month,
-                extract('month', SpecificSchedule.day) <= day.month + 1,
-                extract('year', SpecificSchedule.day) == day.year,
+                SpecificSchedule.day >= day_init,
+                SpecificSchedule.day <= day_end,
                 SpecificSchedule.isCanceling == False
             )
             .options(selectinload(SpecificSchedule.topic_specifics))
