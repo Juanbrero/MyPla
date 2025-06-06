@@ -33,11 +33,12 @@ class AvailableController:
             classR= self.classR
         )
 
-    def getStudentAvailable(self, prof_id: str, day:date):
+    def getStudentAvailable(self, prof_id: str, day:date, student_id:str):
         return GetStudentAvailable.run(
             db = self.db,
             prof_id= prof_id,
             day = day,
+            student_id= student_id,
             recurrentR= self.recurrentR,
             exceptionR= self.exceptionR,
             specificR= self.specificR,

@@ -62,11 +62,11 @@ class ResponseProfessional(ResponseClass, Response):
 class ResponseStudent(BaseModel):
     """
     Esquema de respuesta a alumno
-      - avaible:  list[schema_topic_specific.TopicSpecificCr1]
-      - exception: list[schema_specific.ExceptionCreate]
+      - available:  list[schema_topic_specific.TopicSpecificCr1]
+      - reserv: list[schema_specific.ExceptionCreate]
     """
-    avaible: list[schema_topic_specific.TopicSpecificCr1]
-    exception: list[schema_exception.ExceptionCreate]
+    available: list[schema_topic_specific.TopicSpecificCr1]
+    reserv: list[schema_exception.ExceptionCreate]
     
 
    

@@ -6,17 +6,20 @@ from app.bd.schemas import schema_response
 from fastapi.responses import JSONResponse
 from fastapi import status
 from datetime import timedelta, date
+from app.bd.bd_utils import week_convert
+import calendar
 
 class GetStudentAvailable():
     @handle_errors
     def run(
-        db = Session,
-        prof_id= str,
-        day= date,
-        recurrentR= Repository[RecurrentSchedule],
-        exceptionR= Repository[SpecificSchedule],
-        specificR= Repository[SpecificSchedule],
-        reservationR= Repository[Reservation]
+        db : Session,
+        prof_id: str,
+        day: date,
+        student_id: str,
+        recurrentR: Repository[RecurrentSchedule],
+        exceptionR: Repository[SpecificSchedule],
+        specificR: Repository[SpecificSchedule],
+        reservationR: Repository[Reservation]
     ):
         if day is None:
             day = date.today()
@@ -27,16 +30,27 @@ class GetStudentAvailable():
         data_recurrent = []
 
         day_recurrent= date(year= day.year, month= day.month, day= 1)
-        month = day.month
 
-             
+        if day.month == 12:
+            next_year = day.year + 1
+            next_month= 1
+        else:
+            next_year = day.year
+            next_month = day.month + 1
+
+        last_day = date(
+            next_year,
+            next_month,
+            calendar.monthrange(next_year, next_month)[1]
+        )    
+
         # Recorre desde el mes ingresado hasta el siguiente
-        while day_recurrent.month <= (month + 1) and day_recurrent.year == date.today().year:
-            
+        while day_recurrent <= last_day:
+        
             # Recorre el recurrent y genera los horarios
             # 
             for schedule in all_recurrents:
-                if schedule.week_day == day_recurrent.isoweekday():
+                if week_convert(schedule.week_day) == day_recurrent.isoweekday():
                     item ={
                     "prof_id": schedule.prof_id,
                     "day": day_recurrent.isoformat(),
@@ -45,9 +59,10 @@ class GetStudentAvailable():
                     "topics": [topic.topic_name for topic in schedule.topic_recurrents]
                     }
                     data_recurrent.append(item)
-                if schedule.week_day > day_recurrent.isoweekday():
+                if week_convert(schedule.week_day) > day_recurrent.isoweekday():
                     break
             day_recurrent += timedelta( days= 1 )    
+
 
         
 
@@ -58,27 +73,68 @@ class GetStudentAvailable():
         # S 12 - 15 E 15 - 18 <-
         # S 8 - 12
         # S 8 - 18
-
+        data_available= []
 
         #SPECIFIC
-        all_specifics = specificR.getHourDay(prof_id, day)
+        day = day.replace(day=1)
+        all_specifics = specificR.getHourDay(prof_id, day, last_day)
 
         data_specific = []
         index_r = 0
         for schedule in all_specifics:
+            for dayr in range(index_r, len(data_recurrent)):
+                
+                if data_recurrent[dayr]["day"] < schedule.day.isoformat():
+                    data_available.append(data_recurrent[dayr])
+                elif data_recurrent[dayr]["day"] > schedule.day.isoformat():
+                    
+                    item = {
+                        "prof_id": schedule.prof_id,
+                        "day": schedule.day.isoformat(),
+                        "start": schedule.start.isoformat(),
+                        "end": schedule.end.isoformat(),
+                        "topics": [topic.topic_name for topic in schedule.topic_specifics]
+                    }
+                    data_available.append(item)
+                    index_r= dayr
+                    break
+                #mismo dia
+                elif schedule.end.isoformat() <= data_recurrent[dayr]['start']:
+                    item = {
+                        "prof_id": schedule.prof_id,
+                        "day": schedule.day.isoformat(),
+                        "start": schedule.start.isoformat(),
+                        "end": schedule.end.isoformat(),
+                        "topics": [topic.topic_name for topic in schedule.topic_specifics]
+                    }
+                    data_available.append(item)
+                    index_r= dayr
+                    break
+                elif schedule.start.isoformat() >= data_recurrent[dayr]['end']:
+                    data_available.append(data_recurrent[dayr])
+                    
+            if index_r == len(data_recurrent) -1:
+                item = {
+                        "prof_id": schedule.prof_id,
+                        "day": schedule.day.isoformat(),
+                        "start": schedule.start.isoformat(),
+                        "end": schedule.end.isoformat(),
+                        "topics": [topic.topic_name for topic in schedule.topic_specifics]
+                    }
+                data_available.append(item)
+        if index_r != len(data_recurrent) -1:
+            data_available.extend(data_recurrent[index_r:])
 
-            item = {
-                "prof_id": schedule.prof_id,
-                "day": schedule.day.isoformat(),
-                "start": schedule.start.isoformat(),
-                "end": schedule.end.isoformat(),
-                "topics": [topic.topic_name for topic in schedule.topic_specifics]
-            }
-            data_specific.append(item)
+
+
+
+                    
+
+
 
 
         #EXCEPTION
-        all_exceptions = exceptionR.getHourDay(prof_id, day)
+        all_exceptions = exceptionR.getHourDay(prof_id, day, last_day)
 
         data_exception = []
         for schedule in all_exceptions:
@@ -90,9 +146,10 @@ class GetStudentAvailable():
             }
             data_exception.append(item)
 
-        #RESERVATION
-        all_reservation = reservationR.getReservationDayHour(prof_id, day)
+       
 
+        #RESERVATION
+        all_reservation = reservationR.getReservationDayHour(prof_id, day, last_day)
         for reservation in all_reservation:
 
             start = reservation.day_hour.time().strftime('%H:%M')
@@ -128,13 +185,13 @@ class GetStudentAvailable():
                         # 12 >= 8 and 15 <= 12
                         pass
                     
-        data_available = data_recurrent.copy()
-        data_available.extend(data_specific)
+        #data_available = data_recurrent.copy()
+        #data_available.extend(data_specific)
 
 
         response = {
             'available': data_available,
-            'exception': data_exception
+            'reserv': data_exception
         }
 
         

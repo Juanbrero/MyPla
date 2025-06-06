@@ -1,7 +1,7 @@
 from app.models import Reservation, Meeting
 from sqlalchemy.orm import Session
 from .Repository import Repository
-from sqlalchemy import select, and_, extract
+from sqlalchemy import select, and_, extract, cast
 from datetime import date
 
 class ReservationRepository(Repository[Reservation]):
@@ -12,17 +12,15 @@ class ReservationRepository(Repository[Reservation]):
         return super().create(**data)
     
 
-    def getReservationDayHour(self, prof_id:str, day: date):
+    def getReservationDayHour(self, prof_id:str, day: date, last_day:date):
         stm = (
             select(Reservation)
             .where(
                 Reservation.prof_id == prof_id,
-                extract('month', Reservation.day_hour) >= day.month,
-                extract('month', Reservation.day_hour) <= day.month + 1,
-                extract('year', Reservation.day_hour) == day.year,
+                 Reservation.day_hour >= day,
+                 Reservation.day_hour <= last_day,
                 Reservation.cancel == False
             )
             .distinct().order_by(Reservation.day_hour.asc())
         )
-
         return self.session.execute(stm).scalars().all()

@@ -10,11 +10,11 @@ class GetProfessionalAvailable():
     @handle_errors
     def run(
             db : Session,
-            prof_id= str,
-            recurrentR= Repository[RecurrentSchedule],
-            exceptionR= Repository[SpecificSchedule],
-            specificR= Repository[SpecificSchedule],
-            classR= Repository[Class]
+            prof_id: str,
+            recurrentR: Repository[RecurrentSchedule],
+            exceptionR: Repository[SpecificSchedule],
+            specificR: Repository[SpecificSchedule],
+            classR: Repository[Class]
     ):
         all_specifics = specificR.getAllWithTopics(prof_id, False)
 

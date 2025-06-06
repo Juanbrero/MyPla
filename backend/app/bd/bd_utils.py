@@ -72,6 +72,20 @@ def valid_time(schedule:Schedule) -> bool:
         return True
 
 
+def week_convert(week_day:int):
+    """
+    Permite utilizar el isoweekday, y convertir la semana 7(domingo) a 0(domingo)
+    Postgres utiliza 0 como domingo y isoweekday utiliza 7
+    """
+    # 0 Domingo  6 sabado BD
+    # isoweekday 1 lunes 7 domingo
+    if week_day == 7:
+        return 0
+    if week_day == 0:
+        return 7
+    return week_day
+
+
 # pero usando mayor y menor para conciderar incluido, solo se compara inicio y fin
 def include_time(db_recurrent:list[Schedule], schedule:Schedule) -> bool:
     """
@@ -193,6 +207,8 @@ def include_time0(db_exist:list[Schedule], schedule:Schedule) -> bool:
             incluido = True
             break
     return incluido
+
+
 
 
 

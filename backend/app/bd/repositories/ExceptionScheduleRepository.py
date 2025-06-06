@@ -34,7 +34,7 @@ class ExceptionScheduleRepository(Repository[SpecificSchedule]):
 
         return self.session.execute(stm).scalars().all()   
 
-    def getHourDay(self, prof_id:str, day: date):
+    def getHourDay(self, prof_id:str, day: date, last_day:date):
         """
         Recupera todas excepciones en base a un mes y hasta el siguiente
         """
@@ -42,9 +42,8 @@ class ExceptionScheduleRepository(Repository[SpecificSchedule]):
             select(SpecificSchedule)
             .where(
                 SpecificSchedule.prof_id == prof_id,
-                extract('month', SpecificSchedule.day) >= day.month,
-                extract('month', SpecificSchedule.day) <= day.month + 1,
-                extract('year', SpecificSchedule.day) == day.year,
+                SpecificSchedule.day >= day,
+                SpecificSchedule.day <= last_day,
                 SpecificSchedule.isCanceling == True
             )
             .distinct().order_by(SpecificSchedule.day.asc(), SpecificSchedule.start.asc())

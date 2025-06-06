@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, selectinload
 from .Repository import Repository
 from sqlalchemy import select, cast, Time, func
 from datetime import datetime
+from app.bd.bd_utils import week_convert
 
 class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
     def __init__(self, session: Session):
@@ -32,7 +33,7 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
         )
         
     def getRecurrentToClass (self, prof_id: str, topic: str, day_hour: datetime):
-        target_day = day_hour.isoweekday()
+        target_day = week_convert(day_hour.isoweekday())
         target_time = day_hour.time()
         smt = (
             select(RecurrentSchedule)
