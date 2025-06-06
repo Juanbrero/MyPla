@@ -1,0 +1,69 @@
+#gral-table-container {
+    width: 100%;
+    font-family: sans-serif;
+    border: 2px solid #1cb6ae;
+    border-radius: 8px;
+    background-color: #161616;
+    color: #dad9d9;
+}
+
+#table-title-container {
+    font-size: 20px;
+    padding: 8px;
+    border-bottom: 2px solid #1cb6ae;
+}
+
+#table-title-container span {
+    color:#14a19a;
+}
+
+#table-container {
+    padding: 8px;
+}
+
+#profs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    height: 40px;
+}
+
+thead tr {
+    background-color: #1a1e20;
+}
+
+thead tr th {
+    border: 2px solid #1cb6ae;
+}
+
+thead tr .username{
+    width: 50%;
+}
+
+thead tr .score{
+    width: 25%;
+}
+
+thead tr .price{
+    width: 25%;
+}
+
+
+tbody {
+    background-color: #252a2e;
+}
+
+tbody tr {
+    height: 50px;
+    border: 2px solid #1cb6ae;
+}
+
+tbody tr:hover {
+    background-color: #223635;
+}
+
+tbody tr:active {
+    background-color: #1a1e20;
+}

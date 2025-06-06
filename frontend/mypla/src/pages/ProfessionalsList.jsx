@@ -1,3 +1,4 @@
+import './styles/ProfessionalsList.css';
 import React, { useEffect, useState } from 'react';
 import { getProfessionalsByTopic } from '../services/professionals-topic/professionals-topic.service';
 import { useSearchParams } from "react-router-dom";
@@ -27,17 +28,18 @@ export const ProfessionalsList = ({ token }) => {
 
     useEffect(() => {
         // Eliminar tabla anterior
-        $("#tabla_profs").remove();
+        $("#profs-table").remove();
 
         // Crear nueva tabla
         const tabla = $(`
-            <table id="tabla_profs" style="border-collapse: collapse;">
+            <table id="profs-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Precio</th>
+                        <th class="username">Nombre</th>
+                        <th class="score">Puntuacion</th>
+                        <th class="price">Precio/hr</th>
                     </tr>
-                </thead>
+                </thead>   
                 <tbody></tbody>
             </table>
         `);
@@ -45,20 +47,28 @@ export const ProfessionalsList = ({ token }) => {
         for (let prof of profs) {
             const fila = $(`
                 <tr>
-                    <td>${prof.prof_id}</td>
-                    <td>${prof.price_class}</td>
+                    <td>${prof.username}</td>
+                    <td>${prof.score}</td>
+                    <td>$ ${prof.price_class}</td>
                 </tr>
             `);
+
+            fila.on('click', () => {
+                alert("hola")
+            });
+
             tabla.find("tbody").append(fila);
         }
 
-        $("#contenedor-tabla").append(tabla);
+        $("#table-container").append(tabla);
     }, [profs]);
 
     return (
-        <div>
-            <h2>Profesionales para el tópico: {topic}</h2>
-            <div id="contenedor-tabla"></div>
+        <div id='gral-table-container'>
+            <div id="table-title-container">
+                <h2>Profesionales para el tópico: <span>{topic}</span></h2>
+            </div>
+            <div id="table-container"></div>
         </div>
     );
 };

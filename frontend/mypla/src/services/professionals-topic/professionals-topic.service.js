@@ -42,6 +42,8 @@ export const getProfessionalsByTopic = async (token, topicName) => {
 
     const { data, error } = await callExternalApi({ config });
 
+    
+
     console.log(data);
     if (error) {
       console.error("Error al obtener datos:", error);
