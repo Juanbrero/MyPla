@@ -38,3 +38,4 @@ class MeetingRepository(Repository[Meeting]):
             )
         )
         return self.session.execute(smt).scalars().all()
+    
