@@ -59,7 +59,7 @@ class UpRecurrent():
         if update['start'] >= update['end']:
             raise ValueError('The range hour is invalid')
         
-        if recurrentS.Nweek_day:
+        if recurrentS.Nweek_day != recurrentS.week_day:
             list_week = recurrentR.get_by({
                 'prof_id': recurrentS.prof_id,
                 'start': update['start'],
@@ -85,8 +85,15 @@ class UpRecurrent():
             if not professional_topicR.checkTopicProf(recurrentS.prof_id, recurrentS.topics):
                 raise ValidationError("You don't have a topic")
                         
+            topic_recurrents= topic_recurrentR.get_by(
+                {
+                'prof_id': recurrentS.prof_id,
+                'start': update['start'],
+                'week_day': update['week_day']
+                }
+            )
 
-            topic_names = {top.topic_name for top in obj_to_update[0].topic_recurrents}
+            topic_names = [top.topic_name for top in topic_recurrents]
             
             topic_del = [topic for topic in topic_names if topic not in recurrentS.topics]
 
@@ -118,5 +125,7 @@ class UpRecurrent():
         db.commit()
         
         return JSONResponse(status_code=status.HTTP_200_OK, content='Recurrent updated')
+
+
 
         
