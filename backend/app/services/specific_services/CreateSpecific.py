@@ -1,9 +1,9 @@
 from app.utils.errors import handle_errors, ValidationError
 from app.bd.schemas import schema_topic_specific
 from sqlalchemy.orm import Session
-from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific
+from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific, RecurrentSchedule
 from app.bd.repositories.Repository import Repository
-from app.bd.bd_utils import strip_time_hour_minute
+from app.bd.bd_utils import strip_time_hour_minute, week_convert
 from fastapi.responses import JSONResponse
 from fastapi import status
 from datetime import time
@@ -16,7 +16,8 @@ class CreateSpecific:
         specificR: Repository[SpecificSchedule],
         professional_topicR: Repository[ProfessionalTopic],
         topic_specificR: Repository[TopicSpecific],
-        meetingR: Repository[Meeting]
+        meetingR: Repository[Meeting],
+        recurrentR: Repository[RecurrentSchedule]
     ):
         specificS.start = strip_time_hour_minute(specificS.start)
         specificS.end = strip_time_hour_minute(specificS.end)
@@ -30,6 +31,16 @@ class CreateSpecific:
         if specificS.start >= specificS.end:
             raise ValidationError("The range hour is invalid")
         
+        recurrent = recurrentR.getSpecific(
+            {
+                'prof_id': specificS.prof_id,
+                'week': week_convert(specificS.day.isoweekday()),
+                'start': specificS.start,
+                'end': specificS.end
+            }
+        )
+        if len(recurrent) != 0:
+            raise ValidationError('Recurrent day found')
         
 
         specifics = specificR.getSpecificsToRange(specificS.prof_id, specificS.day, specificS.start, specificS.end)

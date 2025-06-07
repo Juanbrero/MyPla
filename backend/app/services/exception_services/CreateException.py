@@ -34,7 +34,7 @@ class CreateException:
         if len(exceptions) > 0:
             raise ValidationError("In hour you have hour specific to disponibility or exception")
         
-        recurrent = recurrentR.getException(
+        recurrent = recurrentR.getSpecific(
             {
                 'prof_id': exceptionS.prof_id,
                 'week': week_convert(exceptionS.day.isoweekday()),

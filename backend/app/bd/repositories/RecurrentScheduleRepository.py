@@ -67,17 +67,17 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
 
         return self.session.execute(stm).scalars().all()
     
-    def getException(self, exception: dict):
+    def getSpecific(self, specific: dict):
         """
-        Recupera todos los horarios de un dia recurrente que esten abarcados por una excepcion
+        Recupera todos los horarios de un dia recurrente que esten abarcados por un especifico
         """
         stm = (
             select(RecurrentSchedule)
             .where(
-                RecurrentSchedule.week_day == exception['week'],
-                RecurrentSchedule.prof_id == exception['prof_id'],
-                RecurrentSchedule.start <= exception['start'],
-                RecurrentSchedule.end >= exception['end']
+                RecurrentSchedule.week_day == specific['week'],
+                RecurrentSchedule.prof_id == specific['prof_id'],
+                RecurrentSchedule.start <= specific['start'],
+                RecurrentSchedule.end >= specific['end']
             )
         )
         return self.session.execute(stm).scalars().all()
