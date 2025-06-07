@@ -9,6 +9,7 @@ import { postSpecific, putSpecific, deleteSpecific } from '../../services/specif
 import { postRecurrent, putRecurrent, deleteRecurrent } from '../../services/recurrent/recurrent.service';
 import { postException, putException, deleteException } from '../../services/exception/exception.service';
 import { getProfessionalTopics } from '../../services/professionals-topic/professionals-topic.service.js';
+import { ColorReferenceHelp } from './schedule-components/ColorReferenceHelp.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -264,60 +265,62 @@ const Calendario = ({token}) => {
     }, {});
 
     return (
-    <div className="p-4-calendario">
-      <div className="calendario-controles">
-        <button className="direccion" onClick={anteriorSemana}>⬅️ Anterior</button>
-        <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>
-        <button className="direccion" onClick={siguienteSemana}>Siguiente ➡️</button>
-      </div>
-
-      <div className="calendario-contenedor">
-        <div className="columna-horas">
-          <div className="header-horas"></div>
-          {horasDelDia.map(hora => (
-            <div key={hora} className="hora">{hora}:00</div>
-          ))}
+      <div className="p-4-calendario">
+        <div className="calendario-controles">
+          <button className="direccion" onClick={anteriorSemana}>⬅️ Anterior</button>
+          <h2 className="text-xl font-bold">{format(semanaInicio, "'Semana de' dd/MM/yyyy")}</h2>
+          <button className="direccion" onClick={siguienteSemana}>Siguiente ➡️</button>
         </div>
 
-        <div className="grid-dias">
-          {diasSemana.map((dia, idxDia) => (
-            <div key={`header-${idxDia}`} className="header-dia">
-              {format(dia, 'EEE dd/MM', {locale: es})}
-            </div>
-          ))}
+        <div className="calendario-contenedor">
+          <div className="columna-horas">
+            <div className="header-horas"></div>
+            {horasDelDia.map(hora => (
+              <div key={hora} className="hora">{hora}:00</div>
+            ))}
+          </div>
 
-          {horasDelDia.map(hora =>
-            diasSemana.map((dia, idxDia) => {
-              const keyDia = format(dia, 'yyyy-MM-dd');
-              const eventosDelDia = eventosPorDia[keyDia];
+          <div className="grid-dias">
+            {diasSemana.map((dia, idxDia) => (
+              <div key={`header-${idxDia}`} className="header-dia">
+                {format(dia, 'EEE dd/MM', {locale: es})}
+              </div>
+            ))}
 
-              return (
-                <CeldaHora
-                  key={`${hora}-${idxDia}`}
-                  dia={dia}
-                  hora={hora}
-                  eventosDelDia={eventosDelDia}
-                  onClick={handleCeldaClick}
-                />
-              );
-            })
-          )}
+            {horasDelDia.map(hora =>
+              diasSemana.map((dia, idxDia) => {
+                const keyDia = format(dia, 'yyyy-MM-dd');
+                const eventosDelDia = eventosPorDia[keyDia];
+
+                return (
+                  <CeldaHora
+                    key={`${hora}-${idxDia}`}
+                    dia={dia}
+                    hora={hora}
+                    eventosDelDia={eventosDelDia}
+                    onClick={handleCeldaClick}
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
 
-      <ScheduleCreate
-          open={modalOpen}
-          onClose={handleCloseModal}
-          taskData={modalData}
-          onSaveTask={handleSaveNewTask}
-          onEditTask={handleEditTask}
-          mode={modalMode}
-          onDeleteTask={handleDeleteTask}
-          onCreateException={handleCreateException}
-          onDeleteException={handleDeleteException}
-      />
+        <ColorReferenceHelp/>
 
-    </div>
+        <ScheduleCreate
+            open={modalOpen}
+            onClose={handleCloseModal}
+            taskData={modalData}
+            onSaveTask={handleSaveNewTask}
+            onEditTask={handleEditTask}
+            mode={modalMode}
+            onDeleteTask={handleDeleteTask}
+            onCreateException={handleCreateException}
+            onDeleteException={handleDeleteException}
+        />
+
+      </div> 
   );
 };
 

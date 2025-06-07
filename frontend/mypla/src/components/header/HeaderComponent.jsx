@@ -38,7 +38,6 @@ export const HeaderComponent = () => {
     }
 
 
-
     return (
         <div className="header-container">
             <header>
