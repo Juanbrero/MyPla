@@ -1,20 +1,18 @@
 import { Box, Button, Typography } from '@mui/material';
 import ScheduleDate from '../../shedule/schedule-components/ScheduleDate';
 import ScheduleTime from '../../shedule/schedule-components/ScheduleTime';
-import ScheduleTopics from '../../shedule/schedule-components/ScheduleTopics';
+import ScheduleTopicsReservation from '../ScheduleTopicsReservation';
 
 
 export default function ReservationStep({ taskData, onClose, onNext, style}) {
-
     return (
         <Box sx={style}>
                 <Typography variant="h6" mb={2}>
                     Realizar reserva
                 </Typography>
                 
-                <ScheduleTopics
-                    value={taskData?.topics || []}
-                    topicsList={taskData?.avaliableTopics}
+                <ScheduleTopicsReservation
+                    value={taskData?.selectedTopic || ''} // más claro y directo
                     isEditable={false}
                 />
                 <ScheduleDate

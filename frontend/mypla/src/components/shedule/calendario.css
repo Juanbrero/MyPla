@@ -1,6 +1,9 @@
 .p-4-calendario {
   position: relative;
   top: 9rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendario-controles {
@@ -37,9 +40,13 @@
   width: 100%;
 }
 
+.hora, .celda-hora {
+  box-sizing: border-box;
+}
+
 /* Cada hora */
 .columna-horas .hora {
-  height: 45px;
+  height: 44px;
   line-height: 40px;
   border-bottom: 1px solid #ccc;
   width: 100%;
@@ -121,6 +128,26 @@
 .celda-hora.celda-exception:hover {
   background-color: #ff6d13a0;
   border-color: #ff6d13a0;
+}
+
+.celda-hora.celda-available {
+  background-color: #78d70b;
+  border-color: #78d70b;
+}
+
+.celda-hora.celda-available:hover {
+  background-color: #78d70ba0;
+  border-color: #78d70ba0;
+}
+
+.celda-hora.celda-reserve {
+  background-color: #a8a8a8;
+  border-color: #a8a8a8;
+}
+
+.celda-hora.celda-reserve:hover {
+  background-color: #a8a8a8a0;
+  border-color: #a8a8a8a0;
 }
 
 .celda-hora.celda-inicio {

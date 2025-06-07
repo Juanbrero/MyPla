@@ -1,11 +1,11 @@
 import { Box, Button, Typography } from '@mui/material';
 import ScheduleDate from '../../shedule/schedule-components/ScheduleDate';
 import ScheduleTime from '../../shedule/schedule-components/ScheduleTime';
-import ScheduleTopics from '../../shedule/schedule-components/ScheduleTopics';
+import ScheduleTopicsReservation from '../ScheduleTopicsReservation';
 
 
 export default function ConfirmStep({ taskData, onClose, style}) {
-
+    console.log(taskData)
     return (
         <Box sx={style}>
             <Typography variant="h5" textAlign={'center'} mb={2}>
@@ -15,11 +15,12 @@ export default function ConfirmStep({ taskData, onClose, style}) {
                 Tu reserva:
             </Typography>
             
-            <ScheduleTopics
-                value={taskData?.topics || []}
-                topicsList={taskData?.avaliableTopics}
+            <ScheduleTopicsReservation
+                value={taskData?.selectedTopic || ''} // más claro y directo
+                topicsList={taskData?.topics || []}
                 isEditable={false}
             />
+            
             <ScheduleDate
                 type={'specific'}
                 value={{ week_day: taskData?.week_day, date: taskData?.day }}

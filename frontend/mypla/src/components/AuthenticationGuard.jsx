@@ -19,10 +19,9 @@ export const AuthenticationGuard = ({ Component, roles = [] }) => {
   }, [])
 
   // Verifica si el usuario tiene al menos uno de los roles requeridos
+  const userRoles = user?.[import.meta.env.VITE_NAMESPACE + '/roles'] || []; // Obtiene los roles del usuario
   const hasRequiredRole = () => {
-    console.log(user)
     if (!roles.length) return true; // Si no hay roles requeridos, permite el acceso
-    const userRoles = user?.[import.meta.env.VITE_NAMESPACE + '/roles'] || []; // Obtiene los roles del usuario
     return roles.some(role => userRoles.includes(role));
   };
 
@@ -34,7 +33,7 @@ export const AuthenticationGuard = ({ Component, roles = [] }) => {
     ),
   });
 
-  if (isLoading) {
+  if (isLoading || accessToken === undefined) {
     return <div>Verificando autenticación...</div>;
   }
 
@@ -42,5 +41,5 @@ export const AuthenticationGuard = ({ Component, roles = [] }) => {
     return <div>No tienes permisos para acceder a esta página.</div>;
   }
 
-  return <ComponentRender token={accessToken} />;
+  return <ComponentRender token={accessToken} roles={userRoles} />;
 };

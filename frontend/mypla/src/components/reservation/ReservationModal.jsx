@@ -36,6 +36,7 @@ export default function ReservationModal({
 
     useEffect (() => {
         setLocalTaskData(taskData);
+        if (taskData) taskData.selectedTopic = taskData.topics[0];
     }, [taskData])
 
     const goToStep = (nextStep) => {

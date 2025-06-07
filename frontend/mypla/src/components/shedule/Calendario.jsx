@@ -67,6 +67,10 @@ const filtrarEventosPorDia = (eventos, dia) => {
 };
 
 const Calendario = ({token}) => {
+    useEffect(() => {
+      document.title = "Mipla - Calendario";
+    }, []);
+
     // estados del modal
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null); 

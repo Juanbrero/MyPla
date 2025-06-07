@@ -8,10 +8,12 @@ import { useAuth0 } from "@auth0/auth0-react"
 import Home from "./pages/Home"
 import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
-import Calendario from "./components/shedule/Calendario"
+import CalendarioWrapper from "./components/wrappers/CalendarioWrapper.jsx"
 import { TestAuth } from "./pages/TestAuth"
 import { HeaderComponent } from './components/header/HeaderComponent.jsx'
 import { ProfessionalsList } from './pages/ProfessionalsList.jsx'
+import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
+
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -34,9 +36,13 @@ const App = () => {
         
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route
+             path="/calendar/:prof_id" 
+             element={<AuthenticationGuard Component={StudentCalendar} roles={["Alumno"]} />}
+          />
           <Route 
             path="/calendar" 
-            element={<AuthenticationGuard Component={Calendario} roles={["Profesional"]} />} 
+            element={<AuthenticationGuard Component={CalendarioWrapper} roles={["Profesional", "Alumno"]} />} 
           />
           <Route
             path="/profile"
