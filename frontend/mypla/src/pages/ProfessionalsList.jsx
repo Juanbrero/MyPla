@@ -18,7 +18,6 @@ export const ProfessionalsList = ({ token }) => {
         const cargarProfesionales = async () => {
             try {
                 const data = await getProfessionalsByTopic(token, topic);
-                console.log(data);
                 setProfs(data);
             } catch (error) {
                 console.error("Error al obtener profesionales:", error);
