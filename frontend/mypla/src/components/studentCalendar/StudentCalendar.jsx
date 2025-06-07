@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import CeldaHora from '../shedule/CeldaHora.jsx';
+import CeldaHora from '../studentCalendar/CeldaHoraStudent.jsx';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getAvailableStudent } from '../../services/available/avaliable-student.service.js';
 import ReservationModal from '../reservation/ReservationModal.jsx';
-//import { prof_id } from '../../utils/testData.js';
 import { useParams } from 'react-router-dom';
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -32,12 +31,12 @@ const toISO8601 = (hora, minutos = '00') => {
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
-    if (!eventos) return { avaible: [], exception: [] };
+    if (!eventos) return { available: [], exception: [] };
 
-    const { avaible = [], exception = [] } = eventos;
+    const { available = [], exception = [] } = eventos;
 
     // Filtrar específicos para el día
-    const availabeDelDia = avaible.filter(e => isSameDay(parseISO(e.day), dia));
+    const availableDelDia = available.filter(e => isSameDay(parseISO(e.day), dia));
 
     // Filtrar excepciones para el día
     const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
@@ -54,11 +53,8 @@ const filtrarEventosPorDia = (eventos, dia) => {
     //     return esElDia;
     //     // return esElDia && !tieneExcepcion;
     // });
-
-    console.log(availabeDelDia)
-    console.log(excepcionesDelDia)
     return {
-        available: availabeDelDia,
+        available: availableDelDia,
         exception: excepcionesDelDia,
     };
 };
@@ -84,44 +80,18 @@ const StudentCalendar = ({token}) => {
         // Abrir modal en EDITAR si hay evento
         const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
-          if (evento.type === 'recurrent' || evento.type === 'specific') {
+          if (evento.type === 'available') {
+            console.log(evento)
             setModalData({
               start: `${evento.start}.000Z`,
               end: `${evento.end}.000Z`,
               topics: evento.topics,
-              avaliableTopics: professionalTopics,
-              day: evento.day ? evento.day : diaStr, //si es recurrente envio el dia en que se clickea para la generacion de excepciones
-              week_day: evento.week_day,
-              recurrent: evento.type === 'recurrent',
-              selectedHour: toISO8601(hora),
-              tipo: evento.type
-            });
-            setModalMode('edit')
-            setModalOpen(true);
-          }
-          else if (evento.type === 'exception') {
-            setModalData({
-              start: `${evento.start}.000Z`,
-              end: `${evento.end}.000Z`,
               day: evento.day,
-            })
-            setModalMode('exception')
+              selectedHour: toISO8601(hora),
+              tipo: evento.type 
+            });
             setModalOpen(true);
           }
-        }
-        // Abrir modal en CREAR si no hay evento
-        else {
-          setModalData({
-            start: toISO8601(hora),
-            end: toISO8601(hora + 1),
-            topics: [],
-            avaliableTopics: professionalTopics,
-            day: diaStr,
-            week_day: obtenerDiaDeLaSemana(diaStr),
-            recurrent: false,
-          });
-          setModalMode('create')
-          setModalOpen(true);
         }
     };
 

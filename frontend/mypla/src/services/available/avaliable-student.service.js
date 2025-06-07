@@ -12,35 +12,10 @@ export const getAvailableStudent = async (token, prof_id, dia) => {
     },
   }
   const { data, error } = await callExternalApi({ config })
-  console.log(data)
   if (error) {
     console.error("Error al obtener datos:", error);
     throw error;
   }
-
-  data.avaible = data.available
-  delete data.available
-
-  //const data = {
-  //  "avaible": [
-  //    {
-  //      "day": "2025-06-04",
-  //      "start": "18:00:00.000Z",
-  //      "end": "20:00:00.000Z",
-  //      "topics": [
-  //        "string"
-  //      ]
-  //    }
-  //  ],
-  //  "exception": [
-  //    {
-  //      "prof_id": "string",
-  //      "day": "2025-06-03",
-  //      "start": "18:00:00.000Z",
-  //      "end": "20:00:00.000Z"
-  //    }
-  //  ]
-  //}
 
   // Procesar la respuesta para agregar el campo 'type' a cada objeto, manteniendo la estructura original
   const result = {};

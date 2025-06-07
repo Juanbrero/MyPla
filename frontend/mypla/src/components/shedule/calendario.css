@@ -130,6 +130,26 @@
   border-color: #ff6d13a0;
 }
 
+.celda-hora.celda-available {
+  background-color: #78d70b;
+  border-color: #78d70b;
+}
+
+.celda-hora.celda-available:hover {
+  background-color: #78d70ba0;
+  border-color: #78d70ba0;
+}
+
+.celda-hora.celda-reserve {
+  background-color: #a8a8a8;
+  border-color: #a8a8a8;
+}
+
+.celda-hora.celda-reserve:hover {
+  background-color: #a8a8a8a0;
+  border-color: #a8a8a8a0;
+}
+
 .celda-hora.celda-inicio {
   border-top-color: #ddd;
   border-top-left-radius: 6px;

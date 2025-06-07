@@ -21,7 +21,6 @@ export const AuthenticationGuard = ({ Component, roles = [] }) => {
   // Verifica si el usuario tiene al menos uno de los roles requeridos
   const userRoles = user?.[import.meta.env.VITE_NAMESPACE + '/roles'] || []; // Obtiene los roles del usuario
   const hasRequiredRole = () => {
-    console.log(user)
     if (!roles.length) return true; // Si no hay roles requeridos, permite el acceso
     return roles.some(role => userRoles.includes(role));
   };
