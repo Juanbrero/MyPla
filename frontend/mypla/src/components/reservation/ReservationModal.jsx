@@ -71,6 +71,7 @@ export default function ReservationModal({
                             style={style} />;
             case "PAYMENT":
                 return <PaymentStep 
+                            reservationInfo={localTaskData}
                             onClose={handleClose}
                             onNext={() => goToStep(steps[3])}
                             style={style} />;

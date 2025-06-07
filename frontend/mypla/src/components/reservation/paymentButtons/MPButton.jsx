@@ -10,6 +10,8 @@ initMercadoPago(pkey);
 const MPButton = () => {
   const [preferenceId, setPreferenceId] = useState(null);
 
+  // ir a buscar la data de la reserva a la bd
+
   useEffect(() => {
     // Hacer una solicitud al backend para obtener el preference_id
     const getPreferenceId = async () => {

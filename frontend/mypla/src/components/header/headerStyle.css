@@ -22,12 +22,63 @@
     align-items: center;
     padding: 15px 20px;
 }
+
+.header-container header .logo {
+    padding-top: 1em;
+}
+
 .header-container header .logo a {
     font-family: sans-serif;
     font-size: 40px;
     color: #1cb6ae;
     text-decoration: none;
 }
+
+.header-container header .search-container {
+    display: flex;
+    width:35%;
+    height: 35px;
+    justify-content: left;
+    
+}
+
+.header-container header .search-container .search-icon {
+    width: 15%;
+    height: 100%;
+    margin:auto;
+}
+
+.header-container header .search-container .search-icon button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background-color: transparent;
+    font-size: 18px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header-container header .search-container .search-icon button:hover {
+    border: none;
+}
+
+.header-container header .search-container .search-input {
+    width: 100%;
+    height: 100%;
+    margin:auto;
+}
+
+input {
+    width: 100%;
+    height: 100%;
+    background-color: #252a2e;
+    padding: 5px 5px;
+    font-size: 16px;
+    border: solid 2px #1cb6ae;
+    border-radius: 5px;
+}
+
 
 .header-container header ul {
     display: flex;

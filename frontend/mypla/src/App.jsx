@@ -11,7 +11,7 @@ import { TutorialProvider } from "./components/TutorialContext"
 import Calendario from "./components/shedule/Calendario"
 import { TestAuth } from "./pages/TestAuth"
 import { HeaderComponent } from './components/header/HeaderComponent.jsx'
-
+import { ProfessionalsList } from './pages/ProfessionalsList.jsx'
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -55,6 +55,10 @@ const App = () => {
           <Route 
             path="/test-auth" 
             element={<AuthenticationGuard Component={TestAuth} />} 
+          />
+          <Route 
+            path="/professionalsList" 
+            element={<AuthenticationGuard Component={ProfessionalsList} />} 
           />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
