@@ -1,43 +1,53 @@
-import './headerStyle.css'; // si tenés estilos para el header
+import './headerStyle.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-
-
+import { faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getTopics } from '../../services/topics/topics.service';
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const HeaderComponent = () => {
-
+export const HeaderComponent = ({token, roles}) => {
     let menuVisible = false;
 
-    const showHideMenu = () =>  {
+    const [topics, setTopics] = useState([]);
+    const [selectedTopic, setSelectedTopic] = useState('');
 
-        if(menuVisible) {
-            document.getElementById("nav").classList = "";
-            menuVisible = false;  
+    useEffect(() => {
+        const fetchTopics = async () => {
+            try {
+                const fetchedTopics = (await getTopics()).data;
+                setTopics(fetchedTopics);
+            } catch (error) {
+                console.error('Error al obtener los tópicos:', error);
+            }
+        };
+
+        fetchTopics();
+    }, []);
+
+    const showHideMenu = () => {
+        const nav = document.getElementById("nav");
+        if (menuVisible) {
+            nav.classList = "";
+        } else {
+            nav.classList = "responsive";
         }
-        else {
-            document.getElementById("nav").classList = "responsive";
-            menuVisible = true;  
-        }
-    }
+        menuVisible = !menuVisible;
+    };
 
     const select = () => {
         document.getElementById("nav").classList = "";
         menuVisible = false;
-    }
+    };
 
     const navigate = useNavigate();
 
-    const searchProfs = async () => {
-        const topic = $("#searchTopic").val();
-        return navigate(`/ProfessionalsList?topic=${encodeURIComponent(topic)}`);
-    }
-
-
+    const searchProfs = () => {
+        if (selectedTopic) {
+            navigate(`/ProfessionalsList?topic=${encodeURIComponent(selectedTopic)}`);
+        }
+    };
 
     return (
         <div className="header-container">
@@ -45,16 +55,28 @@ export const HeaderComponent = () => {
                 <div className="logo">
                     <Link to="/">MiPla</Link>
                 </div>
-                <div className="search-container">
-                    <div className="search-icon">
-                        <button id='search-button' onClick={() => searchProfs()}>
-                            <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        </button>
+                {roles.includes("Alumno") &&
+                    <div className="search-container">
+                        <div className="search-input">
+                            <select
+                                value={selectedTopic}
+                                onChange={(e) => setSelectedTopic(e.target.value)}
+                            >
+                                <option value="">Seleccionar tópico...</option>
+                                {topics.map((topic, index) => (
+                                    <option key={index} value={topic}>
+                                        {topic}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="search-icon">
+                            <button id="search-button" onClick={searchProfs}>
+                                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            </button>
+                        </div>
                     </div>
-                    <div className="search-input">
-                        <input id="searchTopic" type="text" placeholder='Buscar topicos...' />
-                    </div>
-                </div>
+                }
                 <nav id="nav">
                     <ul className="nav-list">
                         <li><Link to="/" onClick={select}>Inicio</Link></li>
@@ -69,4 +91,3 @@ export const HeaderComponent = () => {
         </div>
     );
 };
-

@@ -1,13 +1,17 @@
 import { getTopics } from '../services/topics/topics.service';
-import { getProfessionalTopics, postProfessionalTopics } from '../services/professionals-topic/professionals-topic.service.js'
+import {
+  getProfessionalTopics,
+  postProfessionalTopics,
+  deleteProfessionalTopics,
+} from '../services/professionals-topic/professionals-topic.service.js';
 
 import React, { useEffect, useState } from 'react';
 import { Button, Box, Typography } from '@mui/material';
 import ScheduleTopics from './shedule/schedule-components/ScheduleTopics';
 
-
-export default function ProfessionalAddTopic({token}) {
-  const [availableTopics, setAvailableTopics] = useState([]);
+export default function ProfessionalAddTopic({ token }) {
+  const [allTopics, setAllTopics] = useState([]);
+  const [initialTopics, setInitialTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -15,25 +19,18 @@ export default function ProfessionalAddTopic({token}) {
   const fetchTopicsData = async () => {
     try {
       setLoading(true);
+      const { data: all, error: allError } = await getTopics();
+      const assigned = await getProfessionalTopics(token);
 
-      const { data: allTopics, error: topicsError } = await getTopics();
-      if (topicsError) {
-        console.error('Error al obtener todos los tópicos:', topicsError);
+      if (allError) {
+        console.error('Error obteniendo tópicos:', allError);
         setStatusMessage('Error al obtener los tópicos');
         return;
       }
 
-      const { data: professionalTopics, error: professionalError } = await getProfessionalTopics(token);
-      if (professionalError) {
-        console.error('Error al obtener tópicos del profesional:', professionalError);
-        setStatusMessage('Error al obtener los tópicos del profesional');
-        return;
-      }
-
-      const topicsAlreadyAssigned = professionalTopics || [];
-      const topicsToAdd = allTopics.filter((topic) => !topicsAlreadyAssigned.includes(topic));
-
-      setAvailableTopics(topicsToAdd);
+      setAllTopics(all || []);
+      setInitialTopics(assigned || []);
+      setSelectedTopics(assigned || []);
       setStatusMessage('');
     } catch (error) {
       console.error('Error inesperado:', error);
@@ -51,9 +48,12 @@ export default function ProfessionalAddTopic({token}) {
     setSelectedTopics(data);
   };
 
-  const handleAddTopics = async () => {
-    if (!selectedTopics.length) {
-      setStatusMessage('Selecciona al menos un tópico');
+  const handleConfirmChanges = async () => {
+    const addedTopics = selectedTopics.filter(t => !initialTopics.includes(t));
+    const removedTopics = initialTopics.filter(t => !selectedTopics.includes(t));
+
+    if (addedTopics.length === 0 && removedTopics.length === 0) {
+      setStatusMessage('No se detectaron cambios');
       return;
     }
 
@@ -61,8 +61,9 @@ export default function ProfessionalAddTopic({token}) {
       setLoading(true);
       setStatusMessage('');
 
-      for (const topic of selectedTopics) {
-        const { data, error } = await postProfessionalTopics(token, topic);
+      // Agregar nuevos tópicos
+      for (const topic of addedTopics) {
+        const { error } = await postProfessionalTopics(token, topic);
         if (error) {
           console.error(`Error al agregar el tópico ${topic}:`, error);
           setStatusMessage(`Error al agregar el tópico ${topic}`);
@@ -70,12 +71,21 @@ export default function ProfessionalAddTopic({token}) {
         }
       }
 
-      setStatusMessage('Tópicos agregados correctamente');
-      setSelectedTopics([]);
-      await fetchTopicsData(); // Recarga los datos para actualizar la lista de disponibles
+      // Eliminar tópicos deseleccionados
+      for (const topic of removedTopics) {
+        const { error } = await deleteProfessionalTopics(token, topic);
+        if (error) {
+          console.error(`Error al eliminar el tópico ${topic}:`, error);
+          setStatusMessage(`Error al eliminar el tópico ${topic}`);
+          return;
+        }
+      }
+
+      setStatusMessage('Cambios guardados correctamente');
+      await fetchTopicsData(); // Recargar datos
     } catch (error) {
-      console.error('Error al agregar tópicos:', error);
-      setStatusMessage('Error al agregar tópicos');
+      console.error('Error al aplicar cambios:', error);
+      setStatusMessage('Error al aplicar cambios');
     } finally {
       setLoading(false);
     }
@@ -83,35 +93,27 @@ export default function ProfessionalAddTopic({token}) {
 
   return (
     <Box>
-      <Typography variant="h6">Agregar tópicos al profesional</Typography>
+      <Typography variant="h6">Editá tus tópicos:</Typography>
 
       {loading && <Typography>Cargando...</Typography>}
 
       {!loading && (
         <>
-          {availableTopics.length === 0 ? (
-            <Typography color="text.secondary" sx={{ marginTop: 2 }}>
-              El profesional ya tiene todos los tópicos asignados.
-            </Typography>
-          ) : (
-            <>
-              <ScheduleTopics
-                value={selectedTopics}
-                isEditable={true}
-                onChange={handleChangeTopics}
-                topicsList={availableTopics}
-              />
+          <ScheduleTopics
+            value={selectedTopics}
+            isEditable={true}
+            onChange={handleChangeTopics}
+            topicsList={allTopics}
+          />
 
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddTopics}
-                sx={{ marginTop: 2 }}
-              >
-                Agregar tópicos
-              </Button>
-            </>
-          )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleConfirmChanges}
+            sx={{ marginTop: 2 }}
+          >
+            Confirmar cambios
+          </Button>
 
           {statusMessage && (
             <Typography color="secondary" sx={{ marginTop: 2 }}>
