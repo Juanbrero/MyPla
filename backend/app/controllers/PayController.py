@@ -2,8 +2,10 @@ from ..bd.repositories.MeetingRepository import MeetingRepository
 from ..bd.repositories.ProfessionalTopicRepository import ProfessionalTopicRepository
 from ..bd.repositories.ReservationRepository import ReservationRepository
 from ..bd.repositories.TopicSpecificRepository import TopicSpecificRepository
+from ..bd.repositories.ClassRepository import ClassRepository
 from sqlalchemy.orm import Session
 from ..services.pay_services.PayInitialService import PayInitialService
+from ..services.pay_services.CreatePreference import CreatePreference
 
 class PayController:
     def __init__ (self, db: Session):
@@ -12,6 +14,7 @@ class PayController:
         self.meetingR = MeetingRepository(db)
         self.professional_topicR = ProfessionalTopicRepository(db)
         self.topic_specificR = TopicSpecificRepository(db)
+        self.classR = ClassRepository(db)
     
     def initialPay (self, student_id: str, method: str):
         return PayInitialService.run(
@@ -19,6 +22,12 @@ class PayController:
             reservationR = self.reservationR,
             meetingR = self.meetingR,
             classR = self.classR,
-            student_id = student_id,
-            method = method 
+            student_id = student_id
+        )
+
+    def createPreference(self,student_id:str):
+        return CreatePreference.run(
+            reservationR = self.reservationR,
+            classR = self.classR,
+            student_id = student_id
         )

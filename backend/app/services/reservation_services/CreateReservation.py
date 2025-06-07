@@ -30,9 +30,7 @@ class CreateReservation ():
         schedule_class = Schedule(start=start, end=end)
         
         reservation = reservationR.get_by({
-            "day_hour": reservationS.day_hour,
             "student_id": reservationS.student_id,
-            "prof_id": reservationS.prof_id,
             "state": 'pending'
         })
         
