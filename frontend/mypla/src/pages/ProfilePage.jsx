@@ -13,16 +13,13 @@ export const ProfilePage = ({token}) => {
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
   // Obtengo la metadata de user
-  console.log(user)
   const metadata = user?.[import.meta.env.VITE_NAMESPACE];
 
   useEffect(() => {
     // para acceder a la metadata del user (ver username, rol, etc) hay que pegarle a la management API de auth0. PENDIENTE
     if (metadata?.tipo_usuario) {
       setTipoUsuario(metadata.tipo_usuario);
-      console.log(metadata)
     }
-    console.log(metadata)
   }, [user]);
 
   // console.log("tipo usuario: " + metadata?.tipo_usuario);

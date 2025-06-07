@@ -50,7 +50,6 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
   const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 
   let claseCelda = 'celda-hora';
-if (evento) console.log(evento)
   if (evento) {
     claseCelda += ' celda-hora-ocupada';
     if (evento.type == 'recurrent') {
