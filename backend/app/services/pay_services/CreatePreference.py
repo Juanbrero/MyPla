@@ -13,11 +13,10 @@ import mercadopago
 sdk = mercadopago.SDK(getenv("ACCESS_TOKEN_MP"))
 
 
-class MPInitialService:
+class CreatePreference:
     @handle_errors
     def run (
         reservationR: Repository[Reservation],
-        meetingR: Repository[Meeting],
         classR: Repository[Class],
         student_id: str
     ):
@@ -40,18 +39,6 @@ class MPInitialService:
         
         c = classes[0]
 
-        if (datetime.now() - r.create > timedelta(minutes=3)):
-            reservationR.delete({
-                "student_id": student_id,
-                "day_hour": r.day_hour,
-                "state": "pending"
-            })
-            meetingR.delete({
-                "prof_id": r.day_hour,
-                "day_hour": r.day_hour,
-            })
-            raise ValidationError("Expired you reservation")
-        
         preference_data = {
             "items": [
                 {
@@ -59,7 +46,8 @@ class MPInitialService:
                     "quantity": 1,
                     "unit_price": c.price,
                 }
-            ]
+            ],
+            "date_of_expiration": (datetime.now() + timedelta(minutes= 5)).isoformat()
         }
     
         preference_response = sdk.preference().create(preference_data)
