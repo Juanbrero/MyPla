@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { getProfessionalsByTopic } from '../services/professionals-topic/professionals-topic.service';
 import { useSearchParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from 'react-router-dom';
+
 
 export const ProfessionalsList = ({ token }) => {
     
@@ -10,8 +12,9 @@ export const ProfessionalsList = ({ token }) => {
     const topic = searchParams.get("topic");
     const [profs, setProfs] = useState([]);
     const { isAuthenticated } = useAuth0();
-
-        useEffect(() => {
+    const navigate = useNavigate();
+    
+    useEffect(() => {
         const cargarProfesionales = async () => {
             try {
                 const data = await getProfessionalsByTopic(token, topic);
@@ -21,44 +24,44 @@ export const ProfessionalsList = ({ token }) => {
                 console.error("Error al obtener profesionales:", error);
             }
         };
-            if (isAuthenticated && topic) {
-                cargarProfesionales();
-            }
-        }, [topic, isAuthenticated]);
-
+        if (isAuthenticated && topic) {
+            cargarProfesionales();
+        }
+    }, [topic, isAuthenticated]);
+    
     useEffect(() => {
         // Eliminar tabla anterior
         $("#profs-table").remove();
-
+        
         // Crear nueva tabla
         const tabla = $(`
             <table id="profs-table">
-                <thead>
-                    <tr>
-                        <th class="username">Nombre</th>
-                        <th class="score">Puntuacion</th>
-                        <th class="price">Precio/hr</th>
-                    </tr>
-                </thead>   
-                <tbody></tbody>
+            <thead>
+            <tr>
+            <th class="username">Nombre</th>
+            <th class="score">Puntuacion</th>
+            <th class="price">Precio/hr</th>
+            </tr>
+            </thead>   
+            <tbody></tbody>
             </table>
-        `);
-
-        for (let prof of profs) {
-            const fila = $(`
-                <tr>
+            `);
+            
+            for (let prof of profs) {
+                const fila = $(`
+                    <tr>
                     <td>${prof.username}</td>
                     <td>${prof.score}</td>
                     <td>$ ${prof.price_class}</td>
-                </tr>
-            `);
+                    </tr>
+                    `);
+                    
+                fila.on('click', () => {
+                    navigate(`/calendar/${encodeURIComponent(prof.prof_id)}`)
+                });
 
-            fila.on('click', () => {
-                alert("hola")
-            });
-
-            tabla.find("tbody").append(fila);
-        }
+                tabla.find("tbody").append(fila);
+            }
 
         $("#table-container").append(tabla);
     }, [profs]);
