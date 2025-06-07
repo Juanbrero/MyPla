@@ -20,8 +20,7 @@ class PayInitialService:
         reservationR: Repository[Reservation],
         meetingR: Repository[Meeting],
         classR: Repository[Class],
-        student_id: str,
-        method: str
+        student_id: str
     ):
         reservations = reservationR.get_by({
             "student_id": student_id,
@@ -54,21 +53,7 @@ class PayInitialService:
             })
             raise ValidationError("Expired you reservation")
         
-        if method == 'paypal':
-            return create_order(amount=c.price)
-        
-        preference_data = {
-            "items": [
-                {
-                    "title": "Pago de reserva en MIPLA",
-                    "quantity": 1,
-                    "unit_price": c.price,
-                }
-            ]
-        }
-    
-        preference_response = sdk.preference().create(preference_data)
-        preference = preference_response["response"]
-        return preference
+        return create_order(amount=c.price)
+
         
             
