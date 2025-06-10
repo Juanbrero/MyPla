@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 
-export const ProfilePage = ({token}) => {
+export const ProfilePage = ({token, roles}) => {
   const { user, logout } = useAuth0();
   const [tipoUsuario, setTipoUsuario] = useState(null);
 
@@ -37,9 +37,9 @@ export const ProfilePage = ({token}) => {
 
       <p><strong>Nombre:</strong> {user.name}</p>
       <p><strong>Email:</strong> {user.email}</p>
-      <div className="prof-topics">
+      {roles.includes('Profesional') ?? <div className="prof-topics">
         <ProfessionalProfile token={token}></ProfessionalProfile>
-      </div>
+      </div>}
 
       {tipoUsuario ? (
         <>
@@ -58,7 +58,7 @@ export const ProfilePage = ({token}) => {
       <Button
           variant="contained"
           color="primary"
-          onClick={() => logout({returnTo: window.location.origin})}
+          onClick={() => logout({returnTo: '/'})}
           sx={{ marginTop: 2 }}
         >
           Logout
