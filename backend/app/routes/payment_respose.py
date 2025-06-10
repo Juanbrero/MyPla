@@ -9,4 +9,4 @@ router = APIRouter()
 def webhook_mp(data: dict):
     print('MP NOTIFICATION')
     print(data)
-    return JSONResponse(status_code= status.HTTP_200, content= '')
+    return JSONResponse(status_code= status.HTTP_200_OK, content= '')
