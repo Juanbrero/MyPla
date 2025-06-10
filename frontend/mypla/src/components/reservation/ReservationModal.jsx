@@ -5,6 +5,7 @@ import ReservationStep from './reservation-steps/ReservationStep';
 import PaymentStep from './reservation-steps/PaymentStep';
 import ConfirmStep from './reservation-steps/ConfirmStep';
 import SelectStep from './reservation-steps/SelectStep';
+import { initialClass } from '../../services/reservation/initial-class.service';
 
 
 const steps = ["SELECT", "RESERVATION", "PAYMENT", "CONFIRMATION"];
@@ -29,6 +30,8 @@ export default function ReservationModal({
   open,
   onClose,
   taskData,
+  token,
+  prof_id
 }) {
 
     const [step, setStep] = useState(steps[0]);
@@ -55,6 +58,14 @@ export default function ReservationModal({
         }));
     };
 
+    const initialReservation = async (go) => {
+        const initial = await initialClass(token, taskData, prof_id)
+        if (initial) {
+            console.log(initial, 'FUNCO?')
+            go()
+        }
+    } 
+
     const renderStep = (step) => {
         switch (step) {
             case "SELECT":
@@ -68,14 +79,15 @@ export default function ReservationModal({
                 return <ReservationStep 
                             taskData={localTaskData} 
                             onClose={handleClose}
-                            onNext={() => goToStep(steps[2])}
+                            onNext={async() => await initialReservation(() => goToStep(steps[2]))}
                             style={style} />;
             case "PAYMENT":
                 return <PaymentStep 
                             reservationInfo={localTaskData}
                             onClose={handleClose}
                             onNext={() => goToStep(steps[3])}
-                            style={style} />;
+                            style={style}
+                            token={token} />;
             case "CONFIRMATION": 
                 return <ConfirmStep 
                             taskData={localTaskData} 

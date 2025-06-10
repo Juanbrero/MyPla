@@ -37,7 +37,7 @@ export const ProfilePage = ({token, roles}) => {
       <Button
           variant="contained"
           color="primary"
-          onClick={() => logout({returnTo: window.location.origin})}
+          onClick={() => logout({returnTo: '/'})}
           sx={{ marginTop: 2 }}
         >
           Logout
