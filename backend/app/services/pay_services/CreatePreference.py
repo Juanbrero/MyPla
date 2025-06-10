@@ -20,6 +20,8 @@ class CreatePreference:
         classR: Repository[Class],
         student_id: str
     ):
+        time_expire = timedelta(minutes= 5)
+
         reservations = reservationR.get_by({
             "student_id": student_id,
             "state": "pending"
@@ -36,7 +38,6 @@ class CreatePreference:
         })
         if (len(classes) <= 0):
             raise NotFound("Not exist class to pay")
-        
         c = classes[0]
 
         preference_data = {
@@ -47,9 +48,11 @@ class CreatePreference:
                     "unit_price": c.price,
                 }
             ],
-            "date_of_expiration": (datetime.now() + timedelta(minutes= 5)).isoformat()
+            "date_of_expiration": (datetime.now() + time_expire).isoformat(),
+            "metadata":{"student_id": student_id}    
         }
-    
+   
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
+       
         return preference
