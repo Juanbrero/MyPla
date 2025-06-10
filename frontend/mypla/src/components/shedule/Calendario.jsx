@@ -3,7 +3,7 @@ import CeldaHora from './CeldaHora.jsx';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
 import { es } from 'date-fns/locale';
 import './calendario.css';
-import ScheduleCreate from './ScheduleModal.jsx';
+import ScheduleModal from './ScheduleModal.jsx';
 import { getAvailableProfessional } from '../../services/available/available-professional.service.js';
 import { postSpecific, putSpecific, deleteSpecific } from '../../services/specific/specific.service';
 import { postRecurrent, putRecurrent, deleteRecurrent } from '../../services/recurrent/recurrent.service';
@@ -82,10 +82,14 @@ const Calendario = ({token}) => {
 
     // datos de la bd
     const [eventos, setEventos] = useState({});
-    const [professionalTopics, setProfessionalTopics] = useState({});
+    const [professionalTopics, setProfessionalTopics] = useState([]);
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
+      if (professionalTopics.length === 0) {
+        alert('Aun no seleccionaste tus tópicos')
+        return
+      }
         // Abrir modal en EDITAR si hay evento
         const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
@@ -306,19 +310,18 @@ const Calendario = ({token}) => {
           </div>
         </div>
 
+      <ScheduleModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          taskData={modalData}
+          onSaveTask={handleSaveNewTask}
+          onEditTask={handleEditTask}
+          mode={modalMode}
+          onDeleteTask={handleDeleteTask}
+          onCreateException={handleCreateException}
+          onDeleteException={handleDeleteException}
+      />
         <ColorReferenceHelp/>
-
-        <ScheduleCreate
-            open={modalOpen}
-            onClose={handleCloseModal}
-            taskData={modalData}
-            onSaveTask={handleSaveNewTask}
-            onEditTask={handleEditTask}
-            mode={modalMode}
-            onDeleteTask={handleDeleteTask}
-            onCreateException={handleCreateException}
-            onDeleteException={handleDeleteException}
-        />
 
       </div> 
   );

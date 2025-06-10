@@ -21,13 +21,52 @@
   padding: 0;
 }
 
-.color-list li {
+/* .color-list li {
   margin-bottom: 6px;
+} */
+
+.color-list li {
+  position: relative;
+  margin-bottom: 6px;
+  padding: 4px 0;
+  display: block;
+  color: inherit;
+  cursor: help;
+}
+
+/* Tooltip */
+.color-list li::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%; /* aparece arriba del li */
+  left: 50%; /* centrado */
+  transform: translateX(-50%) translateY(-8px);
+  background-color: rgba(30, 35, 38, 0.95);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  max-width: 280px;
+  min-width: 180px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1001;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Show tooltip on hover */
+.color-list li:hover::after {
+  opacity: 1;
 }
 
 .color-list li.green {
   color: #1cb698;
 }
+
 
 .color-list li.blue {
   color: #1e90ff;
