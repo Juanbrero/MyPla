@@ -26,7 +26,7 @@ class Reservation(Base):
             name="fk_class_meeting"
         ),
         CheckConstraint(
-            "state IN ('pending', 'finished')",
+            "state IN ('pending', 'pay', 'cancel_student', 'cancel_professional', 'refund', 'finished')",
             name="check_reservation_state"
         ),
     )
