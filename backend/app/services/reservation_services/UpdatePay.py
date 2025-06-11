@@ -55,12 +55,13 @@ def UpdatePay():
 
         if statusP == "approved":
             
-            reservationR.update({"state": "finished"}, {"student_id": student_id, "day_hour": r.day_hour, "state": "pending"})
+            reservationR.update({"state": "pay"}, 
+                                {"student_id": student_id, "day_hour": r.day_hour, "state": "pending"})
 
 
         db.commit()
 
-        return JSONResponse(status_code= status.HTTP_200_OK, content= 'Reservation update')
+        return JSONResponse(status_code= status.HTTP_200_OK, content= 'Reservation paid')
         
         
 
