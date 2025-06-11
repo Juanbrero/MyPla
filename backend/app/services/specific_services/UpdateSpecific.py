@@ -34,6 +34,7 @@ class UpdateSpecific:
             
             start = specificS.Nstart if specificS.Nstart else specificS.start
             start = strip_time_hour_minute(start)
+            
             if specificS.Nend:
 
                 specificS.Nend = strip_time_hour_minute(specificS.Nend)
@@ -41,20 +42,14 @@ class UpdateSpecific:
                 """if specificS.Nend.hour == 0:
                     specificS.Nend = time(hour=23, minute=59)"""
                
-                if specificS.start >= specificS.Nend:
+                if start >= specificS.Nend:
                     raise ValidationError("The range hour is invalid")
+            
+           
             
             day = specificS.Nday if specificS.Nday else specificS.day
             end = specificS.Nend if specificS.Nend else old_specific[0].end
 
-            if start.minute != end.minute:
-                    raise ValidationError("The range hour is invalid")
-            
-            day = specificS.Nday if specificS.Nday else specificS.day
-            end = specificS.Nend if specificS.Nend else old_specific[0].end
-
-
-            
 
             if start.minute != end.minute:
                 raise ValidationError('Hour incomplete')
