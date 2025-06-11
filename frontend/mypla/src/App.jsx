@@ -13,6 +13,7 @@ import { TestAuth } from "./pages/TestAuth"
 import { HeaderComponent } from './components/header/HeaderComponent.jsx'
 import { ProfessionalsList } from './pages/ProfessionalsList.jsx'
 import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
+import { PanelAdminTransaction } from "./pages/PanelAdminTransaction.jsx"
 
 
 const App = () => {
@@ -29,7 +30,7 @@ const App = () => {
     return (
       <>
       <AuthenticationGuard Component={HeaderComponent} roles={[]} />
-        
+
         <TutorialProvider>
           <TutorialGuide />
         </TutorialProvider>
@@ -66,6 +67,14 @@ const App = () => {
             path="/professionalsList" 
             element={<AuthenticationGuard Component={ProfessionalsList} />} 
           />
+          <Route 
+            path="/adminTransactions" 
+            element={<PanelAdminTransaction/>} 
+          />
+          {/* <Route 
+            path="/adminTransactions" 
+            element={<AuthenticationGuard Component={PanelAdminTransaction} />} 
+          /> */}
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
       </>
