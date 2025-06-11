@@ -16,8 +16,8 @@ export const PanelAdminTransaction = ({ token }) => {
     useEffect(() => {
         const cargarTransacciones = async () => {
             try {
-                const data = await getPayPending(token);
-                setTransfer(data);
+                // const data = await getPayPending(token);
+                // setTransfer(data);
             } catch (error) {
                 console.error("Error al obtener transacciones:", error);
             }
@@ -90,7 +90,7 @@ export const PanelAdminTransaction = ({ token }) => {
 
                 const concept = i%3==0 ? "Reembolso" : "Reserva";
                 const idBttn = "doneBttn" + i;
-                const transferWay = concept == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
+                const transferWay = concept == "Reembolso" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
                 const fila = $(`
                     <tr class=tr-${concept}>
                         <td>juaan.b17@hotmail.com</td>
@@ -123,6 +123,8 @@ export const PanelAdminTransaction = ({ token }) => {
                 tabla.find("tbody").append(fila);
                 
             }
+
+            ////////////////////////////////////////////////////////////////////
 
         $("#table-transaction-container").append(tabla);
     }, [transfer]);
