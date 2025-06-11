@@ -1,9 +1,9 @@
 from app.utils.errors import handle_errors, ValidationError, NotFound
 from app.bd.schemas import schema_topic_specific
 from sqlalchemy.orm import Session
-from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific
+from app.models import Meeting, SpecificSchedule, ProfessionalTopic, TopicSpecific, RecurrentSchedule
 from app.bd.repositories.Repository import Repository
-from app.bd.bd_utils import strip_time_hour_minute
+from app.bd.bd_utils import strip_time_hour_minute, week_convert
 from fastapi.responses import JSONResponse
 from fastapi import status
 from datetime import time
@@ -16,7 +16,8 @@ class UpdateSpecific:
         specificR: Repository[SpecificSchedule],
         professional_topicR: Repository[ProfessionalTopic],
         topic_specificR: Repository[TopicSpecific],
-        meetingR: Repository[Meeting]
+        meetingR: Repository[Meeting],
+        recurrentR: Repository[RecurrentSchedule]
     ):
         specificS.start = strip_time_hour_minute(specificS.start)
         
@@ -33,6 +34,7 @@ class UpdateSpecific:
             
             start = specificS.Nstart if specificS.Nstart else specificS.start
             start = strip_time_hour_minute(start)
+            
             if specificS.Nend:
 
                 specificS.Nend = strip_time_hour_minute(specificS.Nend)
@@ -40,17 +42,14 @@ class UpdateSpecific:
                 """if specificS.Nend.hour == 0:
                     specificS.Nend = time(hour=23, minute=59)"""
                
-                if specificS.start >= specificS.Nend:
+                if start >= specificS.Nend:
                     raise ValidationError("The range hour is invalid")
+            
+           
             
             day = specificS.Nday if specificS.Nday else specificS.day
             end = specificS.Nend if specificS.Nend else old_specific[0].end
 
-            if start.minute != end.minute:
-                    raise ValidationError("The range hour is invalid")
-            
-            day = specificS.Nday if specificS.Nday else specificS.day
-            end = specificS.Nend if specificS.Nend else old_specific[0].end
 
             if start.minute != end.minute:
                 raise ValidationError('Hour incomplete')
@@ -63,6 +62,17 @@ class UpdateSpecific:
             meetings = meetingR.getMeetingToRange(specificS.prof_id, day, start, end)
             if len(meetings) > 0:
                 raise ValidationError("In hour you have a meeting")
+            
+            recurrent = recurrentR.getSpecific(
+            {
+                'prof_id': specificS.prof_id,
+                'week': week_convert(day.isoweekday()),
+                'start': start,
+                'end': end
+            }
+            )
+            if len(recurrent) != 0:
+                raise ValidationError('Recurrent day found')
             
             specificR.update({
                 "day": day,
