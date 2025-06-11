@@ -55,7 +55,7 @@ class UpdateExceptions():
         """
         Recuperar recurrente y ver que siga ocupando <-
         """
-        recurrent = recurrentR.getSpecific(
+        recurrent = recurrentR.getException(
             {
                 'prof_id': exceptionS.prof_id,
                 'week': week_convert(day.isoweekday()),
