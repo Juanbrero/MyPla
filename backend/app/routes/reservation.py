@@ -19,3 +19,20 @@ def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session
     """
     reservationS = schema_reservation.ReservationClassIn(**class_.dict(), student_id= user_info["user_id"])
     return ReservationController(db=db).createReservation(reservationS)
+
+@router.get('/student', response_model=schema_reservation.StudentReservation)
+def student_reservation(user_info = Depends(RolesValidator(['Alumno'] ) ), db:Session= Depends(get_db) ):
+    """
+        Endpoint para solicitar todas las reservas pagadas de un alumno
+
+            - Args:
+                - token -> student_id
+            - Returns:
+                - {"reservations": [
+                { "prof_id": str,
+                "prof_id": str,
+                "day_hour": datetime
+                "topic":str
+                }]}
+    """
+    return ReservationController(db= db).studentReservation(studen_id= user_info["user_id"])
