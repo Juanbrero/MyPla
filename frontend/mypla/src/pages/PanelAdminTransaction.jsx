@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { getPayPending } from '../services/payments/payment.service';
 
 
 
@@ -15,8 +16,8 @@ export const PanelAdminTransaction = ({ token }) => {
     useEffect(() => {
         const cargarTransacciones = async () => {
             try {
-                // const data = await getPayPending(token);
-                // setTransfer(data);
+                const data = await getPayPending(token);
+                setTransfer(data);
             } catch (error) {
                 console.error("Error al obtener transacciones:", error);
             }
@@ -47,37 +48,47 @@ export const PanelAdminTransaction = ({ token }) => {
             </table>
             `);
             
-            // for (let tran of transfer) {
+            // for (let pay of transfer) {
 
-            //     const idBttn = "doneBttn" + tran.id;
+            //     const concept = pay.type == "refund" ? "Reembolso" : "Reserva";
+            //     const idBttn = "doneBttn" + pay.id;
+            //     const transferWay = pay.type == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
             //     const fila = $(`
-            //         <tr>
-            //             <td>${tran.user_student.email}</td>
-            //             <td>${tran.type}</td>
-            //             <td>${tran.user_professional.email}</td>
-            //             <td>$ ${tran.amount}</td>
-            //             <td>${tran.date}</td>
-            //             <td><button id=${idBttn}>Hecho<button/></td>
+            //         <tr class=tr-${concept}>
+            //             <td>${pay.user_student.email}</td>
+            //             <td>
+            //                 <div id="type-cell">
+            //                     <p>${concept}</p>
+            //                     <span>${transferWay}</span>
+            //                 </div>
+            //             </td>
+            //             <td>${pay.user_professional.email}</td>
+            //             <td>$ ${pay.amount}</td>
+            //             <td>${pay.date}</td>
+            //             <td id="td-button"><button id=${idBttn}>Hecho</button></td>
             //         </tr>
             //         `);
                     
             //     fila.on('click', () => {
-            //         navigate(`/calendar/${encodeURIComponent(tran.prof_id)}`)
+            //         alert(hola);
             //     });
 
-            //   // Evita que el click del botón dispare el del <tr>
-            //      fila.find(`#${idBttn}`).on('click', (e) => {
-            //          e.stopPropagation();
-            //         alert("chau");
-            //      });
+            //     // Evita que el click del botón dispare el del <tr>
+            //     fila.find(`#${idBttn}`).on('click', (e) => {
+            //         e.stopPropagation();
+            //         // Reemplazar el botón por texto "Confirmado"
+            //         const boton = $(e.currentTarget);
+            //         boton.replaceWith('<span class="confirmado">Confirmado</span>');
+            //     });
 
             //     tabla.find("tbody").append(fila);
                 
             // }
 
+            /////////////////////////////////////////////////////////////////////////////////////
             for (let i=0;i<25;i++) {
 
-                const concept = i%3==0 ? "refund" : "pay";
+                const concept = i%3==0 ? "Reembolso" : "Reserva";
                 const idBttn = "doneBttn" + i;
                 const transferWay = concept == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
                 const fila = $(`
