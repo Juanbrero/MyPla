@@ -23,15 +23,18 @@ class GetStudentAvailable():
     ):
         if day is None:
             day = date.today()
+        last_day = day + timedelta(days=7)
 
         all_recurrents = recurrentR.getRecurrentsWithTopics(prof_id)
 
         #RECURENT
         data_recurrent = []
 
-        day_recurrent= date(year= day.year, month= day.month, day= 1)
+        day_recurrent= date(year= day.year, month= day.month, day= day.day)
 
-        if day.month == 12:
+       
+
+        """if day.month == 12:
             next_year = day.year + 1
             next_month= 1
         else:
@@ -42,7 +45,7 @@ class GetStudentAvailable():
             next_year,
             next_month,
             calendar.monthrange(next_year, next_month)[1]
-        )    
+        )   """ 
 
         # Recorre desde el mes ingresado hasta el siguiente
         while day_recurrent <= last_day:
@@ -76,7 +79,7 @@ class GetStudentAvailable():
         data_available= []
 
         #SPECIFIC
-        day = day.replace(day=1)
+        #day = day.replace(day=1)
         all_specifics = specificR.getHourDay(prof_id, day, last_day)
 
         data_specific = []
@@ -125,10 +128,6 @@ class GetStudentAvailable():
         if index_r != len(data_recurrent) -1:
             data_available.extend(data_recurrent[index_r:])
 
-
-
-
-                    
 
 
 
