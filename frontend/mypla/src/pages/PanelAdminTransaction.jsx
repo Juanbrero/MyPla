@@ -1,9 +1,8 @@
 import './styles/PanelAdminTransaction.css';
 import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { getPayPending } from '../services/payments/payment.service';
+import { getPayPending, putRefundPending, putPayPending } from '../services/payments/payment.service';
 import PaymentInfoModal from '../components/PaymentInfoModal';
 
 
@@ -90,7 +89,6 @@ export const PanelAdminTransaction = ({ token }) => {
         ]
     );
     const { isAuthenticated } = useAuth0();
-    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -167,8 +165,16 @@ export const PanelAdminTransaction = ({ token }) => {
                 });
 
                 // Evita que el click del botón dispare el del <tr>
-                fila.find(`#${idBttn}`).on('click', (e) => {
+                fila.find(`#${idBttn}`).on('click', async (e) => {
                     e.stopPropagation();
+
+                    if(pay.type == "pay") {
+                        await putPayPending(token, pay);
+                    }
+                    else {
+                        await putRefundPending(token, pay);
+                    }
+
                     // Reemplazar el botón por texto "Confirmado"
                     const boton = $(e.currentTarget);
                     boton.replaceWith('<span class="confirmado">Confirmado</span>');
