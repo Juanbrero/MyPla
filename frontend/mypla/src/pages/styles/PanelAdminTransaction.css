@@ -94,6 +94,10 @@ tbody tr #td-button {
     border-left: 2px solid #000000;
 }
 
+.td-oculto {
+    display: none;
+}
+
 #type-cell {
     display: flex;
     flex-direction: column;
