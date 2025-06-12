@@ -15,3 +15,7 @@ def get_preferenceId(db: Session = Depends(get_db), user_info = Depends(RolesVal
 @router.post("/mp_preference")
 def get_prerence(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
     return PayController(db= db).createPreference(user_info["user_id"])
+
+@router.get("/pending")
+def get_pay_pending(db:Session = Depends(get_db)):#, user_info = Depends(RolesValidator(["Administrador"]))):
+    return PayController(db=db).getPayPending()

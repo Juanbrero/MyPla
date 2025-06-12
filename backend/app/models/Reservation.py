@@ -14,7 +14,8 @@ class Reservation(Base):
                                          nullable=False)
     create: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
     cancel: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=false())
-    state: Mapped[str] = mapped_column(String(10), nullable=False, server_default="pending")
+    state: Mapped[str] = mapped_column(String(20), nullable=False, server_default="pending")
+    cancel_time: Mapped[datetime] =  mapped_column(TIMESTAMP, nullable=True)
     #class_: Mapped["Class"] = relationship(back_populates="reservation")
 
     __table_args__ = (
@@ -26,7 +27,7 @@ class Reservation(Base):
             name="fk_class_meeting"
         ),
         CheckConstraint(
-            "state IN ('pending', 'finished')",
+            "state IN ('pending', 'pay', 'cancel_student', 'cancel_professional', 'refund', 'finished')",
             name="check_reservation_state"
         ),
     )

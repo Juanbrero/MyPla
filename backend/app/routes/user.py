@@ -17,4 +17,5 @@ def create_user(user:schema_users.UsersCreate, db:Session = Depends(get_db)):
     Creacion de una clase
     """
     userS = schema_users.UsersCreate(**user.dict())
+    print(userS)
     return UserController(db=db).createUser(userS)
