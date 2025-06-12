@@ -20,7 +20,6 @@ class User(Base):
     )
     username: Mapped[str] = mapped_column(String, nullable=False)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    CBU_CVU: Mapped[int] = mapped_column(Integer, unique= True, nullable= True)
 
     #professional: Mapped['Professional'] = relationship(back_populates='user', cascade='all, delete-orphan')
     #student: Mapped['Student'] = relationship(back_populates='user', cascade='all, delete-orphan')
