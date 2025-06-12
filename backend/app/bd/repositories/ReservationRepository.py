@@ -41,6 +41,7 @@ class ReservationRepository(Repository[Reservation]):
             ).order_by(Reservation.day_hour.asc())
         )
         return self.session.execute(stm)
+    
     def getReservationsForTransaction(self):
         now = datetime.now()
     
