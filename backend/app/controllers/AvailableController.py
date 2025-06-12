@@ -23,10 +23,11 @@ class AvailableController:
         self.reservationR = ReservationRepository(db)
         self.classR = ClassRepository(db)
 
-    def getProfessionalAvailable(self, prof_id: str):
+    def getProfessionalAvailable(self, prof_id: str, day:date):
         return GetProfessionalAvailable.run(
             db = self.db,
             prof_id= prof_id,
+            day= day,
             recurrentR= self.recurrentR,
             exceptionR= self.exceptionR,
             specificR= self.specificR,

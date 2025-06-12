@@ -4,25 +4,29 @@ from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi import status
-from datetime import date
+from datetime import date, timedelta
 
 class GetProfessionalAvailable():
     @handle_errors
     def run(
             db : Session,
             prof_id: str,
+            day:date,
             recurrentR: Repository[RecurrentSchedule],
             exceptionR: Repository[SpecificSchedule],
             specificR: Repository[SpecificSchedule],
             classR: Repository[Class]
     ):
-        all_specifics = specificR.getAllWithTopics(prof_id, False)
+        last_day = day + timedelta(days=7)
 
-        all_exceptions = exceptionR.getAllWithProfessional(prof_id)
+
+        all_specifics = specificR.getHourDay(prof_id, day, last_day)
+
+        all_exceptions = exceptionR.getHourDay(prof_id,day, last_day)
         
         all_recurrents = recurrentR.getRecurrentsWithTopics(prof_id)
 
-        all_class = classR.getTopicClass(prof_id)
+        all_class = classR.getTopicClass(prof_id, day, last_day)
 
         data_specific = []
         for schedule in all_specifics:
