@@ -26,20 +26,27 @@ class CreateUser:
         if (len(user) > 0):
             raise ValidationError("User exist")
         
-        newUser = userR.create({
+        userData = {
             "auth0_id": userS.auth0_id,
             "email": userS.email,
             "username": userS.username,
-        })
+        }
+        
+        if (userS.role == 'Profesional'):
+            userData["link_acceso"] = userS.link_acceso
+        
+        newUser = userR.create(userData)
         db.flush()
         
         if userS.role == 'Profesional':
             professionalR.create({
-                "prof_id": newUser.user_id
+                "prof_id": newUser.user_id,
+                "cvu": userS.cvu_profesional
             }) 
         else:
             studentR.create({
-                "student_id": newUser.user_id
+                "student_id": newUser.user_id,
+                "cvu": userS.cvu_alumno
             })
         
         db.commit()

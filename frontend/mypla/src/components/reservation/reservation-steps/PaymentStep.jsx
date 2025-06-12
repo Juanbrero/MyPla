@@ -3,7 +3,7 @@ import PayPalButton from '../paymentButtons/PayPalButton';
 import MPButton from '../paymentButtons/MPButton';
 
 
-export default function PaymentStep({ onClose, onNext, style, reservationInfo}) {
+export default function PaymentStep({ onClose, onNext, style, reservationInfo, token}) {
 
     console.log(reservationInfo);
 
@@ -25,7 +25,7 @@ export default function PaymentStep({ onClose, onNext, style, reservationInfo}) 
             </Box>
             <Box>
                 <div className="mpButton">
-                    <MPButton fullWidth></MPButton> 
+                    <MPButton fullWidth token={token}></MPButton> 
                 </div>
             
             </Box>

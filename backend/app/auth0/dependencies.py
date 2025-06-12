@@ -32,7 +32,7 @@ class RolesValidator:
     def __call__(self, token: dict = Depends(validate_token), db: Session = Depends(get_db)):
         auth0_id = token.get("sub")  # Auth0 user ID
         token_roles = token.get(self.roles_claim, [])
-        print(token_roles)
+        print(token_roles, "ROLES")
         if not isinstance(token_roles, list):
             token_roles = []
 

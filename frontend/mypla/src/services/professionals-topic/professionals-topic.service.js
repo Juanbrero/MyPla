@@ -43,8 +43,6 @@ export const getProfessionalsByTopic = async (token, topicName) => {
     const { data, error } = await callExternalApi({ config });
 
     
-
-    console.log(data);
     if (error) {
       console.error("Error al obtener datos:", error);
       throw error;
@@ -67,6 +65,25 @@ export const postProfessionalTopics = async (token, topic) => {
         topic_name: topic,
         price_class: 1.1,
     },
+    };
+    
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
+
+export const deleteProfessionalTopics = async (token, topic) => {
+
+    const config = {
+    url: `${apiServerUrl}/professionals-topic?topic=${encodeURIComponent(topic)}`,
+    method: "DELETE",
+    headers: {
+        "content-type": "application/json",
+        "Authorization": `Bearer ${token}`,
+    }
     };
     
     const { data, error } = await callExternalApi({ config });

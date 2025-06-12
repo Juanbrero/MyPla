@@ -189,6 +189,8 @@ const StudentCalendar = ({token}) => {
           open={modalOpen}
           onClose={handleCloseModal}
           taskData={modalData}
+          token={token}
+          prof_id={prof_id}
       />
 
     </div>

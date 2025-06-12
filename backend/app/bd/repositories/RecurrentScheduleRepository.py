@@ -1,7 +1,7 @@
 from app.models import RecurrentSchedule, TopicRecurrent
 from sqlalchemy.orm import Session, selectinload
 from .Repository import Repository
-from sqlalchemy import select, cast, Time, func
+from sqlalchemy import select, cast, Time, func, and_
 from datetime import datetime
 from app.bd.bd_utils import week_convert
 
@@ -67,17 +67,36 @@ class RecurrentScheduleRepository(Repository[RecurrentSchedule]):
 
         return self.session.execute(stm).scalars().all()
     
-    def getException(self, exception: dict):
+    def getException(self, specific: dict):
         """
         Recupera todos los horarios de un dia recurrente que esten abarcados por una excepcion
         """
         stm = (
             select(RecurrentSchedule)
             .where(
-                RecurrentSchedule.week_day == exception['week'],
-                RecurrentSchedule.prof_id == exception['prof_id'],
-                RecurrentSchedule.start <= exception['start'],
-                RecurrentSchedule.end >= exception['end']
+                RecurrentSchedule.week_day == specific['week'],
+                RecurrentSchedule.prof_id == specific['prof_id'],
+                RecurrentSchedule.start <= specific['start'],
+                specific['end'] <= RecurrentSchedule.end
+            )
+        )
+        return self.session.execute(stm).scalars().all()
+    
+    def getSpecific(self, specific: dict):
+        """
+        Recupera todos los horarios de un dia recurrente que esten abarcados por un especifico
+        """
+        stm = (
+            select(RecurrentSchedule)
+            .where(
+                RecurrentSchedule.week_day == specific['week'],
+                RecurrentSchedule.prof_id == specific['prof_id'],
+                and_(
+                    specific['start'] < RecurrentSchedule.end,
+                    specific['end'] > RecurrentSchedule.start,
+                    specific['end'] != RecurrentSchedule.start,
+                    specific['start'] != RecurrentSchedule.end
+                )
             )
         )
         return self.session.execute(stm).scalars().all()

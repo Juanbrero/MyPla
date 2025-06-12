@@ -176,9 +176,10 @@ export default function ScheduleModal({
           <Typography variant="h6" mb={2}>
             {mode === 'edit'
               ? 'Información del Horario'
-              : mode === 'crear'
+              : mode === 'create'
               ? 'Crear Horario'
-              : 'Excepción'}
+              : mode === 'exception' ? 'Excepción' 
+              : ''}
           </Typography>
 
           {!isSelectingExceptions && (
