@@ -10,6 +10,8 @@ class Student(Base):
                                     primary_key=True,
                                     index=True)
     score: Mapped[float] = mapped_column(default=0, server_default=text('0'))
+    
+    cvu: Mapped[str] = mapped_column(String, nullable=False)
 
     #user: Mapped['User'] = relationship(back_populates='student')
     

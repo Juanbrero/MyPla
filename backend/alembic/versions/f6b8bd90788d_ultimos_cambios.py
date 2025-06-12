@@ -1,8 +1,8 @@
 """Ultimos cambios
 
-Revision ID: 3ed878c5e89c
+Revision ID: f6b8bd90788d
 Revises: 
-Create Date: 2025-06-05 17:06:15.399991
+Create Date: 2025-06-12 14:50:11.425988
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3ed878c5e89c'
+revision: str = 'f6b8bd90788d'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -38,6 +38,8 @@ def upgrade() -> None:
     op.create_table('professional',
     sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('score', sa.Float(), server_default=sa.text('0'), nullable=False),
+    sa.Column('link_class', sa.String(), nullable=False),
+    sa.Column('cvu', sa.String(), nullable=False),
     sa.CheckConstraint('score BETWEEN 0 AND 5', name='check_score_valid'),
     sa.ForeignKeyConstraint(['prof_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('prof_id')
@@ -46,6 +48,7 @@ def upgrade() -> None:
     op.create_table('student',
     sa.Column('student_id', sa.String(length=36), nullable=False),
     sa.Column('score', sa.Float(), server_default=sa.text('0'), nullable=False),
+    sa.Column('cvu', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['student_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('student_id')
     )
@@ -102,8 +105,9 @@ def upgrade() -> None:
     sa.Column('student_id', sa.String(length=36), nullable=False),
     sa.Column('create', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('cancel', sa.Boolean(), server_default=sa.text('false'), nullable=False),
-    sa.Column('state', sa.String(length=10), server_default='pending', nullable=False),
-    sa.CheckConstraint("state IN ('pending', 'finished')", name='check_reservation_state'),
+    sa.Column('state', sa.String(length=20), server_default='pending', nullable=False),
+    sa.Column('cancel_time', sa.TIMESTAMP(), nullable=True),
+    sa.CheckConstraint("state IN ('pending', 'pay', 'cancel_student', 'cancel_professional', 'refund', 'finished')", name='check_reservation_state'),
     sa.ForeignKeyConstraint(['day_hour', 'prof_id'], ['meeting.day_hour', 'meeting.prof_id'], name='fk_class_meeting', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['student_id'], ['student.student_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('day_hour', 'prof_id', 'student_id', name='pk_reservation')

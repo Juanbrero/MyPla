@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 #Aqui van los esqueletos de respuestas que podran obtener
 
 
@@ -11,6 +12,9 @@ class UsersCreate(BaseModel):
     email: str
     username: str
     role: str
+    link_acceso: Optional[str] = None
+    cvu_alumno: Optional[str] = None
+    cvu_profesional: Optional[str] = None
     
 
 #Respuesta get

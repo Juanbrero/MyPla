@@ -13,6 +13,10 @@ class Professional(Base):
                                     primary_key=True,
                                     index=True)
     score: Mapped[float] = mapped_column(default=0, server_default=text('0'))
+    
+    link_class: Mapped[str] = mapped_column(String, nullable=False)
+    
+    cvu: Mapped[str] = mapped_column(String, nullable=False)
 
     #user: Mapped['User'] = relationship(back_populates='professional')
     
