@@ -22,5 +22,5 @@ def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session
 
 
 @router.put('/cancel')
-def cancel_reservation(day_hour:datetime, id:str, user_cancel = Depends(RolesValidator(["Alumno", "Profesional"])), db: Session = Depends(get_db)):
-    return ReservationController(db= db).cancelReservation(day_hour= day_hour, user_id= id, user_cancel= user_cancel["user_id"], role= user_cancel["roles"][0] )
+def cancel_reservation(day_hour:datetime, user_id:str, user_cancel = Depends(RolesValidator(["Alumno", "Profesional"])), db: Session = Depends(get_db)):
+    return ReservationController(db= db).cancelReservation(day_hour= day_hour, user_id= user_id, user_cancel= user_cancel["user_id"], role= user_cancel["roles"][0] )
