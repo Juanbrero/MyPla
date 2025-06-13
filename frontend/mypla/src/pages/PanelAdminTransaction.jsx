@@ -6,88 +6,9 @@ import { getPayPending, putRefundPending, putPayPending } from '../services/paym
 import PaymentInfoModal from '../components/PaymentInfoModal';
 
 
-
 export const PanelAdminTransaction = ({ token }) => {
     
-    const [transfer, setTransfer] = useState(
-        [
-            {
-                "id": 1,
-                "type": "pay",
-                "amount": 11111,
-                "CVU": 11,
-                "fecha": "11/11/1111",
-                "user_student": {
-                    "student_id": "11111",
-                    "email": "111111"
-                },
-                "user_professional": {
-                    "professional_id": "22222",
-                    "email": "2222"
-                }
-            },
-            {
-                "id": 2,
-                "type": "refund",
-                "amount": 11111,
-                "CVU": 22,
-                "fecha": "22/22/2222",
-                "user_student": {
-                    "student_id": "11111",
-                    "email": "11111"
-                },
-                "user_professional": {
-                    "professional_id": "22222",
-                    "email": "22222"
-                }
-            },
-            {
-                "id": 3,
-                "type": "refund",
-                "amount": 3333,
-                "CVU": 33333,
-                "fecha": "3/3/2333",
-                "user_student": {
-                    "student_id": "3333",
-                    "email": "3333"
-                },
-                "user_professional": {
-                    "professional_id": "4444",
-                    "email": "44444"
-                }
-            },
-            {
-                "id": 4,
-                "type": "pay",
-                "amount": 5555,
-                "CVU": 5555,
-                "fecha": "5/5/5555",
-                "user_student": {
-                    "student_id": "555",
-                    "email": "5555"
-                },
-                "user_professional": {
-                    "professional_id": "6666",
-                    "email": "6666"
-                }
-            },
-            {
-                "id": 5,
-                "type": "pay",
-                "amount": 77777,
-                "CVU": 7777, 
-                "fecha": "77/77/7777",
-                "user_student": {
-                    "student_id": "7777",
-                    "email": "7777"
-                },
-                "user_professional": {
-                    "professional_id": "8888",
-                    "email": "88888"
-                }
-            }
-        ]
-    );
+    const [transfer, setTransfer] = useState([]);
     const { isAuthenticated } = useAuth0();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -95,8 +16,8 @@ export const PanelAdminTransaction = ({ token }) => {
     useEffect(() => {
         const cargarTransacciones = async () => {
             try {
-                // const data = await getPayPending(token);
-                // setTransfer(data);
+                const data = await getPayPending(token);
+                setTransfer(data);
             } catch (error) {
                 console.error("Error al obtener transacciones:", error);
             }
@@ -130,12 +51,14 @@ export const PanelAdminTransaction = ({ token }) => {
             for (let pay of transfer) {
 
                 const concept = pay.type == "refund" ? "Reembolso" : "Reserva";
-                const idBttn = "doneBttn" + pay.id;
+                const idBttn = "doneBttn" + transfer.indexOf(pay);
                 const transferWay = pay.type == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
+                const payDate = pay.type == "pay" ? new Date(pay.day_hour).toLocaleDateString() : new Date(pay.day_hour_cancel).toLocaleDateString();
+
                 const fila = $(`
-                    <tr id=tr-${pay.id} class=tr-${concept}>
-                        <td id="payId" class="td-oculto"> ${pay.id} </td>
-                        <td id="payAddress" class="td-oculto"> ${pay.CVU} </td>
+                    <tr id=tr-${transfer.indexOf(pay)} class=tr-${concept}>
+                        <td id="payId" class="td-oculto"> ${transfer.indexOf(pay)} </td>
+                        <td id="payAddress" class="td-oculto"> ${pay.cvu} </td>
                         <td id="payAlum">${pay.user_student.email}</td>
                         <td>
                             <div id="type-cell">
@@ -144,8 +67,8 @@ export const PanelAdminTransaction = ({ token }) => {
                             </div>
                         </td>
                         <td id="payProf">${pay.user_professional.email}</td>
-                        <td id="payAmount">$ ${pay.amount}</td>
-                        <td id="payDate">${pay.fecha}</td>
+                        <td id="payAmount">$ ${pay.price}</td>
+                        <td id="payDate">${payDate}</td>
                         <td id="td-button"><button id=${idBttn}>Hecho</button></td>
                     </tr>
                     `);

@@ -4,7 +4,7 @@ const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 export const getPayPending = async (token) => {
 
     const config = {
-        url: `${apiServerUrl}/pay-pending`,
+        url: `${apiServerUrl}/pay/pending`,
         method: "GET",
         headers: {
             "content-type": "application/json",

@@ -110,7 +110,7 @@ export default function PaymentInfoModal({ open, onClose, paymentRow }) {
         <Box sx={itemStyle}>
           <MonetizationOnIcon sx={iconStyle} />
           <Typography variant="body1" fontWeight={600}>
-            <strong>Monto:</strong> ${amount}
+            <strong>Monto:</strong> {amount}
           </Typography>
         </Box>
 
