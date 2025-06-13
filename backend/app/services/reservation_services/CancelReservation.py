@@ -20,7 +20,7 @@ class CancelReservation():
         day_hour = day_hour.replace(second=0, microsecond=0)
 
         reservation_filter ={
-            'day_hour': day_hour,
+            'day_hour': day_hour.isoformat(),
             'prof_id': user_cancel if role == "Profesional" else user_id,
             'student_id': user_cancel if role == "Alumno" else user_id,
             'state': "pay"
