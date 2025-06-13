@@ -50,7 +50,7 @@ class CreatePreference:
             ],
             "date_of_expiration": (datetime.now() + time_expire).isoformat(),
             "metadata":{"student_id": student_id},
-            "notification_url": "https://miplasip.publicvm.com/api/mp-notification"
+            "notification_url": "https://miplasip.publicvm.com/api/mp-notification?source_news=webhooks"
         }
    
         preference_response = sdk.preference().create(preference_data)

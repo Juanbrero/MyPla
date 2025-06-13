@@ -15,19 +15,20 @@ router = APIRouter()
 def webhook_mp(data: dict, db: Session = Depends(get_db)):
     print('MP NOTIFICATION')
     print(data)
+    
+    if data["type"] == "payment":
+        payment_id = data['data']['id']
+        payment_response = sdk.payment().get(payment_id)
+        payment_data = payment_response["response"]
 
-    payment_id = data['data']['id']
-    payment_response = sdk.payment().get(payment_id)
-    payment_data = payment_response["response"]
+        # Extraés la metadata
+        metadata = payment_data.get("metadata", {})
+        student_id = metadata.get("student_id")
+        statusP = payment_data.get("status")
+        print(f'STATUS: {statusP}')
 
-    # Extraés la metadata
-    metadata = payment_data.get("metadata", {})
-    student_id = metadata.get("student_id")
-    statusP = payment_data.get("status")
-    print(f'STATUS: {statusP}')
-
-    if statusP in ["approved", "rejected", "cancelled"]:
-        ReservationController(db= db).updatePay(student_id= student_id, statusP= statusP)
+        if statusP in ["approved", "rejected", "cancelled"]:
+            ReservationController(db= db).updatePay(student_id= student_id, statusP= statusP)
 
     
 
