@@ -2,7 +2,7 @@ import './styles/PanelAdminTransaction.css';
 import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { getPayPending, putRefundPending, putPayPending } from '../services/payments/payment.service';
+import { getPayPending, putPayPending } from '../services/payments/payment.service';
 import PaymentInfoModal from '../components/PaymentInfoModal';
 
 
@@ -91,12 +91,7 @@ export const PanelAdminTransaction = ({ token }) => {
                 fila.find(`#${idBttn}`).on('click', async (e) => {
                     e.stopPropagation();
 
-                    if(pay.type == "pay") {
-                        await putPayPending(token, pay);
-                    }
-                    else {
-                        await putRefundPending(token, pay);
-                    }
+                    await putPayPending(token, pay);
 
                     // Reemplazar el botón por texto "Confirmado"
                     const boton = $(e.currentTarget);

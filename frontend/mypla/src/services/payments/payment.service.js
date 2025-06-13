@@ -25,14 +25,16 @@ export const getPayPending = async (token) => {
 export const putPayPending = async (token, body) => {
 
     const config = {
-        url: `${apiServerUrl}/pay-finished`,
+        url: `${apiServerUrl}/pay/pending`,
         method: "PUT",
         headers: {
             "content-type": "application/json",
             "Authorization": `Bearer ${token}`,
         },
         data: {
-            body:body,
+            day_hour: body.day_hour,
+            prof_id: body.user_professional.professional_id,
+            student_id: body.user_student.student_id,
         }
     };
 
@@ -46,26 +48,3 @@ export const putPayPending = async (token, body) => {
     return data;
 };
 
-export const putRefundPending = async (token, body) => {
-
-    const config = {
-        url: `${apiServerUrl}/pay-refund`,
-        method: "PUT",
-        headers: {
-            "content-type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
-        data: {
-            body:body,
-        }
-    };
-
-    const { data, error } = await callExternalApi({ config });
-
-    if (error) {
-      console.error("Error al obtener datos:", error);
-      throw error;
-    }
-
-    return data;
-};
