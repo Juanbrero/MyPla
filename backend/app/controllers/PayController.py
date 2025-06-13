@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from ..services.pay_services.PayInitialService import PayInitialService
 from ..services.pay_services.CreatePreference import CreatePreference
 from ..services.pay_services.GetPayPending import GetPayPending
+from ..services.pay_services.ModifyPayPending import ModifyPayPending
 
 class PayController:
     def __init__ (self, db: Session):
@@ -36,4 +37,11 @@ class PayController:
     def getPayPending (self):
         return GetPayPending.run(
             reservationR = self.reservationR
+        )
+    
+    def modifyPayPending (self, reservationS: str):
+        return ModifyPayPending.run(
+            db=self.db,
+            reservationR = self.reservationR,
+            reservationS = reservationS
         )

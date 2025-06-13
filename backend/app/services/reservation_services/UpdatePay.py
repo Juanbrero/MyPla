@@ -55,12 +55,17 @@ class UpdatePay():
 
         if statusP == "approved":
             
+<<<<<<< SIP-131-generar-endpoint-para-que-se-realice-la-cancelacion
             reservationR.update({"state": "pay"}, {"student_id": student_id, "day_hour": r.day_hour.isoformat(), "state": "pending"})
+=======
+            reservationR.update({"state": "pay"}, 
+                                {"student_id": student_id, "day_hour": r.day_hour, "state": "pending"})
+>>>>>>> main
 
 
         db.commit()
 
-        return JSONResponse(status_code= status.HTTP_200_OK, content= 'Reservation update')
+        return JSONResponse(status_code= status.HTTP_200_OK, content= 'Reservation paid')
         
         
 
