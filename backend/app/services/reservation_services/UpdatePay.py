@@ -34,28 +34,28 @@ class UpdatePay():
         if statusP == "cancelled":
             reservationR.delete({
                 "student_id": student_id,
-                "day_hour": r.day_hour,
+                "day_hour": r.day_hour.isoformat(),
                 "state": "pending"
             })
             meetingR.delete({
-                "prof_id": r.day_hour,
-                "day_hour": r.day_hour,
+                "prof_id": r.prof_id,
+                "day_hour": r.day_hour.isoformat(),
             })
 
         if statusP == "rejected" and datetime.now() - r.create > timedelta(minutes= 3):
             reservationR.delete({
                 "student_id": student_id,
-                "day_hour": r.day_hour,
+                "day_hour": r.day_hour.isoformat(),
                 "state": "pending"
             })
             meetingR.delete({
-                "prof_id": r.day_hour,
-                "day_hour": r.day_hour,
+                "prof_id": r.prof_id,
+                "day_hour": r.day_hour.isoformat(),
             })
 
         if statusP == "approved":
             
-            reservationR.update({"state": "finished"}, {"student_id": student_id, "day_hour": r.day_hour, "state": "pending"})
+            reservationR.update({"state": "finished"}, {"student_id": student_id, "day_hour": r.day_hour.isoformat(), "state": "pending"})
 
 
         db.commit()
