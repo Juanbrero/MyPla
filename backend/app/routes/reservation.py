@@ -6,7 +6,7 @@ from ..bd.bd_utils import Errors, Info
 from typing import List, Union
 from app.auth0.dependencies import RolesValidator
 from ..controllers.ReservationController import ReservationController
-
+from datetime import datetime
 
 router = APIRouter(prefix="/api/reservation")
 
@@ -19,6 +19,11 @@ def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session
     """
     reservationS = schema_reservation.ReservationClassIn(**class_.dict(), student_id= user_info["user_id"])
     return ReservationController(db=db).createReservation(reservationS)
+
+
+@router.put('/cancel')
+def cancel_reservation(day_hour:datetime, user_id:str, user_cancel = Depends(RolesValidator(["Alumno", "Profesional"])), db: Session = Depends(get_db)):
+    return ReservationController(db= db).cancelReservation(day_hour= day_hour, user_id= user_id, user_cancel= user_cancel["user_id"], role= user_cancel["roles"][0] )
 
 @router.get('/student', response_model=schema_reservation.StudentReservation)
 def student_reservation(user_info = Depends(RolesValidator(['Alumno'] ) ), db:Session= Depends(get_db) ):
@@ -36,3 +41,4 @@ def student_reservation(user_info = Depends(RolesValidator(['Alumno'] ) ), db:Se
                 }]}
     """
     return ReservationController(db= db).studentReservation(studen_id= user_info["user_id"])
+

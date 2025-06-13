@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi import status
 
 
-def UpdatePay():
+class UpdatePay():
     @handle_errors
     def run(
         db: Session,
@@ -34,29 +34,33 @@ def UpdatePay():
         if statusP == "cancelled":
             reservationR.delete({
                 "student_id": student_id,
-                "day_hour": r.day_hour,
+                "day_hour": r.day_hour.isoformat(),
                 "state": "pending"
             })
             meetingR.delete({
-                "prof_id": r.day_hour,
-                "day_hour": r.day_hour,
+                "prof_id": r.prof_id,
+                "day_hour": r.day_hour.isoformat(),
             })
 
         if statusP == "rejected" and datetime.now() - r.create > timedelta(minutes= 3):
             reservationR.delete({
                 "student_id": student_id,
-                "day_hour": r.day_hour,
+                "day_hour": r.day_hour.isoformat(),
                 "state": "pending"
             })
             meetingR.delete({
-                "prof_id": r.day_hour,
-                "day_hour": r.day_hour,
+                "prof_id": r.prof_id,
+                "day_hour": r.day_hour.isoformat(),
             })
 
         if statusP == "approved":
             
+<<<<<<< SIP-131-generar-endpoint-para-que-se-realice-la-cancelacion
+            reservationR.update({"state": "pay"}, {"student_id": student_id, "day_hour": r.day_hour.isoformat(), "state": "pending"})
+=======
             reservationR.update({"state": "pay"}, 
                                 {"student_id": student_id, "day_hour": r.day_hour, "state": "pending"})
+>>>>>>> main
 
 
         db.commit()
