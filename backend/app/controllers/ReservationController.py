@@ -46,7 +46,6 @@ class ReservationController:
             meetingR= self.meetingR
         )
     
-<<<<<<< SIP-131-generar-endpoint-para-que-se-realice-la-cancelacion
     def cancelReservation(self, day_hour:datetime, user_id:str, user_cancel:str, role:str):
         return CancelReservation.run(
             db = self.db,
@@ -56,11 +55,9 @@ class ReservationController:
             role = role,
             reservationR = self.reservationR
         )
-=======
     def studentReservation(self, student_id:str):
         return StudentReservation.run(
             student_id = student_id,
             reservationR = self.reservationR
         )
     
->>>>>>> main
