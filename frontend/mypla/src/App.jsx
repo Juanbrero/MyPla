@@ -69,12 +69,8 @@ const App = () => {
           />
           <Route 
             path="/adminTransactions" 
-            element={<PanelAdminTransaction/>} 
+            element={<AuthenticationGuard Component={PanelAdminTransaction} roles={["Administrador"]}/>} 
           />
-          {/* <Route 
-            path="/adminTransactions" 
-            element={<AuthenticationGuard Component={PanelAdminTransaction} />} 
-          /> */}
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>
       </>

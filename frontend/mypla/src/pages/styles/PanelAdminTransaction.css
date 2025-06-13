@@ -82,16 +82,20 @@ tbody tr:active {
     background-color: #1a1e20;
 }
 
-tbody .tr-refund {
+tbody .tr-Reembolso {
     background-color: #fd000098
 }
 
-tbody .tr-pay {
+tbody .tr-Reserva {
     background-color: #33fd0091
 }
 
 tbody tr #td-button {
     border-left: 2px solid #000000;
+}
+
+.td-oculto {
+    display: none;
 }
 
 #type-cell {

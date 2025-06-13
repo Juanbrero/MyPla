@@ -1,18 +1,18 @@
 import './styles/PanelAdminTransaction.css';
 import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { getPayPending } from '../services/payments/payment.service';
-
+import { getPayPending, putPayPending } from '../services/payments/payment.service';
+import PaymentInfoModal from '../components/PaymentInfoModal';
 
 
 export const PanelAdminTransaction = ({ token }) => {
     
     const [transfer, setTransfer] = useState([]);
     const { isAuthenticated } = useAuth0();
-    const navigate = useNavigate();
-    
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
+
     useEffect(() => {
         const cargarTransacciones = async () => {
             try {
@@ -48,78 +48,56 @@ export const PanelAdminTransaction = ({ token }) => {
             </table>
             `);
             
-            // for (let pay of transfer) {
+            for (let pay of transfer) {
 
-            //     const concept = pay.type == "refund" ? "Reembolso" : "Reserva";
-            //     const idBttn = "doneBttn" + pay.id;
-            //     const transferWay = pay.type == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
-            //     const fila = $(`
-            //         <tr class=tr-${concept}>
-            //             <td>${pay.user_student.email}</td>
-            //             <td>
-            //                 <div id="type-cell">
-            //                     <p>${concept}</p>
-            //                     <span>${transferWay}</span>
-            //                 </div>
-            //             </td>
-            //             <td>${pay.user_professional.email}</td>
-            //             <td>$ ${pay.amount}</td>
-            //             <td>${pay.date}</td>
-            //             <td id="td-button"><button id=${idBttn}>Hecho</button></td>
-            //         </tr>
-            //         `);
-                    
-            //     fila.on('click', () => {
-            //         alert(hola);
-            //     });
+                const concept = pay.type == "refund" ? "Reembolso" : "Reserva";
+                const idBttn = "doneBttn" + transfer.indexOf(pay);
+                const transferWay = pay.type == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
+                const payDate = pay.type == "pay" ? new Date(pay.day_hour).toLocaleDateString() : new Date(pay.day_hour_cancel).toLocaleDateString();
 
-            //     // Evita que el click del botón dispare el del <tr>
-            //     fila.find(`#${idBttn}`).on('click', (e) => {
-            //         e.stopPropagation();
-            //         // Reemplazar el botón por texto "Confirmado"
-            //         const boton = $(e.currentTarget);
-            //         boton.replaceWith('<span class="confirmado">Confirmado</span>');
-            //     });
-
-            //     tabla.find("tbody").append(fila);
-                
-            // }
-
-            /////////////////////////////////////////////////////////////////////////////////////
-            for (let i=0;i<25;i++) {
-
-                const concept = i%3==0 ? "Reembolso" : "Reserva";
-                const idBttn = "doneBttn" + i;
-                const transferWay = concept == "refund" ? '<i class="fa-solid fa-arrow-left"></i>' : '<i class="fa-solid fa-arrow-right"></i>';
                 const fila = $(`
-                    <tr class=tr-${concept}>
-                        <td>juaan.b17@hotmail.com</td>
+                    <tr id=tr-${transfer.indexOf(pay)} class=tr-${concept}>
+                        <td id="payId" class="td-oculto"> ${transfer.indexOf(pay)} </td>
+                        <td id="payAddress" class="td-oculto"> ${pay.cvu} </td>
+                        <td id="payAlum">${pay.user_student.email}</td>
                         <td>
                             <div id="type-cell">
-                                <p>${concept}</p>
+                                <p id="payConcept">${concept}</p>
                                 <span>${transferWay}</span>
-                            </div>    
+                            </div>
                         </td>
-                        <td>juaan.b18@hotmail.com</td>
-                        <td>$ 15000</td>
-                        <td>12/10/2025</td>
+                        <td id="payProf">${pay.user_professional.email}</td>
+                        <td id="payAmount">$ ${pay.price}</td>
+                        <td id="payDate">${payDate}</td>
                         <td id="td-button"><button id=${idBttn}>Hecho</button></td>
                     </tr>
                     `);
                     
-                fila.on('click', () => {
-                    alert("hola");
+                fila.on('click', function () {
+                    const data = {
+                        id: $(this).find("#payId").text(),
+                        address: $(this).find("#payAddress").text(),
+                        alum: $(this).find("#payAlum").text(),
+                        prof: $(this).find("#payProf").text(),
+                        concept: $(this).find("#payConcept").text(),
+                        amount: $(this).find("#payAmount").text(),
+                        date: $(this).find("#payDate").text(),
+                    };
+                    setSelectedRow(data);
+                    setModalOpen(true);
                 });
 
-                
                 // Evita que el click del botón dispare el del <tr>
-                fila.find(`#${idBttn}`).on('click', (e) => {
+                fila.find(`#${idBttn}`).on('click', async (e) => {
                     e.stopPropagation();
-                     // Reemplazar el botón por texto "Confirmado"
+
+                    await putPayPending(token, pay);
+
+                    // Reemplazar el botón por texto "Confirmado"
                     const boton = $(e.currentTarget);
                     boton.replaceWith('<span class="confirmado">Confirmado</span>');
                 });
-                
+
                 tabla.find("tbody").append(fila);
                 
             }
@@ -133,7 +111,13 @@ export const PanelAdminTransaction = ({ token }) => {
                 <h2>Transacciones pendientes</h2>
             </div>
             <div id="table-transaction-container"></div>
+            <PaymentInfoModal 
+                paymentRow={selectedRow}
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+            />
         </div>
+
     );
 
 }
