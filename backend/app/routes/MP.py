@@ -8,6 +8,6 @@ from sqlalchemy.orm import Session
 
 router = APIRouter()
 
-@router.post("api/mp/create-preference", tags=['Pay'])
+@router.post("/api/mp/create-preference", tags=['Pay'])
 def get_prerence(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
     return PayController(db= db).createPreference(user_info["user_id"])
