@@ -61,3 +61,15 @@ class ReservationRepository(Repository[Reservation]):
             )
         )
         return self.session.execute(stm).all()
+    
+    def getReservationForTransaction(self, reservation):
+        stm = (
+            select(Reservation)
+            .where(
+                Reservation.day_hour == reservation["day_hour"],
+                Reservation.prof_id == reservation["prof_id"],
+                Reservation.student_id == reservation["student_id"],
+                Reservation.state.in_(["cancel_student", "cancel_professional", "pay"])
+            )
+        )
+        return self.session.execute(stm).scalars().all()

@@ -9,3 +9,8 @@ class ReservationClassCtrl(BaseModel):
 
 class ReservationClassIn(ReservationClassCtrl):
     student_id: str
+    
+class PayPending(BaseModel):
+    day_hour: datetime
+    prof_id: str
+    student_id: str
