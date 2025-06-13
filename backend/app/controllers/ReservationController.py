@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ..services.reservation_services.CreateReservation import CreateReservation
 from ..services.reservation_services.UpdatePay import UpdatePay
 from app.bd.schemas import schema_reservation 
+from app.services.reservation_services.StudentReservation import StudentReservation
 
 class ReservationController:
     def __init__ (self, db: Session):
@@ -39,3 +40,10 @@ class ReservationController:
             reservationR = self.reservationR,
             meetingR= self.meetingR
         )
+    
+    def studentReservation(self, student_id:str):
+        return StudentReservation.run(
+            student_id = student_id,
+            reservationR = self.reservationR
+        )
+    
