@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi import status
 
 
-def UpdatePay():
+class UpdatePay():
     @handle_errors
     def run(
         db: Session,
