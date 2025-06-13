@@ -1,0 +1,122 @@
+#gral-transaction-table-container {
+    width: 100%;
+    font-family: sans-serif;
+    border: 2px solid #1cb6ae;
+    border-radius: 8px;
+    background-color: #161616;
+    color: #dad9d9;
+}
+
+#table-transaction-title-container {
+    font-size: 20px;
+    padding: 8px;
+    border-bottom: 2px solid #1cb6ae;
+}
+
+#table-transaction-title-container span {
+    color:#14a19a;
+}
+
+#table-transaction-container {
+    padding: 8px;
+}
+
+#transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    height: 40px;
+}
+
+thead tr {
+    background-color: #1a1e20;
+}
+
+thead tr th {
+    border: 2px solid #1cb6ae;
+}
+
+thead tr .emite{
+    width: 25%;
+}
+
+thead tr .concepto{
+    width: 15%;
+}
+
+thead tr .recibe{
+    width: 25%;
+}
+
+thead tr .monto{
+    width: 10%;
+}
+
+thead tr .fecha{
+    width: 10%;
+}
+
+thead tr .estado{
+    width: 15%;
+}
+
+tbody {
+    background-color: #bdbdbd;
+    color: #000;
+    font-weight: 600;
+}
+
+tbody tr {
+    height: 50px;
+    border: 2px solid #000000;
+    text-shadow: 0 0 2px #f7f5f5;
+}
+
+tbody tr:hover {
+    background-color: #e5ebea;
+}
+
+tbody tr:active {
+    background-color: #1a1e20;
+}
+
+tbody .tr-refund {
+    background-color: #fd000098
+}
+
+tbody .tr-pay {
+    background-color: #33fd0091
+}
+
+tbody tr #td-button {
+    border-left: 2px solid #000000;
+}
+
+#type-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#type-cell p {
+    margin: 0;
+    font-size: 20px;
+}
+
+#type-cell span i {
+    font-size: 28px;
+    -webkit-text-stroke: 1px #000;
+    text-shadow: 0 0 4px #000000;
+}
+
+
+#type-cell .fa-arrow-left {
+    color: #ff0000;
+}
+
+#type-cell .fa-arrow-right {
+    color: #00ff0d;
+}

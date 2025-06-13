@@ -2,6 +2,7 @@ from ..bd.repositories.MeetingRepository import MeetingRepository
 from ..bd.repositories.ProfessionalTopicRepository import ProfessionalTopicRepository
 from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleRepository
 from ..bd.repositories.TopicSpecificRepository import TopicSpecificRepository
+from ..bd.repositories.RecurrentScheduleRepository import RecurrentScheduleRepository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_topic_specific
 from ..services.specific_services.CreateSpecific import CreateSpecific
@@ -16,6 +17,7 @@ class SpecificController:
         self.meetingR = MeetingRepository(db)
         self.professional_topicR = ProfessionalTopicRepository(db)
         self.topic_specificR = TopicSpecificRepository(db)
+        self.recurrentR = RecurrentScheduleRepository(db)
     
     def createSpecific (self, specificS: schema_topic_specific.TopicSpecificIn):
         return CreateSpecific.run(
@@ -24,7 +26,8 @@ class SpecificController:
             specificR = self.specificR, 
             professional_topicR = self.professional_topicR, 
             meetingR = self.meetingR,
-            topic_specificR=self.topic_specificR
+            topic_specificR=self.topic_specificR,
+            recurrentR=self.recurrentR
         )
     
     def getAllSpecifics (self, prof_id: str):
@@ -41,7 +44,8 @@ class SpecificController:
             specificR = self.specificR, 
             professional_topicR = self.professional_topicR, 
             meetingR = self.meetingR,
-            topic_specificR=self.topic_specificR
+            topic_specificR=self.topic_specificR,
+            recurrentR= self.recurrentR
         )
     
     def deleteSpecific (self, specificS: schema_topic_specific.TopicSpecificDeleteIn):

@@ -25,6 +25,23 @@ class ReservationRepository(Repository[Reservation]):
         )
         return self.session.execute(stm).scalars().all()
     
+    def getStudent(self, student_id:str):
+        stm = (
+            select(Reservation, Meeting.topic_name, User.username)
+            .join(Meeting, and_(
+                Meeting.prof_id == Reservation.prof_id,
+                Meeting.day_hour == Reservation.day_hour
+                )
+            ).join(
+                User.user_id == Reservation.prof_id
+            )
+            .where(
+                Reservation.student_id == student_id,
+                Reservation.state == 'pay'
+            ).order_by(Reservation.day_hour.asc())
+        )
+        return self.session.execute(stm)
+    
     def getReservationsForTransaction(self):
         now = datetime.now()
     
@@ -61,7 +78,7 @@ class ReservationRepository(Repository[Reservation]):
             )
         )
         return self.session.execute(stm).all()
-    
+      
     def getReservationForTransaction(self, reservation):
         stm = (
             select(Reservation)

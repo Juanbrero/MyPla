@@ -6,7 +6,9 @@ from ..bd.repositories.RecurrentScheduleRepository import RecurrentScheduleRepos
 from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleRepository
 from sqlalchemy.orm import Session
 from ..services.reservation_services.CreateReservation import CreateReservation
+from ..services.reservation_services.UpdatePay import UpdatePay
 from app.bd.schemas import schema_reservation 
+from app.services.reservation_services.StudentReservation import StudentReservation
 
 class ReservationController:
     def __init__ (self, db: Session):
@@ -29,3 +31,19 @@ class ReservationController:
             reservationS = reservationS,
             specificR = self.specificR
         )
+    
+    def updatePay(self, student_id:str, statusP: str):
+        return UpdatePay.run(
+            db= self.db,
+            student_id = student_id,
+            statusP= statusP,
+            reservationR = self.reservationR,
+            meetingR= self.meetingR
+        )
+    
+    def studentReservation(self, student_id:str):
+        return StudentReservation.run(
+            student_id = student_id,
+            reservationR = self.reservationR
+        )
+    
