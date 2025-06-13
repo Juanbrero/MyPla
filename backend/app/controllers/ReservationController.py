@@ -7,7 +7,9 @@ from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleReposit
 from sqlalchemy.orm import Session
 from ..services.reservation_services.CreateReservation import CreateReservation
 from ..services.reservation_services.UpdatePay import UpdatePay
+from ..services.reservation_services.CancelReservation import CancelReservation
 from app.bd.schemas import schema_reservation 
+from datetime import datetime
 
 class ReservationController:
     def __init__ (self, db: Session):
@@ -38,4 +40,14 @@ class ReservationController:
             statusP= statusP,
             reservationR = self.reservationR,
             meetingR= self.meetingR
+        )
+    
+    def cancelReservation(self, day_hour:datetime, user_id:str, user_cancel:str, role:str):
+        return CancelReservation.run(
+            db = self.db,
+            day_hour = day_hour,
+            user_id = user_id,
+            user_cancel = user_cancel,
+            role = role,
+            reservationR = self.reservationR
         )
