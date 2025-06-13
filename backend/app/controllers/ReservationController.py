@@ -9,11 +9,8 @@ from ..services.reservation_services.CreateReservation import CreateReservation
 from ..services.reservation_services.UpdatePay import UpdatePay
 from ..services.reservation_services.CancelReservation import CancelReservation
 from app.bd.schemas import schema_reservation 
-<<<<<<< SIP-131-generar-endpoint-para-que-se-realice-la-cancelacion
 from datetime import datetime
-=======
 from app.services.reservation_services.StudentReservation import StudentReservation
->>>>>>> main
 
 class ReservationController:
     def __init__ (self, db: Session):
