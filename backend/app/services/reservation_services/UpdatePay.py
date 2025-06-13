@@ -55,7 +55,7 @@ class UpdatePay():
 
         if statusP == "approved":
             
-            reservationR.update({"state": "finished"}, {"student_id": student_id, "day_hour": r.day_hour.isoformat(), "state": "pending"})
+            reservationR.update({"state": "pay"}, {"student_id": student_id, "day_hour": r.day_hour.isoformat(), "state": "pending"})
 
 
         db.commit()
