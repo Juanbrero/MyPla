@@ -49,7 +49,8 @@ class CreatePreference:
                 }
             ],
             "date_of_expiration": (datetime.now() + time_expire).isoformat(),
-            "metadata":{"student_id": student_id}    
+            "metadata":{"student_id": student_id},
+            "notification_url": "https://miplasip.publicvm.com/api/mp-notification"
         }
    
         preference_response = sdk.preference().create(preference_data)
