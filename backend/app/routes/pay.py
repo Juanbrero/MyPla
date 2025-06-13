@@ -13,9 +13,6 @@ router = APIRouter(prefix="/api/pay")
 def get_preferenceId(db: Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
     return PayController(db=db).initialPay(user_info["user_id"])
 
-@router.post("/mp_preference", tags=['Pay'])
-def get_prerence(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
-    return PayController(db= db).createPreference(user_info["user_id"])
 
 @router.get("/pending", tags=['Pay'])
 def get_pay_pending(db:Session = Depends(get_db)):#, user_info = Depends(RolesValidator(["Administrador"]))):
