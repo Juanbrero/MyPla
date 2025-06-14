@@ -166,3 +166,7 @@
   border-bottom-color: #ddd;
   border-radius: 6px;
 }
+
+.header-dia.dia-hoy {
+  background-color: #4a90e2;
+}

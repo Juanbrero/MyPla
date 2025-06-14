@@ -33,7 +33,6 @@ export default function ReservationModal({
   token,
   prof_id
 }) {
-
     const [step, setStep] = useState(steps[0]);
     const [localTaskData, setLocalTaskData] = React.useState(taskData);
 
@@ -61,7 +60,6 @@ export default function ReservationModal({
     const initialReservation = async (go) => {
         const initial = await initialClass(token, localTaskData, prof_id)
         if (initial) {
-            console.log(initial, 'FUNCO?')
             go()
         }
     } 

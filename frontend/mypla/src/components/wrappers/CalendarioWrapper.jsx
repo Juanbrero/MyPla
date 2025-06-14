@@ -1,5 +1,5 @@
 import Calendario from "../shedule/Calendario";
-import StudentCalendar from "../studentCalendar/StudentCalendar";
+import StudentMyCalendar from "../studentMyCalendar/StudentMyCalendar";
 
 const CalendarioWrapper = ({token, roles}) => {
   if (roles.includes("Profesional")) {
@@ -7,7 +7,7 @@ const CalendarioWrapper = ({token, roles}) => {
   }
 
   if (roles.includes("Alumno")) {
-    return <StudentCalendar token={token} />;
+    return <StudentMyCalendar token={token} />;
   }
 
   return <div>Loggueate antes de ingresar</div>;
