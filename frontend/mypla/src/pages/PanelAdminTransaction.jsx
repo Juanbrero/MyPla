@@ -6,12 +6,14 @@ import { getPayPending, putPayPending } from '../services/payments/payment.servi
 import PaymentInfoModal from '../components/PaymentInfoModal';
 
 
+
 export const PanelAdminTransaction = ({ token }) => {
+
     
     const [transfer, setTransfer] = useState([]);
     const { isAuthenticated } = useAuth0();
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRow, setSelectedRow] = useState([]);
 
     useEffect(() => {
         const cargarTransacciones = async () => {
@@ -57,32 +59,33 @@ export const PanelAdminTransaction = ({ token }) => {
 
                 const fila = $(`
                     <tr id=tr-${transfer.indexOf(pay)} class=tr-${concept}>
-                        <td id="payId" class="td-oculto"> ${transfer.indexOf(pay)} </td>
-                        <td id="payAddress" class="td-oculto"> ${pay.cvu} </td>
-                        <td id="payAlum">${pay.user_student.email}</td>
+                        <td class="td-oculto"> ${pay.cvu} </td>
+                        <td>${pay.user_student.email}</td>
                         <td>
-                            <div id="type-cell">
-                                <p id="payConcept">${concept}</p>
+                            <div class="type-cell">
+                                <p>${concept}</p>
                                 <span>${transferWay}</span>
                             </div>
                         </td>
-                        <td id="payProf">${pay.user_professional.email}</td>
-                        <td id="payAmount">$ ${pay.price}</td>
-                        <td id="payDate">${payDate}</td>
-                        <td id="td-button"><button id=${idBttn}>Hecho</button></td>
+                        <td>${pay.user_professional.email}</td>
+                        <td>$ ${pay.price}</td>
+                        <td>${payDate}</td>
+                        <td class="td-button"><button id=${idBttn}>Hecho</button></td>
                     </tr>
                     `);
                     
                 fila.on('click', function () {
                     const data = {
-                        id: $(this).find("#payId").text(),
-                        address: $(this).find("#payAddress").text(),
-                        alum: $(this).find("#payAlum").text(),
-                        prof: $(this).find("#payProf").text(),
-                        concept: $(this).find("#payConcept").text(),
-                        amount: $(this).find("#payAmount").text(),
-                        date: $(this).find("#payDate").text(),
+                        id: transfer.indexOf(pay),
+                        address: pay.cvu,
+                        alum: pay.user_student.email,
+                        prof: pay.user_professional.email,
+                        prof_id: pay.user_professional.professional_id,
+                        concept: concept,
+                        amount: pay.price,
+                        date: payDate,
                     };
+                    
                     setSelectedRow(data);
                     setModalOpen(true);
                 });
