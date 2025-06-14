@@ -6,11 +6,11 @@ class ProfessionalController:
 
     def __init__(self, db:Session):
         self.db = db
-        self.professioanlR = ProfessionalRepository(db)
+        self.professionalR = ProfessionalRepository(db)
 
     def getProfessional(self, prof_id:str):
         return GetProfessional.run(
             db = self.db,
             prof_id = prof_id,
-            professionalR = self.professioanlR
+            professionalR = self.professionalR
         )

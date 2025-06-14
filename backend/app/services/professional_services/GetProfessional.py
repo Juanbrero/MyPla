@@ -11,9 +11,9 @@ class GetProfessional():
     def run(
         db:Session,
         prof_id: str,
-        profesionalR: Repository[Professional]
+        professionalR: Repository[Professional]
     ):
-        professional = profesionalR.get_by({'prof_id':prof_id})
+        professional = professionalR.get_by({'prof_id':prof_id})
 
         if len(professional) <= 0:
             raise NotFound('Professional not found')
