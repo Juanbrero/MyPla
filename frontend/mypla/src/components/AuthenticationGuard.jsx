@@ -34,9 +34,9 @@ export const AuthenticationGuard = ({ Component, roles = [] }) => {
   });
 
   if (isLoading || accessToken === undefined) {
-    return <div>Verificando autenticación...</div>;
+    return;
   }
-
+  
   if (!hasRequiredRole()) {
     return <div>No tienes permisos para acceder a esta página.</div>;
   }

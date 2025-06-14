@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfessionalProfile from '../components/ProfessionalProfile.jsx'
 import StudentProfile from '../components/StudentProfile.jsx'
-import { prof_id } from "../utils/testData";
 import { LinkCalendar } from "../components/LinkCalendar.jsx";
 import {
   Button

@@ -2,14 +2,11 @@ import { Route, Routes } from "react-router-dom"
 import { AuthenticationGuard } from "./components/AuthenticationGuard"
 import { ProfilePage } from "./pages/ProfilePage"
 import CallbackPage from "./pages/CallbackPage"
-import { ProtectedPage } from "./pages/ProtectedPage"
-import OAuthCallback from "./OAuthCallback"
 import { useAuth0 } from "@auth0/auth0-react"
 import Home from "./pages/Home"
 import TutorialGuide from "./components/TutorialGuide"
 import { TutorialProvider } from "./components/TutorialContext"
 import CalendarioWrapper from "./components/wrappers/CalendarioWrapper.jsx"
-import { TestAuth } from "./pages/TestAuth"
 import { HeaderComponent } from './components/header/HeaderComponent.jsx'
 import { ProfessionalsList } from './pages/ProfessionalsList.jsx'
 import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
@@ -22,7 +19,7 @@ const App = () => {
     if (isLoading) {
       return (
         <div className="page-layout">
-          ... carregando
+          ... cargando
         </div>
       );
     }
@@ -53,16 +50,15 @@ const App = () => {
             path="/callback"
             element={<AuthenticationGuard Component={CallbackPage} />}
           />
-          <Route
+          {/* <Route
             path="/protected"
             element={<AuthenticationGuard Component={ProtectedPage} />}
-          />
-          <Route path="/oauth-callback" element={<OAuthCallback />} />
-          {/* <Route path="/test" element={<ScheduleManager />} /> */}
-          <Route 
+          /> */}
+          {/* <Route path="/oauth-callback" element={<OAuthCallback />} /> */}
+          {/* <Route 
             path="/test-auth" 
             element={<AuthenticationGuard Component={TestAuth} />} 
-          />
+          /> */}
           <Route 
             path="/professionalsList" 
             element={<AuthenticationGuard Component={ProfessionalsList} />} 

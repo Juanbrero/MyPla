@@ -5,13 +5,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getTopics } from '../../services/topics/topics.service';
 
-const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
 export const HeaderComponent = ({token, roles}) => {
     let menuVisible = false;
 
     const [topics, setTopics] = useState([]);
-    const [selectedTopic, setSelectedTopic] = useState('');
+    const [selectedTopic, setSelectedTopic] = useState('');  
 
     useEffect(() => {
         const fetchTopics = async () => {
@@ -77,16 +76,34 @@ export const HeaderComponent = ({token, roles}) => {
                         </div>
                     </div>
                 }
-                <nav id="nav">
-                    <ul className="nav-list">
-                        <li><Link to="/" onClick={select}>Inicio</Link></li>
-                        <li><Link to="/profile" onClick={select}>Perfil</Link></li>
-                        <li><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
-                    </ul>
-                </nav>
-                <div className="nav-responsive" onClick={showHideMenu}>
-                    <FontAwesomeIcon icon={faBars} />
-                </div>
+                {roles.includes("Administrador") ? (
+                    <div>
+                        <nav id="nav">
+                            <ul className="nav-list">
+                                <li><Link to="/" onClick={select}>Inicio</Link></li>
+                                <li><Link to="/profile" onClick={select}>Perfil</Link></li>
+                                <li><Link to="/adminTransactions" onClick={select}>Transacciones</Link></li>
+                            </ul>
+                        </nav>
+                        <div className="nav-responsive" onClick={showHideMenu}>
+                            <FontAwesomeIcon icon={faBars} />
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <nav id="nav">
+                            <ul className="nav-list">
+                                <li><Link to="/" onClick={select}>Inicio</Link></li>
+                                <li><Link to="/profile" onClick={select}>Perfil</Link></li>
+                                <li><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
+                            </ul>
+                        </nav>
+                        <div className="nav-responsive" onClick={showHideMenu}>
+                            <FontAwesomeIcon icon={faBars} />
+                        </div>
+                    </div>
+                    )
+                }
             </header>
         </div>
     );
