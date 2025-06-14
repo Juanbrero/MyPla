@@ -25,13 +25,17 @@ export const AuthenticationGuard = ({ Component, roles = [], renderAlways }) => 
     return roles.some(role => userRoles.includes(role));
   };
 
-  const ComponentRender = withAuthenticationRequired(Component, {
+  const ComponentRender = !renderAlways ? withAuthenticationRequired(Component, {
     onRedirecting: () => (
       <div className="page-layout">
         ...
       </div>
     ),
-  });
+  }) : Component;
+
+  if (renderAlways) {
+    return <ComponentRender token={accessToken} roles={userRoles} />
+  }
 
   if (isLoading || accessToken === undefined) {
     return;

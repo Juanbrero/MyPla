@@ -50,79 +50,57 @@ export const HeaderComponent = ({token, roles}) => {
         }
     };
     
-    console.log("roles: ", roles);
+    console.log(token);
     return (
         <div className="header-container">
             <header>
                 <div className="logo">
                     <Link to="/">MiPla</Link>
                 </div>
-                {roles == [] &&
-                    <div>
-                        <nav id="nav">
-                            <ul className="nav-list">
-                                <li><Link to="/" onClick={select}>Inicio</Link></li>
-                                <LoginButton/>
-                                <SignupButton/>
-                            </ul>
-                        </nav>
-                        <div className="nav-responsive" onClick={showHideMenu}>
-                            <FontAwesomeIcon icon={faBars} />
-                        </div>
-                    </div>
+                {roles && roles.includes('Alumno') &&
+                 <div className="search-container">
+                 <div className="search-input">
+                     <select
+                         value={selectedTopic}
+                         onChange={(e) => setSelectedTopic(e.target.value)}
+                     >
+                         <option value="">Seleccionar tópico...</option>
+                         {topics.map((topic, index) => (
+                             <option key={index} value={topic}>
+                                 {topic}
+                             </option>
+                         ))}
+                         </select>
+                     </div>
+                     <div className="search-icon">
+                         <button id="search-button" onClick={searchProfs}>
+                             <FontAwesomeIcon icon={faMagnifyingGlass} />
+                         </button>
+                     </div>
+                 </div>
                 }
-                {roles.includes("Alumno") &&
-                    <div className="search-container">
-                        <div className="search-input">
-                            <select
-                                value={selectedTopic}
-                                onChange={(e) => setSelectedTopic(e.target.value)}
-                            >
-                                <option value="">Seleccionar tópico...</option>
-                                {topics.map((topic, index) => (
-                                    <option key={index} value={topic}>
-                                        {topic}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="search-icon">
-                            <button id="search-button" onClick={searchProfs}>
-                                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            </button>
-                        </div>
-                    </div>
-                }
-                {roles.includes("Administrador") ? (
-                    <div>
-                        <nav id="nav">
-                            <ul className="nav-list">
-                                <li><Link to="/" onClick={select}>Inicio</Link></li>
-                                <li><Link to="/profile" onClick={select}>Perfil</Link></li>
-                                <li><Link to="/adminTransactions" onClick={select}>Transacciones</Link></li>
-                                <LogoutButton/>
-                            </ul>
-                        </nav>
-                        <div className="nav-responsive" onClick={showHideMenu}>
-                            <FontAwesomeIcon icon={faBars} />
-                        </div>
-                    </div>
-                ) : (
-                    <div>
-                        <nav id="nav">
-                            <ul className="nav-list">
+                <div>
+                    <nav id="nav">
+                            {!token ? 
+                              <ul className="nav-list">
+                                  <li><Link to="/" onClick={select}>Inicio</Link></li>
+                                  <LoginButton/>
+                                  <SignupButton/>
+                              </ul>
+                              :
+                              <ul className="nav-list">
                                 <li><Link to="/" onClick={select}>Inicio</Link></li>
                                 <li><Link to="/profile" onClick={select}>Perfil</Link></li>
                                 <li><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
                                 <LogoutButton/>
                             </ul>
-                        </nav>
-                        <div className="nav-responsive" onClick={showHideMenu}>
-                            <FontAwesomeIcon icon={faBars} />
-                        </div>
+                            }
+                            
+                    </nav>
+                    <div className="nav-responsive" onClick={showHideMenu}>
+                        <FontAwesomeIcon icon={faBars} />
                     </div>
-                    )
-                }
+                </div>
             </header>
         </div>
     );
