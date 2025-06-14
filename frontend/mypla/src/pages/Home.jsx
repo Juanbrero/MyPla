@@ -1,6 +1,4 @@
 import '../App.css'
-import { LoginButton } from '../components/auth0Buttons/LoginButton'
-import { SignupButton } from '../components/auth0Buttons/SignUpButton'
 
 
 function Home() {

@@ -1,0 +1,21 @@
+import { callExternalApi } from "../external-api.service";
+
+const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
+
+export const getProfessional = async (prof_id) => {
+
+    const config = {
+    url: `${apiServerUrl}/professionals?prof_id=${prof_id}`,
+    method: "GET",
+    headers: {
+        "content-type": "application/json",
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};

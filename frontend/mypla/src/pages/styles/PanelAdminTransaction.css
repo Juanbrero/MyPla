@@ -90,7 +90,7 @@ tbody .tr-Reserva {
     background-color: #33fd0091
 }
 
-tbody tr #td-button {
+tbody tr .td-button {
     border-left: 2px solid #000000;
 }
 
@@ -98,29 +98,29 @@ tbody tr #td-button {
     display: none;
 }
 
-#type-cell {
+.type-cell {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#type-cell p {
+.type-cell p {
     margin: 0;
     font-size: 20px;
 }
 
-#type-cell span i {
+.type-cell span i {
     font-size: 28px;
     -webkit-text-stroke: 1px #000;
     text-shadow: 0 0 4px #000000;
 }
 
 
-#type-cell .fa-arrow-left {
+.type-cell .fa-arrow-left {
     color: #ff0000;
 }
 
-#type-cell .fa-arrow-right {
+.type-cell .fa-arrow-right {
     color: #00ff0d;
 }
