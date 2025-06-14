@@ -20,7 +20,7 @@ class StudentReservation:
             item = {
                 "prof_username": username,
                 "prof_id": reserva.prof_id,
-                "day_hour": reserva.day_hour,
+                "day_hour": reserva.day_hour.isoformat(),
                 "topic": topic,
                 "link_class": link
             }
