@@ -8,26 +8,28 @@ import app.models as models
 from app.bd.cruds import crud_prof
 from app.bd.bd_utils import Errors, Info
 from app.auth0.dependencies import RolesValidator
+from app.controllers.ProfessionalController import ProfessionalController
 
 router = APIRouter(prefix="/api/professionals",tags=["Professionals"])
 
 
-@router.get("", 
-            response_model=List[schema_prof.Professional])
-async def get_all_prof(db : Session = Depends(get_db)):
-    """
-    Retorna todos los profesionales
-    Args:
-        db: Session
-    Return
-        [Professionales]
+# @router.get("", 
+#             response_model=List[schema_prof.Professional])
+# async def get_all_prof(db : Session = Depends(get_db)):
+#     """
+#     Retorna todos los profesionales
+#     Args:
+#         db: Session
+#     Return
+#         [Professionales]
 
-    """
-    return crud_prof.get_prof(db)
+#     """
+#     return crud_prof.get_prof(db)
 
 
-@router.get("/{prof_id}", response_model=Union[schema_prof.Professional, Errors])
-async def find_prof( db: Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
+@router.get("", response_model=Union[schema_prof.Professional, Errors])
+def find_prof(prof_id:str, db: Session = Depends(get_db)):
+    #, user_info = Depends(RolesValidator(["Administrador"]))):
     """
     Retorna un profesional
     Args:
@@ -38,59 +40,60 @@ async def find_prof( db: Session = Depends(get_db), user_info = Depends(RolesVal
         Errors
 
     """
-    response = crud_prof.get_prof_id(db, user_info["user_id"])       
-    return response
+    return ProfessionalController(db= db).getProfessional(prof_id)
+    # response = crud_prof.get_prof_id(db, user_info["user_id"])       
+    # return response
 
 
-@router.delete("/{prof_id}",response_model=Union[Info, Errors])
-def del_user(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
-    """
-    Eliminar un profesional
+# @router.delete("/{prof_id}",response_model=Union[Info, Errors])
+# def del_user(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
+#     """
+#     Eliminar un profesional
 
-    Args:
-        prof_id: str
-        db: Session
-    Returns:
-        Info
-        Errors
-    """
-    return crud_prof.del_prof(db, user_info["user_id"])
+#     Args:
+#         prof_id: str
+#         db: Session
+#     Returns:
+#         Info
+#         Errors
+#     """
+#     return crud_prof.del_prof(db, user_info["user_id"])
 
 
-#Para Desarrollo
-@router.post("", 
-             response_model=Union[Info, Errors])
-async def create_prof(prof : schema_prof.ProfessionalID, 
-                db : Session = Depends(get_db)):
-    """
-    Funcion de desarrollo para crear un profesional
+# #Para Desarrollo
+# @router.post("", 
+#              response_model=Union[Info, Errors])
+# async def create_prof(prof : schema_prof.ProfessionalID, 
+#                 db : Session = Depends(get_db)):
+#     """
+#     Funcion de desarrollo para crear un profesional
 
-    Args:
-        prof_id: str
-        db: Session
+#     Args:
+#         prof_id: str
+#         db: Session
 
-    Return:
-        Info
-        Errors
-    """
-    return crud_prof.create_prof(db, prof.prof_id)
+#     Return:
+#         Info
+#         Errors
+#     """
+#     return crud_prof.create_prof(db, prof.prof_id)
 
-@router.put("/{prof_id}",response_model=Union[schema_prof.Professional, Errors])
-def update_score(prof_id:str, score:schema_prof.ProfessionalScore, db:Session = Depends(get_db)):
-    """
-    Funcion de desarrollo para definir score
+# @router.put("/{prof_id}",response_model=Union[schema_prof.Professional, Errors])
+# def update_score(prof_id:str, score:schema_prof.ProfessionalScore, db:Session = Depends(get_db)):
+#     """
+#     Funcion de desarrollo para definir score
 
-    Args:
-        prof_id: str
-        score: schema_prof.ProfessionalScore
-            - score: float
-        db: Session
-    Return:
-        schema_prof.Professional
-            - prof_id: str
-            - scores: float
-        Errors
-    """
-    prof = schema_prof.Professional(prof_id=prof_id, score= score.score)
-    return crud_prof.update_score(db, prof)
+#     Args:
+#         prof_id: str
+#         score: schema_prof.ProfessionalScore
+#             - score: float
+#         db: Session
+#     Return:
+#         schema_prof.Professional
+#             - prof_id: str
+#             - scores: float
+#         Errors
+#     """
+#     prof = schema_prof.Professional(prof_id=prof_id, score= score.score)
+#     return crud_prof.update_score(db, prof)
 
