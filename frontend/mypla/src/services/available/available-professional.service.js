@@ -2,6 +2,13 @@ import { callExternalApi } from "../external-api.service";
 
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
+function sumarUnaHora(horaStr) {
+  let [hh, mm, ss] = horaStr.split(":").map(Number);
+  hh = (hh + 1) % 24; // Sumar 1 y controlar que no pase de 23
+  return `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
+}
+
+
 export const getAvailableProfessional = async (token) => {
   const config = {
     url: `${apiServerUrl}/available/professionals`,
@@ -24,9 +31,16 @@ export const getAvailableProfessional = async (token) => {
 
   for (const [key, items] of Object.entries(data)) {
     if (Array.isArray(items)) {
-      result[key] = items.map((item) => ({
+      result[key] = items.map((item) => (key === 'class_' ? {
         ...item,
-        type: key, // Agregar el campo 'type' con el nombre de la clave
+        type: key, 
+        day: item.day_hour.split("T")[0],
+        start: item.day_hour.split("T")[1],
+        end: sumarUnaHora(item.day_hour.split("T")[1]),
+        topics: [item.topics],
+      } : {
+        ...item,
+        type: key,
       }));
     } else {
       result[key] = items;

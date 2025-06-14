@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CeldaHora from '../studentCalendar/CeldaHoraStudent.jsx';
+import CeldaHoraStudent from '../studentCalendar/CeldaHoraStudent.jsx';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, isToday} from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getAvailableStudent } from '../../services/available/avaliable-student.service.js';
@@ -31,15 +31,17 @@ const toISO8601 = (hora, minutos = '00') => {
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
-    if (!eventos) return { available: [], exception: [] };
+    if (!eventos) return { available: [], reserv: [] };
 
-    const { available = [], exception = [] } = eventos;
+    const { available = [], reserv = [] } = eventos;
+
+console.log(eventos)
 
     // Filtrar específicos para el día
     const availableDelDia = available.filter(e => isSameDay(parseISO(e.day), dia));
 
     // Filtrar excepciones para el día
-    const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
+    const reservDelDia = reserv.filter(e => isSameDay(parseISO(e.day), dia));
 
     // // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
     // const recurrentesDelDia = recurrent.filter(e => {
@@ -55,7 +57,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
     // });
     return {
         available: availableDelDia,
-        exception: excepcionesDelDia,
+        reserve: reservDelDia,
     };
 };
 
@@ -172,7 +174,7 @@ const StudentCalendar = ({token}) => {
               const eventosDelDia = eventosPorDia[keyDia];
 
               return (
-                <CeldaHora
+                <CeldaHoraStudent
                   key={`${hora}-${idxDia}`}
                   dia={dia}
                   hora={hora}

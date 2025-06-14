@@ -44,13 +44,13 @@ const eventoEnHora = (eventos, dia, hora) => {
 
 
 const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
-  const { recurrent = [], specific = [], exception = [] } = eventosDelDia || {};
-  const todosEventos = [...exception, ...recurrent, ...specific];
-
+  const { recurrent = [], specific = [], exception = [], clases = [] } = eventosDelDia || {};
+  const todosEventos = [...clases, ...exception, ...recurrent, ...specific];
   const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 
   let claseCelda = 'celda-hora';
   if (evento) {
+    // console.log(evento.type)
     claseCelda += ' celda-hora-ocupada';
     if (evento.type == 'recurrent') {
       claseCelda += ' celda-recurrent';
@@ -58,6 +58,8 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
       claseCelda += ' celda-specific';
     } else if (evento.type == 'exception') {
       claseCelda += ' celda-exception';
+    } else if (evento.type == 'class_') {
+      claseCelda += ' celda-reserve';
     }
 
     if (posicion === 'start') {

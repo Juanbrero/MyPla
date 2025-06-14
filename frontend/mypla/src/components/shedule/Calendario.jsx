@@ -37,15 +37,19 @@ const toISO8601 = (hora, minutos = '00') => {
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
-     if (!eventos) return { recurrent: [], specific: [], exception: [] };
+     if (!eventos) return { recurrent: [], specific: [], exception: [], class_: [] };
 
-     const { recurrent = [], specific = [], exception = [] } = eventos;
+     const { class_ = [], recurrent = [], specific = [], exception = [] } = eventos;
 
     // Filtrar específicos para el día
     const especificosDelDia = specific.filter(e => isSameDay(parseISO(e.day), dia));
 
     // Filtrar excepciones para el día
     const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
+    console.log(class_)
+    console.log(specific)
+    // Filtrar excepciones para el día
+    const clasesDelDia = class_.filter(e => isSameDay(parseISO(e.day), dia));
 
     // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
     const recurrentesDelDia = recurrent.filter(e => {
@@ -64,6 +68,7 @@ const filtrarEventosPorDia = (eventos, dia) => {
         recurrent: recurrentesDelDia,
         specific: especificosDelDia,
         exception: excepcionesDelDia,
+        clases: clasesDelDia,
     };
 };
 
@@ -244,7 +249,8 @@ const Calendario = ({token}) => {
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (_token) => {
         try {
-            const data = await getAvailableProfessional(_token);
+          const data = await getAvailableProfessional(_token);
+          console.log(data)
             setEventos(data);
             const topics = await getProfessionalTopics(_token);
             setProfessionalTopics(topics);

@@ -43,10 +43,10 @@ const eventoEnHora = (eventos, dia, hora) => {
 };
 
 
-const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
+const CeldaHoraStudent = ({ dia, hora, eventosDelDia, onClick }) => {
   const { available = [], reserve = [] } = eventosDelDia || {};
   const todosEventos = [...reserve, ...available];
-
+console.log(todosEventos)
   const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 
   let claseCelda = 'celda-hora';
@@ -54,7 +54,7 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
     claseCelda += ' celda-hora-ocupada';
     if (evento.type == 'available') {
       claseCelda += ' celda-available';
-    } else if (evento.type == 'reserve') {
+    } else if (evento.type == 'reserve' || evento.type == 'reserv') {
       claseCelda += ' celda-reserve';
     }
 
@@ -82,4 +82,4 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
 };
 
 
-export default CeldaHora;
+export default CeldaHoraStudent;

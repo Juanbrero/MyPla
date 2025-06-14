@@ -50,7 +50,6 @@ export const HeaderComponent = ({token, roles}) => {
         }
     };
     
-    console.log(token);
     return (
         <div className="header-container">
             <header>
