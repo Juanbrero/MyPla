@@ -11,7 +11,7 @@ import { HeaderComponent } from './components/header/HeaderComponent.jsx'
 import { ProfessionalsList } from './pages/ProfessionalsList.jsx'
 import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
 import { PanelAdminTransaction } from "./pages/PanelAdminTransaction.jsx"
-
+import { AdminTopics } from "./pages/AdminTopics.jsx"
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -66,6 +66,10 @@ const App = () => {
           <Route 
             path="/adminTransactions" 
             element={<AuthenticationGuard Component={PanelAdminTransaction} roles={["Administrador"]}/>} 
+          />
+          <Route 
+            path="/admin-topics" 
+            element={<AuthenticationGuard Component={AdminTopics} roles={["Administrador"]}/>} 
           />
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
         </Routes>

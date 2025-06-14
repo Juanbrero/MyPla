@@ -57,20 +57,6 @@ export const HeaderComponent = ({token, roles}) => {
                 <div className="logo">
                     <Link to="/">MiPla</Link>
                 </div>
-                {roles == [] &&
-                    <div>
-                        <nav id="nav">
-                            <ul className="nav-list">
-                                <li><Link to="/" onClick={select}>Inicio</Link></li>
-                                <LoginButton/>
-                                <SignupButton/>
-                            </ul>
-                        </nav>
-                        <div className="nav-responsive" onClick={showHideMenu}>
-                            <FontAwesomeIcon icon={faBars} />
-                        </div>
-                    </div>
-                }
                 {roles.includes("Alumno") &&
                     <div className="search-container">
                         <div className="search-input">

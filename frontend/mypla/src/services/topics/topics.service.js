@@ -20,3 +20,22 @@ export const getTopics = async () => {
         error,
     };
 };
+
+export const postTopic = async (topic) => {
+
+    const config = {
+    url: `${apiServerUrl}/topics?topic_name=${topic}`,
+    method: "POST",
+    headers: {
+        "content-type": "application/json",
+        // "Authorization": `Bearer ${token}`,
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
