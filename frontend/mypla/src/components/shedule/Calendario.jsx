@@ -132,7 +132,7 @@ const Calendario = ({token}) => {
           }
         }
         // Abrir modal en CREAR si no hay evento
-        else {
+        else if (diaStr >= new Date().toISOString().slice(0, 10)){
           setModalData({
             start: toISO8601(hora),
             end: toISO8601(hora + 1),
