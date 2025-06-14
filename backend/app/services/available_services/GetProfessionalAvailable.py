@@ -57,12 +57,13 @@ class GetProfessionalAvailable():
             data_exception.append(item)
         
         data_class = []
-        for schedule, student_id, topic_name in all_class:
+        for schedule, student_id, topic_name, link in all_class:
             item ={
                 "prof_id": schedule.prof_id,
                 "student_id": student_id,
                 "day_hour": schedule.day_hour.isoformat(),
-                "topics": topic_name
+                "topics": topic_name,
+                "link_class": link
             }
             data_class.append(item) 
 

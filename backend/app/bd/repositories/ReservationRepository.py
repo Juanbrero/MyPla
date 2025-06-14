@@ -27,7 +27,7 @@ class ReservationRepository(Repository[Reservation]):
     
     def getStudent(self, student_id:str):
         stm = (
-            select(Reservation, Meeting.topic_name, User.username)
+            select(Reservation, Meeting.topic_name, User.username, Professional.link_class)
             .join(Meeting, and_(
                 Meeting.prof_id == Reservation.prof_id,
                 Meeting.day_hour == Reservation.day_hour
@@ -35,6 +35,7 @@ class ReservationRepository(Repository[Reservation]):
             ).join(
                 User.user_id == Reservation.prof_id
             )
+            .join(Professional.prof_id == Reservation.prof_id)
             .where(
                 Reservation.student_id == student_id,
                 Reservation.state == 'pay'
