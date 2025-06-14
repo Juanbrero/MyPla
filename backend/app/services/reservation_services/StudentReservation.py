@@ -16,12 +16,13 @@ class StudentReservation:
         
         class_ = reservationR.getStudent(student_id)
         reservas = []
-        for reserva, topic, username in class_:
+        for reserva, topic, username, link in class_:
             item = {
                 "prof_username": username,
                 "prof_id": reserva.prof_id,
                 "day_hour": reserva.day_hour,
-                "topic": topic
+                "topic": topic,
+                "link_class": link
             }
             reservas.append(item)
 

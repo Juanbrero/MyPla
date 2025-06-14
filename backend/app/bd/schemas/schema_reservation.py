@@ -20,6 +20,7 @@ class reservstudent(BaseModel):
     prof_id: str
     day_hour: datetime
     topic:str
+    link_class: str
 
 class StudentReservation(BaseModel):
     reservations: list[reservstudent]
