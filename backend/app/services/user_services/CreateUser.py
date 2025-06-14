@@ -40,7 +40,7 @@ class CreateUser:
             professionalR.create({
                 "prof_id": newUser.user_id,
                 "cvu": userS.cvu_profesional,
-                "link_acceso": userS.link_acceso
+                "link_class": userS.link_acceso
             }) 
         else:
             studentR.create({
