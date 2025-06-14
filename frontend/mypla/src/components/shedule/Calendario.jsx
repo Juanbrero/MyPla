@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './CeldaHora.jsx';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, isToday} from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es, fi } from 'date-fns/locale';
 import './calendario.css';
 import ScheduleModal from './ScheduleModal.jsx';
 import { getAvailableProfessional } from '../../services/available/available-professional.service.js';
@@ -10,6 +10,8 @@ import { postRecurrent, putRecurrent, deleteRecurrent } from '../../services/rec
 import { postException, putException, deleteException } from '../../services/exception/exception.service';
 import { getProfessionalTopics } from '../../services/professionals-topic/professionals-topic.service.js';
 import { ColorReferenceHelp } from './schedule-components/ColorReferenceHelp.jsx';
+import { cancelStudentReservations } from '../../services/reservation/initial-class.service.js';
+import ProfessionalReservationModal from './professionalRecervationModal.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -46,8 +48,6 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
     // Filtrar excepciones para el día
     const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
-    console.log(class_)
-    console.log(specific)
     // Filtrar excepciones para el día
     const clasesDelDia = class_.filter(e => isSameDay(parseISO(e.day), dia));
 
@@ -82,6 +82,10 @@ const Calendario = ({token}) => {
     const [modalData, setModalData] = useState(null); 
     const [modalMode, setModalMode] = useState('create') // 'create', 'edit', 'exception'
 
+    // modal reserva
+    const [modalBOpen, setModalBOpen] = useState(false);
+    const [modalBData, setModalBData] = useState(null); 
+
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
@@ -98,7 +102,11 @@ const Calendario = ({token}) => {
         // Abrir modal en EDITAR si hay evento
         const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
-          if (evento.type === 'recurrent' || evento.type === 'specific') {
+          if (evento.type === 'class_') {
+            setModalBData(evento)
+            setModalBOpen(true)
+          }
+          else if (evento.type === 'recurrent' || evento.type === 'specific') {
             setModalData({
               start: `${evento.start}.000Z`,
               end: `${evento.end}.000Z`,
@@ -144,6 +152,17 @@ const Calendario = ({token}) => {
         setModalOpen(false);
         setModalData(null);
     };
+
+    const handleCloseModalB = () => {
+      setModalBOpen(false);
+      setModalBData(null);
+    }
+
+    const handleCancelarReserva = async (data) => {
+      const res = await cancelStudentReservations(token, `${data.day}T${data.start}`, data.student_id)
+      if (res.error) alert('No se pueden cancelar reservas cercanas o previas a la fecha') 
+      await cargarEventos(token);
+    }
 
     // --- guardo nueva tarea ---------------------------------------------------------------------
     const handleSaveNewTask = async (newTask) => {
@@ -250,7 +269,6 @@ const Calendario = ({token}) => {
     const cargarEventos = async (_token) => {
         try {
           const data = await getAvailableProfessional(_token);
-          console.log(data)
             setEventos(data);
             const topics = await getProfessionalTopics(_token);
             setProfessionalTopics(topics);
@@ -327,6 +345,14 @@ const Calendario = ({token}) => {
           onCreateException={handleCreateException}
           onDeleteException={handleDeleteException}
       />
+
+      <ProfessionalReservationModal
+          open={modalBOpen}
+          onClose={handleCloseModalB}
+          taskData={modalBData}
+          onDeleteTask={handleCancelarReserva}
+      />
+
         <ColorReferenceHelp/>
 
       </div> 
