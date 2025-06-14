@@ -21,11 +21,11 @@ def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session
     return ReservationController(db=db).createReservation(reservationS)
 
 
-@router.put('/cancel')
+@router.put('/cancel', tags=["Reservation"])
 def cancel_reservation(day_hour:datetime, user_id:str, user_cancel = Depends(RolesValidator(["Alumno", "Profesional"])), db: Session = Depends(get_db)):
     return ReservationController(db= db).cancelReservation(day_hour= day_hour, user_id= user_id, user_cancel= user_cancel["user_id"], role= user_cancel["roles"][0] )
 
-@router.get('/student', response_model=schema_reservation.StudentReservation)
+@router.get('/student', response_model=schema_reservation.StudentReservation, tags=["Reservation"])
 def student_reservation(user_info = Depends(RolesValidator(['Alumno'] ) ), db:Session= Depends(get_db) ):
     """
         Endpoint para solicitar todas las reservas pagadas de un alumno
@@ -34,11 +34,12 @@ def student_reservation(user_info = Depends(RolesValidator(['Alumno'] ) ), db:Se
                 - token -> student_id
             - Returns:
                 - {"reservations": [
-                { "prof_id": str,
+                { "prof_username": str,
                 "prof_id": str,
-                "day_hour": datetime
-                "topic":str
+                "day_hour": datetime,
+                "topic":str,
+                "link_class":str
                 }]}
     """
-    return ReservationController(db= db).studentReservation(studen_id= user_info["user_id"])
+    return ReservationController(db= db).studentReservation(student_id= user_info["user_id"])
 
