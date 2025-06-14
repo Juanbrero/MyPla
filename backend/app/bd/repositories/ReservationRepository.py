@@ -35,7 +35,8 @@ class ReservationRepository(Repository[Reservation]):
             ).join(
                 User.user_id == Reservation.prof_id
             )
-            .join(Professional.prof_id == Reservation.prof_id)
+            .join(Professional,
+                  Professional.prof_id == Reservation.prof_id)
             .where(
                 Reservation.student_id == student_id,
                 Reservation.state == 'pay'

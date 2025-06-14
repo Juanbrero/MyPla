@@ -22,7 +22,8 @@ class ClassRepository(Repository[Class]):
                 Class.day_hour == Reservation.day_hour,
                 Class.prof_id == Reservation.prof_id
             ))
-            .join(Professional.prof_id == Class.prof_id)
+            .join(Professional, 
+                  Professional.prof_id == Class.prof_id)
             .where(Class.prof_id == prof_id,
                    Reservation.state == "pay")
         )
