@@ -13,56 +13,46 @@ const steps = [
     content: 'Usa el boton para crear una cuenta e iniciar a usar la app arranquemos por un profesional',
     selector: '.button__sign-up' },
 
-  { title: 'Mercado Pago', 
-    content: 'Este botón es uno de los que se utilizaran para pagar una clase, evento o curso, en caso de usar mercado pago',
-    selector: '.mpButton' },
+  { title: 'Agrega los tópicos de lo que sepas enseñar', 
+    content: 'En esta seccion se ve el perfil y podras agregar el topico y precio de la clase',
+    selector: '.topic_form' },
 
-  { title: 'Log in / Sing up', 
+  { title: 'Vamos a la agenda', 
     content: 'La gestion del modulo de usuarios esta realizada integrando Auth0, con autenticacion de doble factor, y usando su capacidad de gestion de roles.', 
-    foot: 'Logueate para seguir ->',
-    selector: '.loginButtons' },
+    foot: 'Clickea la agenda',
+    selector: '.agenda-link' },
   
-  { title: 'Profile', 
-      content: 'En esta sección se podrá visualizar al perfil del usuario, donde tambien se puede seleccionar los topicos las clases que puede enseñar el profesional.', 
+  { title: 'Crea disponibilidad horaria', 
+      content: 'Clickeando cualquier celda de la agenda permite crear horarios recurrentes y especificos', 
       selector: '.prof-topics' },
     
   {
-    title: 'Ir a Agenda',
-    content: 'Usa el link para ver la funcionalidad de la agenda de la página.',
-    selector: '.link-agenda'
+    title: 'Salir de la cuenta',
+    content: 'Salimos de la cuenta y probemos crear una cuenta de alumno',
+    selector: '.logout-link'
   },
 
-  { title: 'Calendario', 
-    content: 'Llegaste a la funcionalidad principal de la página!!', 
+  { title: 'Entremos como alumno', 
+    content: 'Crea una nueva cuenta como alumno', 
     foot: '',
-    selector: '.calendario' },
+    selector: '.button__sign-up' },
   
-  { title: 'Semana', 
-      content: 'Con este boton se puede cambiar de semana.', 
+  { title: 'Busca profesionales', 
+      content: 'Selecciona un tópico de tu interes', 
       foot: '',
-      selector: '.direccion' },
+      selector: '.search-container' },
   
-  { 
-    title: 'Dias Recurrentes', 
-    content: 'Estos horarios representan los que el profesional esta disponible en todas las semanas.', 
-    foot: '',
-    selector: '.celda-recurrent' 
-  },
+  { title: 'Volvamos a la agenda', 
+    content: 'Al alumno se le gestiona las clases que tiene reservadas', 
+    foot: 'Clickea la agenda',
+    selector: '.agenda-link' },
 
   { 
-    title: 'Dias especificos', 
-    content: 'Estas celdas son de dias en especifico que el profesor decide dar clase.', 
+    title: 'Puede cancelar si quiere la clase', 
+    content: 'Puede clickear y cancelar la clase en caso de no poder asistir', 
     foot: '',
     selector: '.celda-specific' 
   },
-  { 
-    title: 'Agregar horario', 
-    content: 'Bueno ahora agreguemos algun horario, para probar, selecciona un espacio vacío del calendario.', 
-  },
-  { 
-    title: 'Integracion con auth0', 
-    content: 'Por último dejamos una ruta para que puedan probar la integración con auth0 en caso de estar logueado entren a /test-auth', 
-  }
 ];
 
 

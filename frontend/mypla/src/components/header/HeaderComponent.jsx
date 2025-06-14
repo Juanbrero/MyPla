@@ -100,7 +100,7 @@ export const HeaderComponent = ({token, roles}) => {
                                 <ul className="nav-list">
                                     <li><Link to="/" onClick={select}>Inicio</Link></li>
                                     <li><Link to="/profile" onClick={select}>Perfil</Link></li>
-                                    <li><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
+                                    <li className="agenda-link"><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
                                     <LogoutButton />
                                 </ul>
                                 )

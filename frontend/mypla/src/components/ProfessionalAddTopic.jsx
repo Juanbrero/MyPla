@@ -180,7 +180,7 @@ export default function ProfessionalAddTopic({ token }) {
               </div>
             ))}
           </div>
-          {notSelectedTopics.length > 0 ? <div> <ScheduleTopicsProfile
+          {notSelectedTopics.length > 0 ? <div className="topic_form"> <ScheduleTopicsProfile
             isEditable={false}
             onChange={handleChangeTopics}
             value={selectTopic}

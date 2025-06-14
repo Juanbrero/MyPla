@@ -4,6 +4,6 @@ export const LogoutButton = () => {
 
     const { user, logout } = useAuth0();
 
-    return <li style={{cursor: 'pointer'}} onClick={() => logout({returnTo: '/'})}>Log out</li>
+    return <li className="logout-link" style={{cursor: 'pointer'}} onClick={() => logout({returnTo: '/'})}>Salir</li>
 
 }
