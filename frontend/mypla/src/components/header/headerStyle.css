@@ -95,13 +95,27 @@ select {
 .header-container header nav ul li a {
     text-align: none;
     color: #1cb6ae;
-    margin: 0 15px;
+    /* margin: 0 15px; */
     padding: 3px;
     transition: .5s;
     text-decoration: none;
 }
 
 .header-container header nav ul li a:hover {
+    color: #aaf3e4;
+}
+
+.header-container header nav ul li {
+    text-align: none;
+    color: #1cb6ae;
+    margin: 0 15px;
+    padding: 3px;
+    transition: .5s;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.header-container header nav ul li:hover {
     color: #aaf3e4;
 }
 

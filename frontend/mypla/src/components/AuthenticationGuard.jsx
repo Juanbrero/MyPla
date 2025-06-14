@@ -1,7 +1,7 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import React, { useState, useEffect } from "react";
 
-export const AuthenticationGuard = ({ Component, roles = [] }) => {
+export const AuthenticationGuard = ({ Component, roles = [], renderAlways }) => {
   const [accessToken, setAccessToken] = useState()
   const { user, getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0()
 
@@ -25,18 +25,22 @@ export const AuthenticationGuard = ({ Component, roles = [] }) => {
     return roles.some(role => userRoles.includes(role));
   };
 
-  const ComponentRender = withAuthenticationRequired(Component, {
+  const ComponentRender = !renderAlways ? withAuthenticationRequired(Component, {
     onRedirecting: () => (
       <div className="page-layout">
         ...
       </div>
     ),
-  });
+  }) : Component;
 
-  if (isLoading || accessToken === undefined) {
-    return <div>Verificando autenticación...</div>;
+  if (renderAlways) {
+    return <ComponentRender token={accessToken} roles={userRoles} />
   }
 
+  if (isLoading || accessToken === undefined) {
+    return;
+  }
+  
   if (!hasRequiredRole()) {
     return <div>No tienes permisos para acceder a esta página.</div>;
   }

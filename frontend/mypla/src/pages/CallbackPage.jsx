@@ -9,11 +9,6 @@ const CallbackHandler = () => {
 
   const backendUrl = import.meta.env.VITE_API_SERVER_URL;
 
-  // console.log("user.tipo usuario: " + user.user_metadata.tipo_usuario);
-  // console.log("tipo usuario: " + tipoUsuario);
-  // console.log("isAuth: " + isAuthenticated);
-  
-
   useEffect(() => {
     if (isAuthenticated && tipoUsuario) {
       const sendUserType = async () => {
@@ -43,32 +38,3 @@ const CallbackHandler = () => {
 };
 
 export default CallbackHandler;
-
-// import { useAuth0 } from "@auth0/auth0-react";
-
-// const CallbackPage = () => {
-//     const { error } = useAuth0();
-
-//     if (error) {
-//       return (
-//           <div className="content-layout">
-//             <h1 id="page-title" className="content__title">
-//               Error
-//             </h1>
-//             <div className="content__body">
-//               <p id="page-description">
-//                 <span>{error.message}</span>
-//               </p>
-//             </div>
-//           </div>
-//       );
-//     }
-  
-//     return (
-//       <div className="page-layout">
-//         No hubo error
-//       </div>
-//     );
-// }
-
-// export default CallbackPage

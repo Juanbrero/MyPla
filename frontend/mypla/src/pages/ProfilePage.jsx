@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfessionalProfile from '../components/ProfessionalProfile.jsx'
 import StudentProfile from '../components/StudentProfile.jsx'
-import { prof_id } from "../utils/testData";
-import { LinkCalendar } from "../components/LinkCalendar.jsx";
-import {
-  Button
-} from '@mui/material';
+import AdminProfile from '../components/AdminProfile.jsx'
+
 
 export const ProfilePage = ({token, roles}) => {
   const { user, logout } = useAuth0();
@@ -30,18 +27,10 @@ export const ProfilePage = ({token, roles}) => {
       {roles.includes("Alumno") &&
         <StudentProfile token={token} user={user}></StudentProfile>
       }
+      {roles.includes("Administrador") &&
+        <AdminProfile token={token} user={user}></AdminProfile>
+      }
       
-      <div className="link-agenda">
-        <LinkCalendar></LinkCalendar>
-      </div>
-      <Button
-          variant="contained"
-          color="primary"
-          onClick={() => logout({returnTo: '/'})}
-          sx={{ marginTop: 2 }}
-        >
-          Logout
-        </Button>
     </div>
   );
 };
