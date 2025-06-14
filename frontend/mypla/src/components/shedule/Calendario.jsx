@@ -255,7 +255,7 @@ const Calendario = ({token}) => {
 
     useEffect(() => {
         cargarEventos(token);
-    }, [semanaInicio]);
+    }, []);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
     const anteriorSemana = () => setSemanaInicio(addDays(semanaInicio, -7));

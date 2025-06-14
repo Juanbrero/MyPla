@@ -130,7 +130,7 @@ const StudentCalendar = ({token}) => {
 
     useEffect(() => {
         cargarEventos(token);
-    }, [semanaInicio, prof_id]);
+    }, [prof_id]);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
     const anteriorSemana = () => setSemanaInicio(addDays(semanaInicio, -7));
