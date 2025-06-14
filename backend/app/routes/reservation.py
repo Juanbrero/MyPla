@@ -41,5 +41,5 @@ def student_reservation(user_info = Depends(RolesValidator(['Alumno'] ) ), db:Se
                 "link_class":str
                 }]}
     """
-    return ReservationController(db= db).studentReservation(studen_id= user_info["user_id"])
+    return ReservationController(db= db).studentReservation(student_id= user_info["user_id"])
 
