@@ -1,7 +1,7 @@
 import { callExternalApi } from "../external-api.service";
 const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 
-export const getProfessionalTopics = async (token) => {
+export const getProfessionalTopics = async (token, price = false) => {
 
     const config = {
     url: `${apiServerUrl}/professionals-topic`,
@@ -18,6 +18,8 @@ export const getProfessionalTopics = async (token) => {
       console.error("Error al obtener datos:", error);
       throw error;
     }
+
+    if (price) return data
 
     const topics = Array.isArray(data)
         ? data.map(item => item.topic_name)
@@ -52,7 +54,7 @@ export const getProfessionalsByTopic = async (token, topicName) => {
 };
 
 
-export const postProfessionalTopics = async (token, topic) => {
+export const postProfessionalTopics = async (token, topic, price_class = 1.1) => {
 
     const config = {
     url: `${apiServerUrl}/professionals-topic`,
@@ -63,7 +65,7 @@ export const postProfessionalTopics = async (token, topic) => {
     },
     data: {
         topic_name: topic,
-        price_class: 1.1,
+        price_class,
     },
     };
     
@@ -84,6 +86,26 @@ export const deleteProfessionalTopics = async (token, topic) => {
         "content-type": "application/json",
         "Authorization": `Bearer ${token}`,
     }
+    };
+    
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
+
+export const putProfesionalTopics = async (token, topic) => {
+
+    const config = {
+    url: `${apiServerUrl}/professionals-topic`,
+    method: "PUT",
+    headers: {
+        "content-type": "application/json",
+        "Authorization": `Bearer ${token}`,
+    },
+    data: topic
     };
     
     const { data, error } = await callExternalApi({ config });
