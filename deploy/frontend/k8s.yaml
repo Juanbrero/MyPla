@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: matiasherrneder/mipla-frontend:48dc5c3
+          image: matiasherrneder/mipla-frontend:2ff19cf
           ports:
             - containerPort: 80
 
