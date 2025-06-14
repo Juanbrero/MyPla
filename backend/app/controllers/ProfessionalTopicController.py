@@ -2,6 +2,8 @@
 from ..bd.repositories.ProfessionalTopicRepository import ProfessionalTopicRepository
 from ..bd.repositories.TopicRepository import TopicRepository
 from ..bd.repositories.ProfessionalRepository import ProfessionalRepository
+from ..bd.repositories.TopicRecurrentRepository import TopicRecurrentRepository
+from ..bd.repositories.TopicSpecificRepository import TopicSpecificRepository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_prof_topic
 from app.services.professional_topic_services.CreateProfTopic import CreateProfTopic
@@ -18,6 +20,8 @@ class ProfessionalTopicController:
         self.professional_topicR = ProfessionalTopicRepository(db)
         self.topicR = TopicRepository(db)
         self.professioanlR = ProfessionalRepository(db)
+        self.topic_recurrentR = TopicRecurrentRepository(db)
+        self.topic_specificR = TopicSpecificRepository(db)
 
     def createProfTopic(self, prof_topicS:schema_prof_topic.ProfessionalTopic):
         return CreateProfTopic.run(
@@ -45,7 +49,9 @@ class ProfessionalTopicController:
         return DelProfTopic.run(
             db= self.db,
             prof_topicS = prof_topicS,
-            professional_topicR= self.professional_topicR
+            professional_topicR= self.professional_topicR,
+            topic_recurrentR = self.topic_recurrentR,
+            topic_specificR= self.topic_specificR
         )
     
     def getTopicProf(self, topic_name: str):

@@ -9,9 +9,9 @@ const steps = [
     foot: 'Hagamos un recorrido ->', 
     selector: '' },
   
-  { title: 'PayPal', 
-    content: 'Otro botón disponible en caso de que se quiera usar PayPal',
-    selector: '.paypalButton' },
+  { title: 'Crear cuenta', 
+    content: 'Usa el boton para crear una cuenta e iniciar a usar la app arranquemos por un profesional',
+    selector: '.button__sign-up' },
 
   { title: 'Mercado Pago', 
     content: 'Este botón es uno de los que se utilizaran para pagar una clase, evento o curso, en caso de usar mercado pago',

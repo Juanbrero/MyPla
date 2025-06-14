@@ -5,6 +5,9 @@ import LabelIcon from '@mui/icons-material/Label';
 import PersonIcon from '@mui/icons-material/Person';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import { getProfessional } from '../services/professionals/professionals.service';
+import { useEffect, useState } from 'react';
+
 
 const style = {
   position: 'absolute',
@@ -34,10 +37,28 @@ const iconStyle = {
   color: 'primary.main',
 };
 
-export default function PaymentInfoModal({ open, onClose, paymentRow }) {
-  if (!paymentRow) return null;
 
-  const { id, address, alum, prof, concept, amount, date } = paymentRow;
+export default function PaymentInfoModal({ open, onClose, paymentRow }) {
+  
+  const { id, address, alum, prof, prof_id, concept, amount, date } = paymentRow;
+
+  const getComision = async ()=> {
+    const PORCENTAJE_COMISION = 0.1;
+    const profFind = await getProfessional(prof_id);
+    const PUNTAJE_PROF = parseFloat(profFind.data.score);
+    const INDICE_VALORACION = 0.05 - (PUNTAJE_PROF/100);
+    setComFinal(PORCENTAJE_COMISION + INDICE_VALORACION);
+  }
+
+  const [com_final, setComFinal] = useState(0);
+
+  
+  useEffect(() => {
+    getComision();
+  },[paymentRow]);
+
+  if (!paymentRow) return null;
+  
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -110,9 +131,17 @@ export default function PaymentInfoModal({ open, onClose, paymentRow }) {
         <Box sx={itemStyle}>
           <MonetizationOnIcon sx={iconStyle} />
           <Typography variant="body1" fontWeight={600}>
-            <strong>Monto:</strong> {amount}
+            <strong>Monto Bruto:</strong> $ {amount}
           </Typography>
         </Box>
+        {concept === 'Reserva' &&
+          <Box sx={itemStyle}>
+            <MonetizationOnIcon sx={iconStyle} />
+            <Typography variant="body1" fontWeight={600}>
+              <strong>Monto Final a Pagar (comisiones aplicadas):</strong> $ {(parseFloat(amount) * (1 - com_final)).toFixed(2)}
+            </Typography>
+          </Box>
+        }
 
         {/* Botón centrado para cerrar */}
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
