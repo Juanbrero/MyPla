@@ -1,7 +1,7 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import React, { useState, useEffect } from "react";
 
-export const AuthenticationGuard = ({ Component, roles = [] }) => {
+export const AuthenticationGuard = ({ Component, roles = [], renderAlways }) => {
   const [accessToken, setAccessToken] = useState()
   const { user, getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0()
 

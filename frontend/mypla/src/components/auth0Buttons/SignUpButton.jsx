@@ -17,8 +17,11 @@ export const SignupButton = () => {
   };
 
   return (
-    <button className="button__sign-up" onClick={handleSignUp}>
+    <li className="button__sign-up" onClick={handleSignUp}>
       Sign Up
-    </button>
+    </li>
+    // <button className="button__sign-up" onClick={handleSignUp}>
+    //   Sign Up
+    // </button>
   );
 };

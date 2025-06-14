@@ -4,13 +4,15 @@ import { faBars, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getTopics } from '../../services/topics/topics.service';
+import { LoginButton } from '../auth0Buttons/LoginButton';
+import { SignupButton } from '../auth0Buttons/SignUpButton';
+import { LogoutButton } from '../auth0Buttons/LogoutButton';
 
 
 export const HeaderComponent = ({token, roles}) => {
     let menuVisible = false;
-
     const [topics, setTopics] = useState([]);
-    const [selectedTopic, setSelectedTopic] = useState('');  
+    const [selectedTopic, setSelectedTopic] = useState(''); 
 
     useEffect(() => {
         const fetchTopics = async () => {
@@ -47,13 +49,28 @@ export const HeaderComponent = ({token, roles}) => {
             navigate(`/ProfessionalsList?topic=${encodeURIComponent(selectedTopic)}`);
         }
     };
-
+    
+    console.log("roles: ", roles);
     return (
         <div className="header-container">
             <header>
                 <div className="logo">
                     <Link to="/">MiPla</Link>
                 </div>
+                {roles == [] &&
+                    <div>
+                        <nav id="nav">
+                            <ul className="nav-list">
+                                <li><Link to="/" onClick={select}>Inicio</Link></li>
+                                <LoginButton/>
+                                <SignupButton/>
+                            </ul>
+                        </nav>
+                        <div className="nav-responsive" onClick={showHideMenu}>
+                            <FontAwesomeIcon icon={faBars} />
+                        </div>
+                    </div>
+                }
                 {roles.includes("Alumno") &&
                     <div className="search-container">
                         <div className="search-input">
@@ -83,6 +100,7 @@ export const HeaderComponent = ({token, roles}) => {
                                 <li><Link to="/" onClick={select}>Inicio</Link></li>
                                 <li><Link to="/profile" onClick={select}>Perfil</Link></li>
                                 <li><Link to="/adminTransactions" onClick={select}>Transacciones</Link></li>
+                                <LogoutButton/>
                             </ul>
                         </nav>
                         <div className="nav-responsive" onClick={showHideMenu}>
@@ -96,6 +114,7 @@ export const HeaderComponent = ({token, roles}) => {
                                 <li><Link to="/" onClick={select}>Inicio</Link></li>
                                 <li><Link to="/profile" onClick={select}>Perfil</Link></li>
                                 <li><Link to="/calendar" onClick={select}>Mi agenda</Link></li>
+                                <LogoutButton/>
                             </ul>
                         </nav>
                         <div className="nav-responsive" onClick={showHideMenu}>
