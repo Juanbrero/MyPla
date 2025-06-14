@@ -11,7 +11,7 @@ import { postException, putException, deleteException } from '../../services/exc
 import { getProfessionalTopics } from '../../services/professionals-topic/professionals-topic.service.js';
 import { ColorReferenceHelp } from './schedule-components/ColorReferenceHelp.jsx';
 import { cancelStudentReservations } from '../../services/reservation/initial-class.service.js';
-import ProfessionalReservationModal from './professionalRecervationModal.jsx';
+import ProfessionalReservationModal from './ProfessionalRecervationModal.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
