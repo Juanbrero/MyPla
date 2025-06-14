@@ -10,11 +10,6 @@ function Home() {
       
       <h1>Bienvenido a <span style={{color: '#1cb6ae'}}>MiPla!</span></h1>
       
-      <div className='loginButtons'>
-        <LoginButton />
-        <SignupButton />
-      </div>
-
     </>
   )
 }
