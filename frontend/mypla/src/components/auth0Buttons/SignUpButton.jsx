@@ -17,7 +17,7 @@ export const SignupButton = () => {
   };
 
   return (
-    <li className="button__sign-up" onClick={handleSignUp}>
+    <li className="button__sign-up" style={{cursor: "pointer"}} onClick={handleSignUp}>
       Sign Up
     </li>
     // <button className="button__sign-up" onClick={handleSignUp}>

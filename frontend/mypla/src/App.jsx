@@ -26,7 +26,8 @@ const App = () => {
 
     return (
       <>
-      <AuthenticationGuard Component={HeaderComponent} roles={[]} />
+      <AuthenticationGuard Component={HeaderComponent} roles={[]} renderAlways={true} />
+      {/*<HeaderComponent />*/}
 
         <TutorialProvider>
           <TutorialGuide />
