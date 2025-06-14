@@ -32,10 +32,11 @@ class ReservationRepository(Repository[Reservation]):
                 Meeting.prof_id == Reservation.prof_id,
                 Meeting.day_hour == Reservation.day_hour
                 )
-            ).join(
+            ).join(User,
                 User.user_id == Reservation.prof_id
             )
-            .join(Professional.prof_id == Reservation.prof_id)
+            .join(Professional,
+                  Professional.prof_id == Reservation.prof_id)
             .where(
                 Reservation.student_id == student_id,
                 Reservation.state == 'pay'
