@@ -59,7 +59,7 @@ export default function ReservationModal({
     };
 
     const initialReservation = async (go) => {
-        const initial = await initialClass(token, taskData, prof_id)
+        const initial = await initialClass(token, localTaskData, prof_id)
         if (initial) {
             console.log(initial, 'FUNCO?')
             go()
