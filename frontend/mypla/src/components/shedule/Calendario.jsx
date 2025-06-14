@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CeldaHora from './CeldaHora.jsx';
-import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, setHours, setMinutes, weeksToDays} from 'date-fns';
+import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, isToday} from 'date-fns';
 import { es } from 'date-fns/locale';
 import './calendario.css';
 import ScheduleModal from './ScheduleModal.jsx';
@@ -255,7 +255,7 @@ const Calendario = ({token}) => {
 
     useEffect(() => {
         cargarEventos(token);
-    }, [semanaInicio]);
+    }, []);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
     const anteriorSemana = () => setSemanaInicio(addDays(semanaInicio, -7));
@@ -286,7 +286,7 @@ const Calendario = ({token}) => {
 
           <div className="grid-dias">
             {diasSemana.map((dia, idxDia) => (
-              <div key={`header-${idxDia}`} className="header-dia">
+              <div key={`header-${idxDia}`} className={`header-dia ${isToday(dia) ? 'dia-hoy' : ''}`}>
                 {format(dia, 'EEE dd/MM', {locale: es})}
               </div>
             ))}

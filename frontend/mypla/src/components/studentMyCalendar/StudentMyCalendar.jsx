@@ -1,29 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import CeldaHora from '../studentCalendar/CeldaHoraStudent.jsx';
+import CeldaHoraMyStudent from './CeldaHoraMyStudent.jsx';
 import { startOfWeek, addDays, format, isSameDay, getDay, parseISO, isToday} from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getAvailableStudent } from '../../services/available/avaliable-student.service.js';
-import ReservationModal from '../reservation/ReservationModal.jsx';
+import StudentReservationModal from './StudentReservationModal.jsx';
 import { useParams } from 'react-router-dom';
+import { getStudentReservations, cancelStudentReservations } from '../../services/reservation/initial-class.service.js';
+
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
 
 // --- funciones utilitarias para fechas y horas --------------------------------------------
-const parseHora = (horaStr) => {
-    if (!horaStr) return '';
-    return horaStr.slice(0, 5);
-};
-
-const horaNumero = (horaStr) => {
-    if (!horaStr) return null;
-    return parseInt(horaStr.slice(0, 2), 10);
-};
-
-const obtenerDiaDeLaSemana = (fecha) => {
-  const [anio, mes, dia] = fecha.split('-');
-  const date = new Date(Date.UTC(anio, mes - 1, dia));
-  return date.getUTCDay();
-};
+function sumarUnaHora(horaStr) {
+  let [hh, mm, ss] = horaStr.split(":").map(Number);
+  hh = (hh + 1) % 24; // Sumar 1 y controlar que no pase de 23
+  return `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
+}
 
 const toISO8601 = (hora, minutos = '00') => {
   return `${String(hora).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:00.000Z`;
@@ -31,36 +22,16 @@ const toISO8601 = (hora, minutos = '00') => {
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
-    if (!eventos) return { available: [], exception: [] };
-
-    const { available = [], exception = [] } = eventos;
-
+    if (Object.keys(eventos).length === 0) return { reservations: [] };
+    
     // Filtrar específicos para el día
-    const availableDelDia = available.filter(e => isSameDay(parseISO(e.day), dia));
-
-    // Filtrar excepciones para el día
-    const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
-
-    // // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
-    // const recurrentesDelDia = recurrent.filter(e => {
-    //     const esElDia = getDay(dia) === e.week_day;
-    //     const horaEv = horaNumero(parseHora(e.start));
-    //     const tieneExcepcion = excepcionesDelDia.some(exc => {
-    //         const horaInicioRecurrente = parseHora(e.start);
-    //         const horaInicioExcepcion = parseHora(exc.start);
-    //         return esElDia && horaInicioRecurrente === horaInicioExcepcion;
-    //     });
-    //     return esElDia;
-    //     // return esElDia && !tieneExcepcion;
-    // });
+    const reservationsDelDia = eventos.filter(e => isSameDay(parseISO(e.day), dia));
     return {
-        available: availableDelDia,
-        exception: excepcionesDelDia,
+        reservations: reservationsDelDia,
     };
 };
 
-const StudentCalendar = ({token}) => {
-    const { prof_id } = useParams() 
+const StudentMyCalendar = ({token}) => {
     useEffect(() => {
         document.title = "MiPla - Calendario";
     }, []);
@@ -77,21 +48,11 @@ const StudentCalendar = ({token}) => {
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
-        // Abrir modal en EDITAR si hay evento
-        const diaStr = format(dia, 'yyyy-MM-dd')
         if (evento) {
-          if (evento.type === 'available') {
-            console.log(evento)
-            setModalData({
-              start: `${evento.start}.000Z`,
-              end: `${evento.end}.000Z`,
-              topics: evento.topics,
-              day: evento.day,
-              selectedHour: toISO8601(hora),
-              tipo: evento.type 
-            });
-            setModalOpen(true);
-          }
+          setModalData(evento)
+          evento.topics = []
+          evento.topics.push(evento.topic)
+          setModalOpen(true);
         }
     };
 
@@ -101,36 +62,41 @@ const StudentCalendar = ({token}) => {
         setModalData(null);
     };
 
-    // --- guardo nueva tarea ---------------------------------------------------------------------
-    const handleSaveNewTask = async (newTask) => {
-      try {
-        if (newTask.recurrent) {
-          await postRecurrent(token, newTask);
-        }
-        else {
-          await postSpecific(token, newTask);
-        }
-        setModalOpen(false);
-        setModalData(null);
+    const handleCancelarReserva = async (data) => {
+        const res = await cancelStudentReservations(token, `${data.day}T${data.start}`, data.prof_id)
+        if (res.error) alert('No se pueden cancelar reservas cercanas o previas a la fecha') 
         await cargarEventos(token);
-      } catch (error) {
-        console.error('Error al guardar la tarea:', error);
-      }
-    };
+    }
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (_token) => {
         try {
-            const data = await getAvailableStudent(_token, prof_id, format(semanaInicio, 'yyyy-MM-dd'));
-            setEventos(data);
+            const data = await getStudentReservations(token)
+            const ev = data['data']['reservations']
+            const eventos2 = []
+            ev.forEach(element => {
+              const [f, h] = element.day_hour.split("T");
+              const elem2 = {
+                day: f,
+                start: h,
+                end: sumarUnaHora(h),
+                topic: element.topic,
+                prof_id: element.prof_id,
+                prof_username: element.prof_username,
+                link_class: element.link_class,
+              }
+              eventos2.push(elem2)
+            });
+            setEventos(eventos2);
         } catch (error) {
             console.error("Error cargando eventos:", error);
         }
     };
 
+
     useEffect(() => {
         cargarEventos(token);
-    }, [prof_id]);
+    }, []);
 
     const siguienteSemana = () => setSemanaInicio(addDays(semanaInicio, 7));
     const anteriorSemana = () => setSemanaInicio(addDays(semanaInicio, -7));
@@ -172,7 +138,7 @@ const StudentCalendar = ({token}) => {
               const eventosDelDia = eventosPorDia[keyDia];
 
               return (
-                <CeldaHora
+                <CeldaHoraMyStudent
                   key={`${hora}-${idxDia}`}
                   dia={dia}
                   hora={hora}
@@ -185,16 +151,15 @@ const StudentCalendar = ({token}) => {
         </div>
       </div>
 
-      <ReservationModal
+      <StudentReservationModal
           open={modalOpen}
           onClose={handleCloseModal}
           taskData={modalData}
-          token={token}
-          prof_id={prof_id}
+          onDeleteTask={handleCancelarReserva}
       />
 
     </div>
   );
 };
 
-export default StudentCalendar;
+export default StudentMyCalendar;
