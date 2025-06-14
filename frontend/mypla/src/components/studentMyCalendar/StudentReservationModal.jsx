@@ -57,6 +57,10 @@ export default function StudentReservationModal({
           <Typography variant="h6" mb={2}>
             Clase con: {localTaskData.prof_username}
           </Typography>
+
+          <Typography variant="p" mb={2}>
+            Link de la clase: {localTaskData.link_class}
+          </Typography>
         <>
             <ScheduleTopics
                 value={localTaskData.topics || []}
