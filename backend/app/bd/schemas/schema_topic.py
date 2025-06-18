@@ -9,6 +9,7 @@ class TopicBase(BaseModel):
         - topic_name: str
     """
     topic_name: str
+    category_name: str
 
 
 
@@ -27,6 +28,7 @@ class Topic(TopicBase):
          - topic_name: str
     """
     topic_name: str
+    category_name:str
 
     class Config:
         #Permite convertir desde SQLAlchemy (no dicts)
