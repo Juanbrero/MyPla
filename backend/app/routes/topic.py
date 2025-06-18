@@ -13,12 +13,14 @@ router = APIRouter(prefix="/api/topics")
 
 @router.post("", response_model= str,
               tags=["Topics"])
-def create_topic( topic_name: str, db:Session = Depends(get_db)):
+def create_topic( topicS: schema_topic.TopicCreate, db:Session = Depends(get_db)):
     """
-    Crea un topico
-    - topic_name: str (not case sensitive)
+    - Crea un topico
+        - data:
+            - topic_name: str (not case sensitive)
+            - category_name: str (not case sensitive)
     """
-    return TopicController(db= db).createTopic(topic_name)
+    return TopicController(db= db).createTopic(topicS)
 
 @router.get("",
             response_model=List[str], tags=["Topics"])
@@ -36,5 +38,11 @@ def delete_topic(topic_name:str, db:Session = Depends(get_db)):
     """
     return TopicController(db= db).deleteTopic(topic_name)
 
-
+@router.get('/category', tags=['Topics'])
+def get_via_category(category_name:str, db: Session = Depends(get_db)):
+    """
+    - Recupera todos los topicos de una categoria dada
+        - param **category_name**
+    """
+    return TopicController(db= db).getTopicsCategory(category_name= category_name)
 
