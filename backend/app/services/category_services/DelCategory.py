@@ -19,4 +19,6 @@ class DelCategory():
         
         deleted = categoryR.delete({'category_name':category_name})
 
+        db.commit()
+
         return JSONResponse(status_code= status.HTTP_200_OK, content='Category deleted')
