@@ -12,6 +12,9 @@
     left: 0;
     z-index: 99;
     background-color: #383838;
+    background: linear-gradient(90deg, #383838, #0ff2d828, #383838);
+    background: linear-gradient(180deg, #383838, #0ff2d810);
+    -webkit-text-fill-color: transparent;
 }
 
 .header-container .logo {
@@ -34,12 +37,24 @@
     padding-top: 1em;
 }
 
+
 .header-container header .logo a {
-    font-family: sans-serif;
-    font-size: 40px;
-    color: #1cb6ae;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    letter-spacing: 2px;
     text-decoration: none;
+    background: linear-gradient(90deg, #1cb698, #0ff2d6, #1cb698);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
+
+.header-container header .logo a:hover {
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+}
+
 
 .header-container header .search-container {
     display: flex;
@@ -94,10 +109,14 @@ select {
 
 .header-container header nav ul li a {
     text-align: none;
-    color: #1cb6ae;
     padding: 3px;
     transition: .5s;
     text-decoration: none;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0);
+    background: linear-gradient(180deg, #ffffff, #07f3e752, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .header-container header nav ul li a:hover {
@@ -106,12 +125,16 @@ select {
 
 .header-container header nav ul li {
     text-align: none;
-    color: #1cb6ae;
     margin: 0 15px;
     padding: 3px;
     transition: .5s;
     text-decoration: none;
     font-weight: 500;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgb(0, 0, 0);
+    background: linear-gradient(180deg, #ffffff, #07f3e752, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .header-container header nav ul li:hover {

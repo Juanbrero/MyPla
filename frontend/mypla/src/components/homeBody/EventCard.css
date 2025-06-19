@@ -1,0 +1,97 @@
+.event-section {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: auto;
+  font-family: sans-serif;
+}
+
+.event-section h2 {
+    font-size: 30px;
+    text-align: left;
+    /* text-shadow: 1px 1px 3px #1cb698; */
+    text-shadow: 1px 3px 6px #1cb697c4;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.event-card {
+  display: flex;
+  flex-direction: row;
+  background: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+  border-radius: 12px;
+  overflow: hidden;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(28, 182, 152, 0.25);
+}
+
+.event-card-date {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  justify-content: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.event-card-date .weekday {
+  font-size: 0.8rem;
+  color: #ccc;
+}
+.event-card-date .day {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.event-card-date .month {
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.event-card-body {
+  padding: 1rem;
+  flex: 1;
+}
+
+.event-card-body h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #1cb698;
+}
+
+.event-card-body p {
+  font-size: 0.85rem;
+  margin: 0.3rem 0;
+}
+
+.event-category {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: #1cb698;
+  color: #000;
+  font-weight: bold;
+}
+
+/* Ejemplos por categoría */
+.category-programacion .event-category {
+  background-color: #1cb698;
+}
+.category-matematicas .event-category {
+  background-color: #ffcc00;
+}
+.category-astronomia .event-category {
+  background-color: #7d5fff;
+}
