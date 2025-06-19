@@ -48,11 +48,12 @@ class CreatePreference:
                     "unit_price": c.price,
                 }
             ],
-            "date_of_expiration": (datetime.now() + EXPIRE_RESERVATION).isoformat(),
+            "date_of_expiration": (r.create + EXPIRE_RESERVATION).isoformat(),
             "metadata":{"student_id": student_id},
             "notification_url": "https://miplasip.publicvm.com/api/mp-notification?source_news=webhooks",
             "back_urls":{
-                "success": "https://miplasip.publicvm.com/calendar"
+                "success": "https://miplasip.publicvm.com/calendar",
+                "failure": "https://miplasip.publicvm.com/profile"
             }
         }
    
