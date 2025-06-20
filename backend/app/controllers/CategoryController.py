@@ -11,12 +11,6 @@ class CategoryController:
         self.db = db
         self.categoryR = CategoryRepository(db)
 
-    def createCategory(self, category_name:str):
-        return CreateCategory.run(
-            db= self.db,
-            category_name = category_name,
-            categoryR = self.categoryR
-        )
     
     def getCategory(self):
         return GetCategory.run(
