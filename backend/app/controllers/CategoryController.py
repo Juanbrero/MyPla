@@ -1,5 +1,4 @@
 from ..bd.repositories.CategoryRepository import CategoryRepository
-from ..services.category_services.CreateCategory import CreateCategory
 from ..services.category_services.GetCategory import GetCategory
 from ..services.category_services.DelCategory import DelCategory
 
