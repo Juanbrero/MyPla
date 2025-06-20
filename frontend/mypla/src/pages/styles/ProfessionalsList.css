@@ -1,69 +1,93 @@
 #gral-table-container {
-    width: 100%;
-    font-family: sans-serif;
-    border: 2px solid #1cb6ae;
-    border-radius: 8px;
-    background-color: #161616;
-    color: #dad9d9;
+  width: 100%;
+  font-family: sans-serif;
+  border: 2px solid #C4DDD6;
+  border-radius: 8px;
+  background-color: #ECECDD;
+  color: #383838;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 #table-title-container {
-    font-size: 20px;
-    padding: 8px;
-    border-bottom: 2px solid #1cb6ae;
+  font-size: 20px;
+  color: #3D3D3D;
+  padding: 8px 16px;
+  border-bottom: 2px solid #C4DDD6;
+  background-color: #E4DDD6;
+  font-weight: bold;
 }
 
+
 #table-title-container span {
-    color:#14a19a;
+  font-weight: bold;
+  background: linear-gradient(90deg, #383838, #757575, #383838); /* tonos gris oscuro */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 #table-container {
-    padding: 8px;
+  padding: 8px 16px;
 }
 
 #profs-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
+
 }
 
 thead {
-    height: 40px;
-}
-
-thead tr {
-    background-color: #1a1e20;
+  height: 40px;
+  background-color: #D4DDD6 !important;
 }
 
 thead tr th {
-    border: 2px solid #1cb6ae;
+  background-color: #D4DDD6 !important;
+  border: 2px solid #000000 !important;
+  color: #383838 !important;
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-thead tr .username{
-    width: 50%;
+
+thead tr .username {
+  width: 50%;
 }
 
-thead tr .score{
-    width: 25%;
+thead tr .score,
+thead tr .price {
+  width: 25%;
 }
-
-thead tr .price{
-    width: 25%;
-}
-
 
 tbody {
-    background-color: #252a2e;
+  background-color: #ECECDD;
 }
 
 tbody tr {
-    height: 50px;
-    border: 2px solid #1cb6ae;
+  height: 50px;
+  border-bottom: 1px solid #D4DDD6;
+  transition: background-color 0.2s ease-in-out;
+}
+
+tbody tr {
+  background-color: #F5F5F1;
 }
 
 tbody tr:hover {
-    background-color: #223635;
+  background-color: #E4E3CD;
 }
 
-tbody tr:active {
-    background-color: #1a1e20;
+tbody td {
+  padding: 10px;
+  color: #383838;
+  font-size: 0.9rem;
 }
+
+tbody td:first-child {
+  font-weight: 600;
+  color: #383838;
+}
+
+

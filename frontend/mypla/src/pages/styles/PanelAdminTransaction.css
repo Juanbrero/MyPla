@@ -1,126 +1,134 @@
 #gral-transaction-table-container {
-    width: 100%;
-    font-family: sans-serif;
-    border: 2px solid #1cb6ae;
-    border-radius: 8px;
-    background-color: #161616;
-    color: #dad9d9;
+  width: 100%;
+  margin-top: 120px;
+  font-family: sans-serif;
+  border: 2px solid #C4DDD6;
+  border-radius: 8px;
+  background-color: #ECECDD;
+  color: #383838;
 }
 
 #table-transaction-title-container {
-    font-size: 20px;
-    padding: 8px;
-    border-bottom: 2px solid #1cb6ae;
+  font-size: 20px;
+  padding: 8px;
+  border-bottom: 2px solid #C4DDD6;
+  background-color: #E4DDD6;
+  font-weight: bold;
 }
 
 #table-transaction-title-container span {
-    color:#14a19a;
+  color: #1cb698;
 }
 
 #table-transaction-container {
-    padding: 8px;
+  padding: 8px;
 }
 
 #transaction-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 thead {
-    height: 40px;
-}
-
-thead tr {
-    background-color: #1a1e20;
+  height: 40px;
+  background-color: #D4DDD6;
 }
 
 thead tr th {
-    border: 2px solid #1cb6ae;
+  border: 1px solid #C4DDD6;
+  color: #383838;
+  padding: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-thead tr .emite{
-    width: 25%;
+thead tr .emite {
+  width: 25%;
 }
 
-thead tr .concepto{
-    width: 15%;
+thead tr .concepto {
+  width: 15%;
 }
 
-thead tr .recibe{
-    width: 25%;
+thead tr .recibe {
+  width: 25%;
 }
 
-thead tr .monto{
-    width: 10%;
+thead tr .monto {
+  width: 10%;
 }
 
-thead tr .fecha{
-    width: 10%;
+thead tr .fecha {
+  width: 10%;
 }
 
-thead tr .estado{
-    width: 15%;
+thead tr .estado {
+  width: 15%;
 }
 
 tbody {
-    background-color: #bdbdbd;
-    color: #000;
-    font-weight: 600;
+  background-color: #ECECDD;
+  font-weight: 600;
+  color: #383838;
 }
 
 tbody tr {
-    height: 50px;
-    border: 2px solid #000000;
-    text-shadow: 0 0 2px #f7f5f5;
+  height: 50px;
+  border-bottom: 1px solid #D4DDD6;
+  transition: background-color 0.2s ease-in-out;
 }
 
 tbody tr:hover {
-    background-color: #e5ebea;
+  background-color: #E4E3CD;
 }
 
 tbody tr:active {
-    background-color: #1a1e20;
+  background-color: #E4DDD6;
 }
 
 tbody .tr-Reembolso {
-    background-color: #fd000098
+  background-color: #f3b9b9;
 }
 
 tbody .tr-Reserva {
-    background-color: #33fd0091
+  background-color: #c1f3aa;
 }
 
-tbody tr .td-button {
-    border-left: 2px solid #000000;
+tbody td {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+tbody td.td-button {
+  border-left: 1px solid #C4DDD6;
 }
 
 .td-oculto {
-    display: none;
+  display: none;
 }
 
 .type-cell {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .type-cell p {
-    margin: 0;
-    font-size: 20px;
+  margin: 0;
+  font-size: 18px;
 }
 
 .type-cell span i {
-    font-size: 28px;
-    -webkit-text-stroke: 1px #000;
-    text-shadow: 0 0 4px #000000;
+  font-size: 24px;
+  -webkit-text-stroke: 0.5px #383838;
+  text-shadow: 0 0 2px #C4DDD6;
 }
 
-
 .type-cell .fa-arrow-left {
-    color: #ff0000;
+  color: #d9534f;
 }
 
 .type-cell .fa-arrow-right {
-    color: #00ff0d;
+  color: #5cb85c;
 }

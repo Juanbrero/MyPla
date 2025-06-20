@@ -1,179 +1,162 @@
-.header-container *{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+.header-container * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .header-container {
-    position:fixed;
-    width: 100%;
-    height: 120px;
-    top: 0;
-    left: 0;
-    z-index: 99;
-    background-color: #383838;
-    background: linear-gradient(90deg, #383838, #0ff2d828, #383838);
-    background: linear-gradient(180deg, #383838, #0ff2d810);
-    -webkit-text-fill-color: transparent;
+  position: fixed;
+  width: 100%;
+  height: 120px;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  background: linear-gradient(180deg, #C4DDD6, #ECECDD);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #D4DDD6;
 }
 
 .header-container .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
 }
 
 .header-container header {
-    max-width: 1100px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
 }
 
 .header-container header .logo {
-    padding-top: 1em;
+  padding-top: 1em;
 }
-
 
 .header-container header .logo a {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 48px;
-    letter-spacing: 2px;
-    text-decoration: none;
-    background: linear-gradient(90deg, #1cb698, #0ff2d6, #1cb698);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  background: linear-gradient(90deg, #383838, #757575, #383838); /* tonos gris oscuro */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3); /* leve halo claro para legibilidad */
 }
+
 
 .header-container header .logo a:hover {
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-    transform: scale(1.05);
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
 }
 
-
 .header-container header .search-container {
-    display: flex;
-    width:35%;
-    height: 35px;
-    justify-content: left;
-    
+  display: flex;
+  width: 35%;
+  height: 35px;
+  justify-content: left;
 }
 
 .header-container header .search-container .search-icon {
-    width: 15%;
-    height: 100%;
-    margin:auto;
+  width: 15%;
+  height: 100%;
+  margin: auto;
 }
 
 .header-container header .search-container .search-icon button {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    background-color: transparent;
-    font-size: 18px;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: transparent;
+  font-size: 18px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #383838;
 }
 
 .header-container header .search-container .search-icon button:hover {
-    border: none;
+  border: none;
 }
 
 .header-container header .search-container .search-input {
-    width: 100%;
-    height: 100%;
-    margin:auto;
+  width: 100%;
+  height: 100%;
+  margin: auto;
 }
 
 select {
-    width: 100%;
-    height: 100%;
-    background-color: #252a2e;
-    padding: 5px 5px;
-    font-size: 16px;
-    border: solid 2px #1cb6ae;
-    border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  background-color: #ECECDD;
+  padding: 5px 5px;
+  font-size: 16px;
+  border: solid 2px #C4DDD6;
+  border-radius: 5px;
+  color: #383838;
 }
-
 
 .header-container header ul {
-    display: flex;
-    list-style: none;
+  display: flex;
+  list-style: none;
 }
 
+.header-container header nav ul li,
 .header-container header nav ul li a {
-    text-align: none;
-    padding: 3px;
-    transition: .5s;
-    text-decoration: none;
-    color: #fff;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0);
-    background: linear-gradient(180deg, #ffffff, #07f3e752, #ffffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  font-weight: 500;
+  margin: 0 15px;
+  padding: 3px;
+  color: #3D3D3D;
+  text-decoration: none;
+  text-shadow: none;
+  background: none;
+  -webkit-text-fill-color: initial;
 }
 
+.header-container header nav ul li:hover,
 .header-container header nav ul li a:hover {
-    color: #aaf3e4;
+  color: #1cb698;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.header-container header nav ul li {
-    text-align: none;
-    margin: 0 15px;
-    padding: 3px;
-    transition: .5s;
-    text-decoration: none;
-    font-weight: 500;
-    color: #fff;
-    text-shadow: 3px 3px 6px rgb(0, 0, 0);
-    background: linear-gradient(180deg, #ffffff, #07f3e752, #ffffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.header-container header nav ul li:hover {
-    color: #aaf3e4;
-}
 
 .nav-responsive {
-    background-color: #383838;
-    color: #1cb6ae;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: none;
+  background-color: #D4DDD6;
+  color: #383838;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
 }
 
 @media screen and (max-width:900px) {
-    .header-container nav {
-        display: none;
-    }
+  .header-container nav {
+    display: none;
+  }
 
-    .nav-responsive {
-        display: block;
-    }
+  .nav-responsive {
+    display: block;
+  }
 
-    nav.responsive {
-        display: block;
-        position: absolute;
-        right: 0;
-        top: 75px;
-        background-color: #252a2e;
-        width: 180px;
-    }
+  nav.responsive {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 75px;
+    background-color: #ECECDD;
+    width: 180px;
+  }
 
-    nav.responsive ul {
-        display: block !important;
-    }
+  nav.responsive ul {
+    display: block !important;
+  }
 
-    nav.responsive ul li {
-        border-bottom: 1px solid #fff;
-        padding: 10px;
-    }
+  nav.responsive ul li {
+    border-bottom: 1px solid #C4DDD6;
+    padding: 10px;
+  }
 }

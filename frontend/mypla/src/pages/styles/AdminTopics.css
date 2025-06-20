@@ -1,0 +1,55 @@
+.admin-topics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 120px auto;
+}
+
+.admin-topics-container h3 {
+    font-size: 20px;
+    color: #3D3D3D;
+    background: linear-gradient(90deg, #383838, #757575, #383838);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.input-topic-container .admin-topics-input {
+    width: 50%;
+    height: 30px;
+    color: #3D3D3D;
+    font-size: 16px;
+    padding-left: 5px;
+    background-color: #c4ddd680;
+    border: none;
+    border-bottom: 1px solid #383838;
+    border-right: 1px solid #383838;
+    border-radius: 8px;
+}
+
+.container-agregar button {
+    margin-top: 10px;
+    color: #3D3D3D;
+    background-color: #a9cac180;
+    border: 1px solid #383838;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+
+.mostrar-topics-disp-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; 
+}
+
+.each-topic-disp-container {
+    background-color: #b1af89;
+    color: #3D3D3D;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}

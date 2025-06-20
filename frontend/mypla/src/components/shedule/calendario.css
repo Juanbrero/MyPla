@@ -12,6 +12,9 @@
     /* padding-top: 120px; */
 }
 
+.calendario-controles .text-xl {
+  color: #3D3D3D;
+}
 /* Contenedor principal del calendario: flex horizontal */
 .calendario-contenedor {
   display: flex;
