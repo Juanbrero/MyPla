@@ -8,14 +8,6 @@ from app.auth0.dependencies import RolesValidator
 
 router = APIRouter(prefix="/api/category", tags=["Category"])
 
-@router.post("")
-def create_category(category_name: str, db:Session = Depends(get_db)):
-    """
-       - Creador de categoria
-            - param : category_name
-    """
-    return CategoryController(db= db).createCategory(category_name= category_name)
-
 @router.get("")
 def get_category(db:Session =Depends(get_db)):
     """
