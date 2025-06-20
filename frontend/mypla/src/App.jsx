@@ -34,7 +34,7 @@ const App = () => {
         </TutorialProvider>
         
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<AuthenticationGuard Component={Home} roles={[]} renderAlways={true} />} />
           <Route
              path="/calendar/:prof_id" 
              element={<AuthenticationGuard Component={StudentCalendar} roles={["Alumno"]} />}

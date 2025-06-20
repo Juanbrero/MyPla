@@ -1,6 +1,6 @@
 import './EventCard.css';
 
-export const EventCard = ({ event }) => {
+export const EventCard = ({ event , onClick}) => {
   const { title, date, hora, precio, creator, participants, category } = event;
 
   const dateObj = new Date(date);
@@ -8,8 +8,13 @@ export const EventCard = ({ event }) => {
   const month = dateObj.toLocaleDateString('es-AR', { month: 'short' }).toUpperCase();
   const weekday = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
 
+  const select = () => {
+    onClick?.(event);
+  }
+
+
   return (
-    <div className={`event-card category-${category.toLowerCase()}`}>
+    <div className={`event-card category-${category.toLowerCase()}`} onClick={select}>
       <div className="event-card-date">
         <span className="weekday">{weekday}</span>
         <span className="day">{day}</span>

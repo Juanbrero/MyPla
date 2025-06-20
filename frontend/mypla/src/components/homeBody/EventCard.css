@@ -85,7 +85,7 @@
   font-weight: bold;
 }
 
-/* Ejemplos por categoría */
+/* Color por categoría */
 .category-programacion .event-category {
   background-color: #1cb698;
   color: #fff;
@@ -97,4 +97,36 @@
 .category-astronomia .event-category {
   background-color: #7d5fff;
   color: #fff;
+}
+.category-tecnologia .event-category {
+  background-color: #ff5fea;
+  color: #fff;
+}
+.category-ciencias .event-category {
+  background-color: #72ff5f;
+  color: #000000;
+}
+.category-fisica .event-category {
+  background-color: #fa8705;
+  color: #000000;
+}
+.category-literatura .event-category {
+  background-color: #0307fc;
+  color: #ffffff;
+}
+.category-geografia .event-category {
+  background-color: #39b4fc;
+  color: #ffffff;
+}
+.category-guitarra .event-category {
+  background-color: #723d00;
+  color: #ffffff;
+}
+.category-baile .event-category {
+  background-color: #ff5f74;
+  color: #ffffff;
+}
+.category-python .event-category {
+  background-color: #fbff00;
+  color: #1302ff;
 }
