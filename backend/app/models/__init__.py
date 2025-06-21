@@ -10,5 +10,7 @@ from .Student import Student
 from .Class import Class
 from .Meeting import Meeting
 from .Reservation import Reservation
+from .Event import Event
+from .Invite import Invite
 
 from app.config.database import Base

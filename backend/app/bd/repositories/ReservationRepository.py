@@ -1,4 +1,5 @@
-from app.models import Reservation, Meeting, Professional, Student, Events, Class, User
+from app.models import Reservation, Meeting, Professional, Student, Class, User
+from backend.app.models import Event
 from sqlalchemy.orm import Session, aliased
 from .Repository import Repository
 from sqlalchemy import select, and_, extract, cast, or_, outerjoin
