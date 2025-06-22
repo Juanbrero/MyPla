@@ -4,26 +4,64 @@ import ScheduleTime from '../../shedule/schedule-components/ScheduleTime';
 import ScheduleTopicsReservation from '../ScheduleTopicsReservation';
 
 
-export default function ReservationStep({ taskData, onClose, onNext, style}) {
+export default function ReservationStep({ taskData, event, onClose, onNext, style}) {
     return (
         <Box sx={style}>
                 <Typography variant="h6" mb={2}>
                     Realizar reserva
                 </Typography>
                 
-                <ScheduleTopicsReservation
-                    value={taskData?.selectedTopic || ''} // más claro y directo
-                    isEditable={false}
-                />
-                <ScheduleDate
-                    type={'specific'}
-                    value={{ week_day: taskData?.week_day, date: taskData?.day }}
-                    isEditable={false}
-                />
-                <ScheduleTime
-                    value={{ start: taskData?.start, end: taskData?.end }}
-                    isEditable={false}
-                />
+                {taskData ? (
+                    <>
+                        <ScheduleTopicsReservation
+                        value={taskData?.selectedTopic || ''} // más claro y directo
+                        isEditable={false}
+                        />
+                        <ScheduleDate
+                        type={'specific'}
+                        value={{ week_day: taskData?.week_day, date: taskData?.day }}
+                        isEditable={false}
+                        />
+                        <ScheduleTime
+                        value={{ start: taskData?.start, end: taskData?.end }}
+                        isEditable={false}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <ScheduleTopicsReservation
+                        value={event?.topic || ''}
+                        isEditable={false}
+                        />
+                        
+                        <Typography variant="subtitle1">
+                            <strong>Anfitrion del evento: </strong>
+                            {event?.creator}
+                        </Typography>
+                        
+                        <Typography variant="subtitle1">
+                            <strong>Coanfitriones invitados: </strong>
+                            {event?.participants?.join(', ')}
+                        </Typography>
+                        
+                        <ScheduleDate
+                        type={'specific'}
+                        value={{date: event?.date}}
+                        isEditable={false}
+                        />
+                        <ScheduleTime
+                        value={{ start: event?.hour, end: null }}
+                        isEditable={false}
+                        />
+
+                        <Typography variant="subtitle1">
+                            <strong>Valor de inscripcion: </strong>
+                            $ {event?.precio}
+                        </Typography>
+                        
+                    </>
+                )
+                }
 
                 {/* Botones */}
                 <Box

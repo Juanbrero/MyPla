@@ -3,117 +3,121 @@ import '../App.css'
 import { EventGrid } from '../components/homeBody/EventGrid'
 import { getEvents } from '../services/events/events.service'
 import { useAuth0 } from "@auth0/auth0-react";
+import ReservationModal from '../components/reservation/ReservationModal';
 
 
 function Home(token) {
 
 const events = [
   {
+    prof_id: 0,
     title: "Taller de JavaScript Avanzado",
     date: "2025-06-21",
-    hora: "10:00",
+    hour: "10:00",
     precio: 1500,
     creator: "María López",
     participants: ["Juan Pérez", "Ana Torres"],
-    category: "Programacion"
+    topic: "Programacion"
   },
   {
+    prof_id: 1,
     title: "Introducción al Universo",
     date: "2025-07-10",
-    hora: "14:30",
+    hour: "14:30",
     precio: 2000,
     creator: "Carlos Gómez",
     participants: [],
-    category: "Astronomia"
+    topic: "Astronomia"
   },
   {
+    prof_id: 2,
     title: "Álgebra para Principiantes",
     date: "2025-06-25",
-    hora: "16:00",
+    hour: "16:00",
     precio: 1200,
     creator: "Sofía Rodríguez",
     participants: ["Lucía González"],
-    category: "Matematicas"
+    topic: "Matematicas"
   },
   {
-
+    prof_id: 3,
     title: "Robótica Educativa en Secundaria",
     date: "2025-07-05",
-    hora: "09:00",
+    hour: "09:00",
     precio: 2500,
     creator: "Luis Fernández",
     participants: ["Julián Bravo", "Esteban Gil"],
-    category: "Tecnologia"
+    topic: "Tecnologia"
   },
   {
-
+    prof_id: 4,
     title: "Taller de React + FastAPI",
     date: "2025-06-29",
-    hora: "18:00",
+    hour: "18:00",
     precio: 3000,
     creator: "Valentina Castro",
     participants: [],
-    category: "Baile"
+    topic: "Baile"
   },
   {
-
+    prof_id: 5,
     title: "Noches de Astronomía: Observación del Cielo",
     date: "2025-07-12",
-    hora: "20:00",
+    hour: "20:00",
     precio: 1800,
     creator: "Gustavo Luna",
     participants: ["Astrónomos invitados"],
-    category: "Literatura"
+    topic: "Literatura"
   },
   {
-
+    prof_id: 6,
     title: "Cálculo I Intensivo",
     date: "2025-07-03",
-    hora: "11:00",
+    hour: "11:00",
     precio: 1600,
     creator: "Fernando Martínez",
     participants: [],
-    category: "Geografia"
+    topic: "Geografia"
   },
   {
- 
+    prof_id: 7,
     title: "Python para Análisis de Datos",
     date: "2025-07-08",
-    hora: "17:00",
+    hour: "17:00",
     precio: 2800,
     creator: "Camila Ortega",
     participants: ["Laura Vega"],
-    category: "Guitarra"
+    topic: "Guitarra"
   },
   {
-
+    prof_id: 8,
     title: "Noche de Ciencias: Taller con Experimentos",
     date: "2025-06-30",
-    hora: "19:00",
+    hour: "19:00",
     precio: 1900,
     creator: "Mariano Torres",
     participants: ["Equipo Científico Escolar"],
-    category: "Ciencias"
+    topic: "Ciencias"
   },
   {
-
+    prof_id: 9,
     title: "Introducción a Machine Learning",
     date: "2025-07-15",
-    hora: "13:00",
+    hour: "13:00",
     precio: 3200,
     creator: "Natalia Domínguez",
     participants: [],
-    category: "Python"
+    topic: "Python"
   },
   {
-
+    prof_id: 10,
     title: "Introducción a Machine Learning",
     date: "2025-07-15",
-    hora: "13:00",
+    hour: "13:00",
     precio: 3200,
     creator: "Natalia Domínguez",
     participants: [],
-    category: "Periodismo"
+    topic: "Periodismo"
   }
 ];
 
@@ -121,6 +125,10 @@ const events = [
 
   const { isAuthenticated } = useAuth0();
   const { loginWithRedirect } = useAuth0();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null); 
+  const [prof_id, setProfId] = useState(); 
+
   
   useEffect(() => {
       const cargarEventos = async () => {
@@ -136,10 +144,19 @@ const events = [
 
   }, []);
 
+  // --- cierro el modal ------------------------------------------------------------------------
+  const handleCloseModal = () => {
+      setModalOpen(false);
+      setModalData(null);
+  };
+
 
   const selectEvent = async (event) => {
 
     if (isAuthenticated) {
+      setModalData(event);
+      setProfId(event.prof_id);
+      setModalOpen(true);
       console.log(event);
     }
     else {
@@ -163,6 +180,14 @@ const events = [
         
         <EventGrid events={events} onSelectEvent={selectEvent}/>
       </div>
+
+      <ReservationModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          event={modalData}
+          token={token}
+          prof_id={prof_id}
+      />
 
     </>
   )

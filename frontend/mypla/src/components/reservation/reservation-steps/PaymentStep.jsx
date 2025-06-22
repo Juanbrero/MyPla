@@ -41,7 +41,7 @@ export default function PaymentStep({ onClose, onNext, style, reservationInfo, t
                 <Button
                     color="secondary"
                     variant="outlined"
-                    onClick={onNext}
+                    onClick={onNext} //esto pasa al siguiente step para poder verlo mientras se prueba, la accion correcta es onClose
                     // onClick={() => onClose?.()}
                     fullWidth
                     sx={{ p: 2 }}

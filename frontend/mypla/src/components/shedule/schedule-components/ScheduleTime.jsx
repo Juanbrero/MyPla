@@ -6,6 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 export default function ScheduleTime({ value, onChange, isEditable }) {
   const { start, end } = value || {};
 
+  console.log(value);
   // Helper para parsear string 'HH:MM:00:000Z' a Date
   const parseTime = (timeStr) => {
     if (!timeStr) return null;
@@ -48,12 +49,14 @@ export default function ScheduleTime({ value, onChange, isEditable }) {
     });
   };
 
+  console.log(start);
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       {!isEditable ? (
         <Box>
           <Typography variant="subtitle1">
-            <strong>Horario:</strong> {start.slice(0, 5) || '--:--'} - {end.slice(0, 5) || '--:--'}
+            <strong>Horario:</strong> {start.slice(0, 5) || '--:--'}
+            {/* <strong>Horario:</strong> {start.slice(0, 5) || '--:--'} - {end.slice(0, 5) || '--:--'} */}
           </Typography>
         </Box>
       ) : (

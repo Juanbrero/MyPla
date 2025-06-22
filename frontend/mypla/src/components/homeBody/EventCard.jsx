@@ -1,9 +1,13 @@
 import './EventCard.css';
+import dayjs from "dayjs";
+
 
 export const EventCard = ({ event , onClick}) => {
-  const { title, date, hora, precio, creator, participants, category } = event;
+  const { title, date, hora, precio, creator, participants, topic } = event;
 
-  const dateObj = new Date(date);
+
+  const dateObj = dayjs(date).toDate();
+
   const day = dateObj.toLocaleDateString('es-AR', { day: '2-digit' });
   const month = dateObj.toLocaleDateString('es-AR', { month: 'short' }).toUpperCase();
   const weekday = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
@@ -14,7 +18,7 @@ export const EventCard = ({ event , onClick}) => {
 
 
   return (
-    <div className={`event-card category-${category.toLowerCase()}`} onClick={select}>
+    <div className={`event-card category-${topic.toLowerCase()}`} onClick={select}>
       <div className="event-card-date">
         <span className="weekday">{weekday}</span>
         <span className="day">{day}</span>
@@ -28,7 +32,7 @@ export const EventCard = ({ event , onClick}) => {
         )}
         <p><strong>Hora de inicio:</strong> {hora}hs</p>
         <p><strong>Valor de inscripcion:</strong> ${precio}</p>
-        <span className="event-category">{category}</span>
+        <span className="event-category">{topic}</span>
       </div>
     </div>
   );
