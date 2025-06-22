@@ -1,0 +1,20 @@
+.stars-grid {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 20px 0;
+}
+
+.star-grid-label {
+    padding: 0 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+.stars-grid-content {
+    display: flex;
+    color: #333;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 0;
+}
