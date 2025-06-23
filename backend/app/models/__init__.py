@@ -12,5 +12,6 @@ from .Meeting import Meeting
 from .Reservation import Reservation
 from .Event import Event
 from .Invite import Invite
+from .Category import Category
 
 from app.config.database import Base

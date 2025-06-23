@@ -13,3 +13,8 @@ class TopicRepository(Repository[Topic]):
     def create(self, topic_name: str):
         return super().create(**topic_name)
     
+    def getCategory(self, category:str):
+        stm = (
+            select(Topic).where(Topic.category_name == category)
+            )
+        return self.session.execute(stm).scalars().all()
