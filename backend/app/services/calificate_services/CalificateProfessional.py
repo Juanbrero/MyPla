@@ -21,6 +21,10 @@ class CalificateProfessional:
         if clase is None:
             raise NotFound('Class to calificate not exist')
 
+        if calificateS.score not in range(0, 6):
+            raise ValueError('Score value invalid')
+
+        
         updated = classR.update({'calificate_teacher':calificateS.score},
                       {
                           'prof_id': calificateS.prof_id,
