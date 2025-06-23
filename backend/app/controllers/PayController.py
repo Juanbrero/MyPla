@@ -3,6 +3,7 @@ from ..bd.repositories.ProfessionalTopicRepository import ProfessionalTopicRepos
 from ..bd.repositories.ReservationRepository import ReservationRepository
 from ..bd.repositories.TopicSpecificRepository import TopicSpecificRepository
 from ..bd.repositories.ClassRepository import ClassRepository
+from ..bd.repositories.CancelationRepository import CancelationRepository
 from sqlalchemy.orm import Session
 from ..services.pay_services.PayInitialService import PayInitialService
 from ..services.pay_services.CreatePreference import CreatePreference
@@ -17,6 +18,7 @@ class PayController:
         self.professional_topicR = ProfessionalTopicRepository(db)
         self.topic_specificR = TopicSpecificRepository(db)
         self.classR = ClassRepository(db)
+        self.cancelationR = CancelationRepository(db)
     
     def initialPay (self, student_id: str, method: str):
         return PayInitialService.run(
@@ -36,12 +38,14 @@ class PayController:
     
     def getPayPending (self):
         return GetPayPending.run(
-            reservationR = self.reservationR
+            reservationR = self.reservationR,
+            cancelationR = self.cancelationR
         )
     
     def modifyPayPending (self, reservationS: str):
         return ModifyPayPending.run(
             db=self.db,
             reservationR = self.reservationR,
-            reservationS = reservationS
+            reservationS = reservationS,
+            cancelationR = self.cancelationR
         )
