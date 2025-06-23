@@ -43,7 +43,7 @@ class ClassRepository(Repository[Class]):
             .where(
                 or_(
                     Reservation.state == 'pay', 
-                    Reservation.state == 'finish'
+                    Reservation.state == 'finished'
                 ),
                 Reservation.student_id == student_id,
                 func.now() >= Class.day_hour,
@@ -67,7 +67,7 @@ class ClassRepository(Repository[Class]):
                    Class.prof_id == prof_id,
                    or_(
                     Reservation.state == 'pay', 
-                    Reservation.state == 'finish'
+                    Reservation.state == 'finished'
                 ))
         )
         return self.session.execute(stm).scalars().all()
@@ -102,7 +102,7 @@ class ClassRepository(Repository[Class]):
             .where(
                 or_(
                     Reservation.state == 'pay', 
-                    Reservation.state == 'finish'
+                    Reservation.state == 'finished'
                 ),
                 Reservation.prof_id == prof_id,
                 Reservation.day_hour == day_hour,
