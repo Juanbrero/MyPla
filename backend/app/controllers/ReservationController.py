@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ..services.reservation_services.CreateReservation import CreateReservation
 from ..services.reservation_services.UpdatePay import UpdatePay
 from ..services.reservation_services.CancelReservation import CancelReservation
+from ..bd.repositories.CancelationRepository import CancelationRepository
 from app.bd.schemas import schema_reservation 
 from datetime import datetime
 from app.services.reservation_services.StudentReservation import StudentReservation
@@ -21,6 +22,7 @@ class ReservationController:
         self.classR = ClassRepository(db)
         self.recurrentR = RecurrentScheduleRepository(db)
         self.specificR = SpecificScheduleRepository(db)
+        self.cancelationR = CancelationRepository(db)
     
     def createReservation (self, reservationS: schema_reservation.ReservationClassIn):
         return CreateReservation.run(
@@ -50,8 +52,12 @@ class ReservationController:
             user_id = user_id,
             user_cancel = user_cancel,
             role = role,
-            reservationR = self.reservationR
+            reservationR = self.reservationR,
+            meetingR = self.meetingR,
+            cancelationR = self.cancelationR,
+            classR = self.classR
         )
+    
     def studentReservation(self, student_id:str):
         return StudentReservation.run(
             student_id = student_id,
