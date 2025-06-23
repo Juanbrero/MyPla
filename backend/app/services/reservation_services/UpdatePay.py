@@ -4,7 +4,8 @@ from app.models import Reservation, Meeting
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_reservation 
-from datetime import timedelta, datetime
+from datetime import datetime
+from app.config.expire import EXPIRE_RESERVATION
 
 from fastapi.responses import JSONResponse
 from fastapi import status
@@ -42,7 +43,7 @@ class UpdatePay():
                 "day_hour": r.day_hour.isoformat(),
             })
 
-        if statusP == "rejected" and datetime.now() - r.create > timedelta(minutes= 3):
+        if statusP == "rejected" and datetime.now() - r.create > EXPIRE_RESERVATION:
             reservationR.delete({
                 "student_id": student_id,
                 "day_hour": r.day_hour.isoformat(),

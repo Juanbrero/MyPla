@@ -5,7 +5,8 @@ from app.utils.errors import handle_errors, ValidationError, NotFound
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi import status
-from datetime import datetime, timedelta
+from datetime import datetime
+from app.config.expire import EXPIRE_DAY
 
 class CancelReservation():
     @handle_errors
@@ -31,7 +32,7 @@ class CancelReservation():
         if len(reserva) == 0:
             raise NotFound("Reservation to cancel not found")
         
-        if reserva[0].day_hour - datetime.now() < timedelta(days=1):
+        if reserva[0].day_hour - datetime.now() < EXPIRE_DAY:
             raise ValidationError("The reservation is less than one day ")
 
         if role == "Alumno":
