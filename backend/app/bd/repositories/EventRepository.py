@@ -12,19 +12,11 @@ class EventRepository(Repository[Event]):
         return super().create(**data)
     
     def getEventsPage (self, page: int, amount: int):
-        # Calcular el offset: (página - 1) * cantidad
         offset = (page - 1) * amount
-        
         CreatorUser = aliased(User)
-        
-        smt = (
-            select(Event, Invite, User, CreatorUser)
-            .join(Invite,  and_(
-                Invite.prof_id == Event.prof_id,
-                Invite.day_hour == Event.day_hour
-            ))
-            .join(User, Invite.invite_id == User.user_id)
-            .join(CreatorUser, Event.prof_id == CreatorUser.user_id)
+    
+        event_subq = (
+        select(Event)
             .where(
                 Event.day_hour > datetime.now(),
                 Event.confirm == True
@@ -32,6 +24,20 @@ class EventRepository(Repository[Event]):
             .order_by(asc(Event.day_hour))
             .offset(offset)
             .limit(amount)
+            .subquery()
+        )
+    
+        EventAlias = aliased(Event, event_subq)
+    
+        smt = (
+            select(EventAlias, Invite, User, CreatorUser)
+            .join(Invite, and_(
+                Invite.prof_id == EventAlias.prof_id,
+                Invite.day_hour == EventAlias.day_hour
+            ))
+            .join(User, Invite.invite_id == User.user_id)
+            .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
+            .order_by(asc(EventAlias.day_hour))
         )
 
         return self.session.execute(smt).all()

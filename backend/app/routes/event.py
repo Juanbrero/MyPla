@@ -17,3 +17,8 @@ def create_event(eventS: schema_event.EventBase, db:Session = Depends(get_db)): 
 def get_events(eventS: schema_event.EventGet = Depends(), db:Session = Depends(get_db)):
 
     return EventController(db= db).getEvents(eventS = eventS)
+
+@router.patch('/invite', tags=['Event'], response_model= schema_event.InviteConfirm)
+def accept_event(inviteS: schema_event.InviteConfirm, db:Session = Depends(get_db)): #user_info = Depends(RolesValidator(["Profesional"]))):
+
+    return EventController(db= db).acceptInvite(invite_id = "9bb43560-9d90-403d-933d-bc3ac6d6abbc", inviteS = inviteS)

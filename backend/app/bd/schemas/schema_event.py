@@ -12,3 +12,8 @@ class EventBase(BaseModel):
 class EventGet(BaseModel):
     page: int
     amount: int
+    
+class InviteConfirm(BaseModel):
+    prof_id: str
+    day_hour: datetime
+    accept: bool
