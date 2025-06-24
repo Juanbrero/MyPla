@@ -22,3 +22,21 @@ def get_events(eventS: schema_event.EventGet = Depends(), db:Session = Depends(g
 def accept_event(inviteS: schema_event.InviteConfirm, db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
 
     return EventController(db= db).acceptInvite(invite_id = user_info["user_id"], inviteS = inviteS)
+
+
+##prof_id
+@router.post('/test', tags=['Event-ID'], response_model= schema_event.EventBase )
+def create_event(prof_id: str,eventS: schema_event.EventBase, db:Session = Depends(get_db)):
+
+    return EventController(db= db).createEvent(prof_id = prof_id, eventS = eventS)
+
+
+@router.get('/test', tags=['Event-ID'], response_model= schema_event.EventGet )
+def get_events(eventS: schema_event.EventGet = Depends(), db:Session = Depends(get_db)):
+
+    return EventController(db= db).getEvents(eventS = eventS)
+
+@router.patch('/test/invite', tags=['Event-ID'], response_model= schema_event.InviteConfirm)
+def accept_event(prof_id: str,inviteS: schema_event.InviteConfirm, db:Session = Depends(get_db)):
+
+    return EventController(db= db).acceptInvite(invite_id = prof_id, inviteS = inviteS)
