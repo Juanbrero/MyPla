@@ -17,7 +17,7 @@ class GetEvents:
         events = eventR.getEventsPage(page=eventS.page, amount=eventS.amount)
         eventos_dict = {}
 
-        for event, invite, user, creator in events:
+        for event, invite, user, creator, topic in events:
             key = (event.prof_id, event.day_hour)
             if key not in eventos_dict:
                 eventos_dict[key] = {
@@ -28,7 +28,8 @@ class GetEvents:
                     "confirm": event.confirm,
                     "cancel": event.cancel,
                     "creator": creator.username,
-                    "invites": []
+                    "invites": [],
+                    "topic": topic
                 }
             eventos_dict[key]["invites"].append(user.username)
 
