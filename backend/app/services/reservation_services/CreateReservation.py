@@ -20,7 +20,8 @@ class CreateReservation ():
         classR: Repository[Class],
         reservationS: schema_reservation.ReservationClassIn
     ):
-        
+        reservationR.delPending()
+
         reservationS.day_hour = reservationS.day_hour.replace(second=0, microsecond=0)
         day = reservationS.day_hour.date()
         if day < date.today():
@@ -29,6 +30,14 @@ class CreateReservation ():
         start = reservationS.day_hour.time()
         end = (reservationS.day_hour + timedelta(hours=1)).time()
         topic = reservationS.topic
+
+        student_reserv = reservationR.get_by({'student_id': reservationS.student_id, 
+                                              "day_hour":reservationS.day_hour,
+                                               "state":"pay"})
+        
+        if len(student_reserv) > 0:
+            raise ValidationError("You have a reservation to this hour")
+
 
         schedule_class = Schedule(start=start, end=end)
         
