@@ -23,8 +23,8 @@ class CreateReservation ():
         
         reservationS.day_hour = reservationS.day_hour.replace(second=0, microsecond=0)
         day = reservationS.day_hour.date()
-        if day < date.today():
-            raise ValueError('Day value is invalid')
+        # if day < date.today():
+        #     raise ValueError('Day value is invalid')
         
         start = reservationS.day_hour.time()
         end = (reservationS.day_hour + timedelta(hours=1)).time()
