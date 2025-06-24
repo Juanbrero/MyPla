@@ -21,6 +21,8 @@ class CancelReservation():
         cancelationR: Repository[Cancelation],
         classR : Repository[Class]
     ):
+        reservationR.delPending()
+
         day_hour = day_hour.replace(second=0, microsecond=0)
 
         reservation_filter ={

@@ -21,6 +21,8 @@ class GetStudentAvailable():
         specificR: Repository[SpecificSchedule],
         reservationR: Repository[Reservation]
     ):
+        reservationR.delPending()
+
         if day is None:
             day = date.today()
         

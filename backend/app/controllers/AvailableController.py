@@ -30,7 +30,8 @@ class AvailableController:
             recurrentR= self.recurrentR,
             exceptionR= self.exceptionR,
             specificR= self.specificR,
-            classR= self.classR
+            classR= self.classR,
+            reservationR = self.reservationR
         )
 
     def getStudentAvailable(self, prof_id: str, day:date, student_id:str):

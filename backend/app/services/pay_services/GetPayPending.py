@@ -19,6 +19,8 @@ class GetPayPending:
         reservationR: Repository[Reservation],
         cancelationR: Repository[Cancelation]
     ):
+        reservationR.delPending()
+
         reservations = reservationR.getReservationsForTransaction()
         reservData = []
         for reservation, professional, student, prof_email, stud_email ,price in reservations:
