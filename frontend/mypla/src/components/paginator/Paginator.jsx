@@ -1,5 +1,5 @@
 import React from 'react';
-import './Paginator.css'; // Asegurate de que la ruta sea correcta
+import './Paginator.css';
 
 export const Paginator = ({ currentPage, hasNextPage, onPageChange }) => {
   return (
