@@ -3,16 +3,22 @@ import dayjs from "dayjs";
 
 
 export const EventCard = ({ event , onClick}) => {
-  const { title, date, hora, precio, creator, participants, topic } = event;
 
+  const { creator, day_hour, duration, invites, price, topic } = event;
 
-  const dateObj = dayjs(date).toDate();
+  const [date, hour] = day_hour.split("T");
+  const [hours, minutes] = hour.split(":");
+
+  const formattedHour = `${hours}:${minutes}`;
+ 
+  const dateObj = dayjs(day_hour).toDate();
 
   const day = dateObj.toLocaleDateString('es-AR', { day: '2-digit' });
   const month = dateObj.toLocaleDateString('es-AR', { month: 'short' }).toUpperCase();
   const weekday = dateObj.toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase();
 
   const select = () => {
+    console.log("evento seleccionado: ", event);
     onClick?.(event);
   }
 
@@ -25,13 +31,13 @@ export const EventCard = ({ event , onClick}) => {
         <span className="month">{month}</span>
       </div>
       <div className="event-card-body">
-        <h3>{title}</h3>
+        {/* <h3>{title}</h3> */}
         <p><strong>Host:</strong> {creator}</p>
-        {participants.length > 0 && (
-          <p><strong>Invitados:</strong> {participants.join(', ')}</p>
+        {invites.length > 0 && (
+          <p><strong>Invitados:</strong> {invites.join(', ')}</p>
         )}
-        <p><strong>Hora de inicio:</strong> {hora}hs</p>
-        <p><strong>Valor de inscripcion:</strong> ${precio}</p>
+        <p><strong>Hora de inicio:</strong> {formattedHour}hs</p>
+        <p><strong>Valor de inscripcion:</strong> ${price}</p>
         <span className="event-category">{topic}</span>
       </div>
     </div>
