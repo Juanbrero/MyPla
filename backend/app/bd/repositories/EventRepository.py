@@ -1,4 +1,4 @@
-from app.models import Event, Professional, Invite, User
+from app.models import Event, Professional, Invite, User, Meeting
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy import asc, select, and_
 from .Repository import Repository
@@ -30,13 +30,16 @@ class EventRepository(Repository[Event]):
         EventAlias = aliased(Event, event_subq)
     
         smt = (
-            select(EventAlias, Invite, User, CreatorUser)
+            select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
             .join(Invite, and_(
                 Invite.prof_id == EventAlias.prof_id,
                 Invite.day_hour == EventAlias.day_hour
             ))
             .join(User, Invite.invite_id == User.user_id)
             .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
+            .join(Meeting, and_(Meeting.prof_id == CreatorUser.user_id,
+                                Meeting.day_hour == EventAlias.day_hour)
+                                )
             .order_by(asc(EventAlias.day_hour))
         )
 
