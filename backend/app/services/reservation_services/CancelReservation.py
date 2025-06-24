@@ -41,6 +41,11 @@ class CancelReservation():
             raise ValidationError("The reservation is less than one day ")
         
         clase = classR.get_by({'prof_id':reserva.prof_id, "day_hour": reserva.day_hour})
+        cancel = cancelationR.get_by({"prof_id": reserva.prof_id, "student_id":reserva.student_id, "day_hour": reserva.day_hour})
+        
+        if len(cancel) != 0:
+            raise ValidationError("This class was previously cancelled")
+
 
         if role == "Alumno":
             cancelationR.create({
