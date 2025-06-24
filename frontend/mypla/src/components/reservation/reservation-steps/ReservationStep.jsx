@@ -41,7 +41,7 @@ export default function ReservationStep({ taskData, event, onClose, onNext, styl
                         
                         <Typography variant="subtitle1">
                             <strong>Coanfitriones invitados: </strong>
-                            {event?.participants?.join(', ')}
+                            {event?.invites?.join(', ')}
                         </Typography>
                         
                         <ScheduleDate
@@ -56,7 +56,7 @@ export default function ReservationStep({ taskData, event, onClose, onNext, styl
 
                         <Typography variant="subtitle1">
                             <strong>Valor de inscripcion: </strong>
-                            $ {event?.precio}
+                            $ {event?.price}
                         </Typography>
                         
                     </>

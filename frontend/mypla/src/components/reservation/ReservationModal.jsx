@@ -40,7 +40,6 @@ export default function ReservationModal({
     // const [localTaskData, setLocalTaskData] = React.useState(taskData);
     const [localTaskData, setLocalTaskData] = React.useState(taskData? taskData : null);
 
-    console.log("step: ", step);
     useEffect (() => {
         // setLocalTaskData(taskData);
         // if (taskData) taskData.selectedTopic = taskData.topics[0];
