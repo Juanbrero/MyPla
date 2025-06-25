@@ -1,4 +1,4 @@
-from app.models import Class, Reservation, Meeting, Professional
+from app.models import Class, Reservation, Meeting, Professional, User
 from sqlalchemy.orm import Session
 from .Repository import Repository
 from sqlalchemy import select, and_, func, or_
@@ -36,10 +36,15 @@ class ClassRepository(Repository[Class]):
 
         """
         stm = (
-            select(Class)
+            select(Class, User.username, Meeting.topic_name)
             .join(Reservation, and_(
                 Reservation.day_hour == Class.day_hour,
                 Reservation.prof_id == Class.prof_id))
+            .join(Meeting, and_(
+                Meeting.prof_id == Class.prof_id,
+                Meeting.day_hour == Class.day_hour
+            ))
+            .join(User, User.user_id == Class.prof_id)
             .where(
                 or_(
                     Reservation.state == 'pay', 
@@ -49,7 +54,7 @@ class ClassRepository(Repository[Class]):
                 func.now() >= Class.day_hour,
                 Class.calificate_teacher.is_(None))
             )
-        return self.session.execute(stm).scalars().all()
+        return self.session.execute(stm)
     
     def getCalificateStudent(self, prof_id:str):
         """
