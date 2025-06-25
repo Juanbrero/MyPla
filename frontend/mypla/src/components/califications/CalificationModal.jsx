@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { StarsGrid } from './StarsGrid';
+import { patchCalification } from '../../services/calification/calification.service';
 
 
 const style = {
@@ -24,8 +25,8 @@ const style = {
 export default function CalificationModal({
   open,
   onClose,
-//   token,
-//   prof_id
+  token,
+  class_id,
 }) {
 
     useEffect(() => {
@@ -50,9 +51,16 @@ export default function CalificationModal({
         setHoverRating(0);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log("Calificación enviada:", rating);
         
+        const body = {
+            day_hour: class_id.day_hour,
+            prof_id: class_id.prof_id,
+            score: rating,
+        }
+        await patchCalification(token, body);
+
         onClose?.();
     };
 
