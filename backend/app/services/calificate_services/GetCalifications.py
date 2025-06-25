@@ -20,10 +20,12 @@ class GetCalification:
             result = classR.getCalificateStudent(id)
 
         response = []
-        for clase in result:
+        for clase, username, topic in result:
             item = {
                 'prof_id': clase.prof_id,
-                'day_hour': clase.day_hour.isoformat()
+                'day_hour': clase.day_hour.isoformat(),
+                "prof_username": username,
+                "topic": topic
             }
             response.append(item)
 
