@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import './profile.css'
-import CalificationModal from './califications/CalificationModal';
+import { useNavigate } from "react-router-dom";
 
-export default function ProfessionalProfile({ token, user }) {
+
+export default function StudentProfile({ token, user }) {
   
   ///////////////////////////////////////////
-  
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalData, setModalData] = useState(null); 
-  
-  const handleCloseModal = () => {
-      setModalOpen(false);
-      setModalData(null);
-  };
+  const navigate = useNavigate();
   ///////////////////////////////////////////
   
   
@@ -28,13 +21,7 @@ export default function ProfessionalProfile({ token, user }) {
       <p><strong>Nombre:</strong> {user.name}</p>
       <p><strong>Email:</strong> {user.email}</p>
 
-      <button onClick={() => setModalOpen(true)}>probar modal de calificacion</button>
-
-
-      <CalificationModal
-        open={modalOpen}
-        onClose={handleCloseModal}
-      />
+      <button onClick={() => navigate('/califications/pending')}>Clases pendientes de calificacion</button>
 
     </Box>
   );

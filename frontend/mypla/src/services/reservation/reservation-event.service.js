@@ -5,7 +5,7 @@ const apiServerUrl = import.meta.env.VITE_API_SERVER_URL;
 export const postReservationEvent = async (token, event, prof_id) => {
 
     const body = {
-        day_hour: `${event.date}T${event.hour}`,
+        day_hour: `${event.day_hour}`,
         prof_id: prof_id,
         topic: event.topic,
     }
