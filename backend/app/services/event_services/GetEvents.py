@@ -22,6 +22,7 @@ class GetEvents:
             if key not in eventos_dict:
                 eventos_dict[key] = {
                     "prof_id": event.prof_id,
+                    "title": event.title,
                     "day_hour": event.day_hour.isoformat(),
                     "duration": event.duration,
                     "price": event.price,
