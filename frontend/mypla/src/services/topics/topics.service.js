@@ -20,6 +20,24 @@ export const getTopics = async () => {
     };
 };
 
+export const getTopicsByCategory = async (category) => {
+
+    const config = {
+    url: `${apiServerUrl}/topics/category?category_name=${category}`,
+    method: "GET",
+    headers: {
+        "content-type": "application/json",
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
+
 export const postTopic = async (body) => {
     
     const config = {

@@ -13,6 +13,7 @@ import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
 import { PanelAdminTransaction } from "./pages/PanelAdminTransaction.jsx"
 import { AdminTopics } from "./pages/AdminTopics.jsx"
 import CalificationsPending from "./pages/CalificationsPending.jsx"
+import { TopicsList } from "./pages/TopicsList.jsx"
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -59,6 +60,10 @@ const App = () => {
           <Route 
             path="/professionalsList" 
             element={<AuthenticationGuard Component={ProfessionalsList} />} 
+          />
+          <Route 
+            path="/topicsList" 
+            element={<AuthenticationGuard Component={TopicsList} />} 
           />
           <Route 
             path="/adminTransactions" 
