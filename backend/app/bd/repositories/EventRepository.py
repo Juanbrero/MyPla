@@ -11,12 +11,13 @@ class EventRepository(Repository[Event]):
     def create(self, data):
         return super().create(**data)
     
-    def getEventsPage (self, page: int, amount: int):
+    
+    def getEventsPage(self, page: int, amount: int):
         offset = (page - 1) * amount
         CreatorUser = aliased(User)
     
         event_subq = (
-        select(Event)
+            select(Event)
             .where(
                 Event.day_hour > datetime.now(),
                 Event.confirm == True
@@ -31,13 +32,13 @@ class EventRepository(Repository[Event]):
     
         smt = (
             select(EventAlias, Invite, User, CreatorUser)
-            .join(Invite, and_(
+            .outerjoin(Invite, and_(
                 Invite.prof_id == EventAlias.prof_id,
                 Invite.day_hour == EventAlias.day_hour
             ))
-            .join(User, Invite.invite_id == User.user_id)
+            .outerjoin(User, Invite.invite_id == User.user_id)
             .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
             .order_by(asc(EventAlias.day_hour))
         )
-
+    
         return self.session.execute(smt).all()

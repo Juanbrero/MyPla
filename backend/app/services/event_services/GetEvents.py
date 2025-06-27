@@ -16,7 +16,7 @@ class GetEvents:
     ):
         events = eventR.getEventsPage(page=eventS.page, amount=eventS.amount)
         eventos_dict = {}
-
+        
         for event, invite, user, creator in events:
             key = (event.prof_id, event.day_hour)
             if key not in eventos_dict:
@@ -30,7 +30,8 @@ class GetEvents:
                     "creator": creator.username,
                     "invites": []
                 }
-            eventos_dict[key]["invites"].append(user.username)
+            if user:
+                eventos_dict[key]["invites"].append(user.username)
 
         eventos_finales = list(eventos_dict.values())
         return JSONResponse(status_code=status.HTTP_200_OK, content=eventos_finales)
