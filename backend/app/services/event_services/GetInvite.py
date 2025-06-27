@@ -28,10 +28,11 @@ class GetInvite:
             return result
 
         res = []
-        for invite, event in invites:
+        for invite, event, username in invites:
             res.append({
                 "invite": to_dict(invite),
-                "event": to_dict(event)
+                "event": to_dict(event),
+                "professional_username": username
             })
         
         return JSONResponse(status_code=status.HTTP_200_OK, content=res)
