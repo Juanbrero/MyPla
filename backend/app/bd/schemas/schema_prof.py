@@ -35,3 +35,11 @@ class ProfessionalScore(ProfessionalBase):
         - score: float
     """
     score:float
+
+
+class ProfessionalInfo(BaseModel):
+    prof_id:str
+    prof_username: str
+
+class ProfessionalAll(BaseModel):
+    professionals: list[ProfessionalInfo]
