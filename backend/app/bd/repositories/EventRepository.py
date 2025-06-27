@@ -45,8 +45,8 @@ class EventRepository(Repository[Event]):
 
         # return self.session.execute(smt).all()
 
-        # Paso 1: obtener eventos paginados
-        events_stmt = (
+            # Subquery paginada de eventos confirmados
+        event_subq = (
             select(Event)
             .where(
                 Event.day_hour > datetime.now(),
@@ -55,36 +55,26 @@ class EventRepository(Repository[Event]):
             .order_by(asc(Event.day_hour))
             .offset(offset)
             .limit(amount)
+            .subquery()
         )
 
-        events = self.session.execute(events_stmt).scalars().all()
+        EventAlias = aliased(Event, event_subq)
 
-        if not events:
-            return []
+        # Hacemos los JOINS sobre los eventos paginados (event_subq)
+        stmt = (
+            select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
+            .select_from(EventAlias)
+            .join(Invite, and_(
+                Invite.prof_id == EventAlias.prof_id,
+                Invite.day_hour == EventAlias.day_hour
+            ))
+            .join(User, Invite.invite_id == User.user_id)
+            .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
+            .join(Meeting, and_(
+                Meeting.prof_id == EventAlias.prof_id,
+                Meeting.day_hour == EventAlias.day_hour
+            ))
+            .order_by(asc(EventAlias.day_hour))
+        )
 
-        # Paso 2: traer info relacionada para esos eventos
-        results = []
-        for ev in events:
-            smt = (
-                select(Event, Invite, User, CreatorUser, Meeting.topic_name)
-                .select_from(Event)
-                .join(Invite, and_(
-                    Invite.prof_id == Event.prof_id,
-                    Invite.day_hour == Event.day_hour
-                ))
-                .join(User, Invite.invite_id == User.user_id)
-                .join(CreatorUser, Event.prof_id == CreatorUser.user_id)
-                .join(Meeting, and_(
-                    Meeting.prof_id == Event.prof_id,
-                    Meeting.day_hour == Event.day_hour
-                ))
-                .where(
-                    Event.prof_id == ev.prof_id,
-                    Event.day_hour == ev.day_hour
-                )
-            )
-
-            related_data = self.session.execute(smt).all()
-            results.extend(related_data)
-
-        return results
+        return self.session.execute(stmt).all()
