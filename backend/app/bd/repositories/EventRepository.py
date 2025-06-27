@@ -62,20 +62,21 @@ class EventRepository(Repository[Event]):
         if not events:
             return []
 
-        # Paso 2: traer info relacionada con cada evento
+        # Paso 2: traer info relacionada para esos eventos
         results = []
         for ev in events:
             smt = (
                 select(Event, Invite, User, CreatorUser, Meeting.topic_name)
+                .select_from(Event)
                 .join(Invite, and_(
-                    Invite.prof_id == ev.prof_id,
-                    Invite.day_hour == ev.day_hour
+                    Invite.prof_id == Event.prof_id,
+                    Invite.day_hour == Event.day_hour
                 ))
                 .join(User, Invite.invite_id == User.user_id)
-                .join(CreatorUser, ev.prof_id == CreatorUser.user_id)
+                .join(CreatorUser, Event.prof_id == CreatorUser.user_id)
                 .join(Meeting, and_(
-                    Meeting.prof_id == ev.prof_id,
-                    Meeting.day_hour == ev.day_hour
+                    Meeting.prof_id == Event.prof_id,
+                    Meeting.day_hour == Event.day_hour
                 ))
                 .where(
                     Event.prof_id == ev.prof_id,
