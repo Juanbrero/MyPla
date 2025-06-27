@@ -9,7 +9,6 @@ export const getTopics = async () => {
     method: "GET",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
     }
     };
 
@@ -21,15 +20,37 @@ export const getTopics = async () => {
     };
 };
 
-export const postTopic = async (topic) => {
+export const getTopicsByCategory = async (category) => {
 
     const config = {
-    url: `${apiServerUrl}/topics?topic_name=${topic}`,
-    method: "POST",
+    url: `${apiServerUrl}/topics/category?category_name=${category}`,
+    method: "GET",
     headers: {
         "content-type": "application/json",
-        // "Authorization": `Bearer ${token}`,
     }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};
+
+export const postTopic = async (body) => {
+    
+    const config = {
+        url: `${apiServerUrl}/topics`,
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            // "Authorization": `Bearer ${token}`,
+        },
+        data: {
+            topic_name: body.topic_name,
+            category_name: body.category_name,
+        },
     };
 
     const { data, error } = await callExternalApi({ config });

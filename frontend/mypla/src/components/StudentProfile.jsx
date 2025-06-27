@@ -1,8 +1,15 @@
-import React from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import './profile.css'
+import { useNavigate } from "react-router-dom";
 
-export default function ProfessionalProfile({ token, user }) {
+
+export default function StudentProfile({ token, user }) {
+  
+  ///////////////////////////////////////////
+  const navigate = useNavigate();
+  ///////////////////////////////////////////
+  
+  
   return (
     <Box className="profile-container" sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -13,6 +20,9 @@ export default function ProfessionalProfile({ token, user }) {
 
       <p><strong>Nombre:</strong> {user.name}</p>
       <p><strong>Email:</strong> {user.email}</p>
+
+      <button onClick={() => navigate('/califications/pending')}>Clases pendientes de calificacion</button>
+
     </Box>
   );
 }

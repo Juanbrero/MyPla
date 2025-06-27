@@ -1,9 +1,10 @@
 from app.models import Reservation, Meeting, Professional, Student, Class, User
-from backend.app.models import Event
+from app.models import Event
 from sqlalchemy.orm import Session, aliased
 from .Repository import Repository
-from sqlalchemy import select, and_, extract, cast, or_, outerjoin
+from sqlalchemy import select, and_, extract, cast, or_, outerjoin, func
 from datetime import date, datetime
+from app.config.expire import EXPIRE_RESERVATION
 
 class ReservationRepository(Repository[Reservation]):
     def __init__(self, session: Session):
@@ -93,3 +94,23 @@ class ReservationRepository(Repository[Reservation]):
             )
         )
         return self.session.execute(stm).scalars().all()
+
+    def delPending(self):
+        """
+        Codigo que recupera todas las reservas pedientes que su tiempo de expiración pasara
+        y elimina las mismas
+        """
+        stm = (
+            select(Reservation)
+            .where(Reservation.state == "pending",
+                   func.now() >= Reservation.create + EXPIRE_RESERVATION)
+        )
+        
+        result = self.session.execute(stm).scalars().all()
+        for reserva in result:
+            self.session.query(Meeting).filter(
+                Meeting.prof_id== reserva.prof_id, 
+                Meeting.day_hour == reserva.day_hour).delete()
+        self.session.commit()
+        
+    

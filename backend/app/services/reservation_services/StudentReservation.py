@@ -12,7 +12,8 @@ class StudentReservation:
     def run(
         student_id: str,
         reservationR: Repository[Reservation]
-    ):
+    ):  
+        reservationR.delPending()
         
         class_ = reservationR.getStudent(student_id)
         reservas = []

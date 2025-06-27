@@ -1,11 +1,12 @@
-from app.models import Reservation
+from app.models import Reservation, Cancelation, Meeting, Class
 from app.bd.repositories.Repository import Repository
 
 from app.utils.errors import handle_errors, ValidationError, NotFound
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi import status
-from datetime import datetime, timedelta
+from datetime import datetime
+from app.config.expire import EXPIRE_DAY
 
 class CancelReservation():
     @handle_errors
@@ -15,8 +16,13 @@ class CancelReservation():
         user_id : str,
         user_cancel : str,
         role : str,
-        reservationR : Repository[Reservation]
+        reservationR : Repository[Reservation],
+        meetingR: Repository[Meeting],
+        cancelationR: Repository[Cancelation],
+        classR : Repository[Class]
     ):
+        reservationR.delPending()
+
         day_hour = day_hour.replace(second=0, microsecond=0)
 
         reservation_filter ={
@@ -31,22 +37,45 @@ class CancelReservation():
         if len(reserva) == 0:
             raise NotFound("Reservation to cancel not found")
         
-        if reserva[0].day_hour - datetime.now() < timedelta(days=1):
+        reserva = reserva[0]
+
+        if reserva.day_hour - datetime.now() < EXPIRE_DAY:
             raise ValidationError("The reservation is less than one day ")
+        
+        clase = classR.get_by({'prof_id':reserva.prof_id, "day_hour": reserva.day_hour})
+        cancel = cancelationR.get_by({"prof_id": reserva.prof_id, "student_id":reserva.student_id, "day_hour": reserva.day_hour})
+        
+        if len(cancel) != 0:
+            raise ValidationError("This class was previously cancelled")
+
 
         if role == "Alumno":
-            reservationR.update(filters=reservation_filter,
-                                values={"cancel": True,
-                                        "cancel_time": datetime.now(),
-                                        "state": "cancel_student"
+            cancelationR.create({
+                "prof_id": reserva.prof_id,
+                "student_id": reserva.student_id,
+                "day_hour": reserva.day_hour,
+                "cancel_time": datetime.now(),
+                "state": "cancel_student",
+                "price": clase[0].price
             })
+
+            meetingR.delete({'prof_id':reserva.prof_id,
+                             'day_hour':reserva.day_hour})
+            
+            
         else:
-            reservationR.update(filters=reservation_filter,
-                                values={"cancel": True,
-                                        "cancel_time": datetime.now(),
-                                        "state": "cancel_professional"
+            cancelationR.create({
+                "prof_id": reserva.prof_id,
+                "student_id": reserva.student_id,
+                "day_hour": reserva.day_hour,
+                "cancel_time": datetime.now(),
+                "state": "cancel_professional",
+                "price": clase[0].price
             })
-        
+
+            meetingR.delete({'prof_id':reserva.prof_id,
+                             'day_hour':reserva.day_hour})
+            
         db.commit()
 
         return JSONResponse(status_code= status.HTTP_202_ACCEPTED, content='Reservation canceled')

@@ -5,6 +5,8 @@ import { es } from 'date-fns/locale';
 import StudentReservationModal from './StudentReservationModal.jsx';
 import { useParams } from 'react-router-dom';
 import { getStudentReservations, cancelStudentReservations } from '../../services/reservation/initial-class.service.js';
+import { getCalificate } from '../../services/calification/calification.service.js';
+import CalificationsPendingAlert from '../califications/CalificationsPendingAlert.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -31,11 +33,33 @@ const filtrarEventosPorDia = (eventos, dia) => {
     };
 };
 
+
 const StudentMyCalendar = ({token}) => {
     useEffect(() => {
         document.title = "MiPla - Calendario";
     }, []);
+    
+    const [openAlert, setOpenAlert] = useState(false);
 
+    useEffect(() => {
+      const verificarCalificacionesPendientes = async () => {
+        try {
+          const califPendings = await getCalificate(token);
+
+          // Mostrar la alerta si hay al menos una calificación pendiente
+          if (Array.isArray(califPendings) && califPendings.length > 0) {
+            setOpenAlert(true);
+          }
+        } catch (error) {
+          console.error("Error al verificar calificaciones pendientes:", error);
+        }
+      };
+
+      verificarCalificacionesPendientes();
+    }, [token]);
+
+
+  
     // estados del modal
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null); 
@@ -109,6 +133,7 @@ const StudentMyCalendar = ({token}) => {
         return acc;
     }, {});
 
+
     return (
     <div className="p-4-calendario">
       <div className="calendario-controles">
@@ -157,6 +182,12 @@ const StudentMyCalendar = ({token}) => {
           taskData={modalData}
           onDeleteTask={handleCancelarReserva}
       />
+
+      {openAlert && (
+        <CalificationsPendingAlert open={openAlert} onClose={() => setOpenAlert(false)} />
+      )}
+
+
 
     </div>
   );

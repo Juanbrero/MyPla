@@ -2,6 +2,7 @@ import { EventCard } from './EventCard';
 
 
 export const EventGrid = ({ events, onSelectEvent }) => {
+  
   if (!Array.isArray(events)) return null;
 
   return (

@@ -12,6 +12,8 @@ import { ProfessionalsList } from './pages/ProfessionalsList.jsx'
 import StudentCalendar from "./components/studentCalendar/StudentCalendar.jsx"
 import { PanelAdminTransaction } from "./pages/PanelAdminTransaction.jsx"
 import { AdminTopics } from "./pages/AdminTopics.jsx"
+import CalificationsPending from "./pages/CalificationsPending.jsx"
+import { TopicsList } from "./pages/TopicsList.jsx"
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -51,18 +53,17 @@ const App = () => {
             path="/callback"
             element={<AuthenticationGuard Component={CallbackPage} />}
           />
-          {/* <Route
-            path="/protected"
-            element={<AuthenticationGuard Component={ProtectedPage} />}
-          /> */}
-          {/* <Route path="/oauth-callback" element={<OAuthCallback />} /> */}
-          {/* <Route 
-            path="/test-auth" 
-            element={<AuthenticationGuard Component={TestAuth} />} 
-          /> */}
+          <Route 
+            path="/califications/pending" 
+            element={<AuthenticationGuard Component={CalificationsPending} roles={["Alumno"]} />} 
+          />
           <Route 
             path="/professionalsList" 
             element={<AuthenticationGuard Component={ProfessionalsList} />} 
+          />
+          <Route 
+            path="/topicsList" 
+            element={<AuthenticationGuard Component={TopicsList} />} 
           />
           <Route 
             path="/adminTransactions" 

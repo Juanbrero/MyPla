@@ -7,12 +7,16 @@ import { getTopics } from '../../services/topics/topics.service';
 import { LoginButton } from '../auth0Buttons/LoginButton';
 import { SignupButton } from '../auth0Buttons/SignUpButton';
 import { LogoutButton } from '../auth0Buttons/LogoutButton';
+import { getCategories } from '../../services/categories/category.service';
 
 
 export const HeaderComponent = ({token, roles}) => {
     let menuVisible = false;
     const [topics, setTopics] = useState([]);
-    const [selectedTopic, setSelectedTopic] = useState(''); 
+    const [selectedTopic, setSelectedTopic] = useState('');
+    const [searchByCategory, setSearchByCategory] = useState(false);
+    const [categories, setCategories] = useState([]);
+ 
 
     useEffect(() => {
         const fetchTopics = async () => {
@@ -26,6 +30,23 @@ export const HeaderComponent = ({token, roles}) => {
 
         fetchTopics();
     }, []);
+
+    useEffect(() => {
+        if (searchByCategory) {
+            const fetchCategories = async () => {
+                try {
+                    const response = await getCategories();
+                    const fetchedCategories = await response.data;
+                    setCategories(fetchedCategories);
+                } catch (error) {
+                    console.error('Error al obtener las categorías:', error);
+                }
+            };
+
+            fetchCategories();
+        }
+    }, [searchByCategory]);
+
 
     const showHideMenu = () => {
         const nav = document.getElementById("nav");
@@ -44,11 +65,17 @@ export const HeaderComponent = ({token, roles}) => {
 
     const navigate = useNavigate();
 
-    const searchProfs = () => {
-        if (selectedTopic) {
+
+    const search = () => {
+        if (!selectedTopic) return;
+
+        if (searchByCategory) {
+            navigate(`/topicsList?category=${encodeURIComponent(selectedTopic)}`);
+        } else {
             navigate(`/ProfessionalsList?topic=${encodeURIComponent(selectedTopic)}`);
         }
     };
+
     
     return (
         <div className="header-container">
@@ -57,26 +84,49 @@ export const HeaderComponent = ({token, roles}) => {
                     <Link to="/">MiPla</Link>
                 </div>
                 {roles && roles.includes('Alumno') &&
-                 <div className="search-container">
-                 <div className="search-input">
-                     <select
-                         value={selectedTopic}
-                         onChange={(e) => setSelectedTopic(e.target.value)}
-                     >
-                         <option value="">Seleccionar tópico...</option>
-                         {topics.map((topic, index) => (
-                             <option key={index} value={topic}>
-                                 {topic}
-                             </option>
-                         ))}
-                         </select>
-                     </div>
-                     <div className="search-icon">
-                         <button id="search-button" onClick={searchProfs}>
-                             <FontAwesomeIcon icon={faMagnifyingGlass} />
-                         </button>
-                     </div>
-                 </div>
+                <div className="search-container">
+
+                    <div className='search-filter'>
+                        <label className='label-check-filter'>
+                            <input
+                                id='filter-checkbox' 
+                                type='checkbox'
+                                checked={searchByCategory}
+                                onChange={(e) => {
+                                    setSearchByCategory(e.target.checked);
+                                    setSelectedTopic(''); // limpiar selección anterior
+                                }}
+                            >
+                            </input>
+                            <span>Buscar por categoria</span>
+                        </label>
+                    </div>
+
+                    <div className='search-input-container'>
+                        <div className="search-input">
+                            <select
+                                value={selectedTopic}
+                                onChange={(e) => setSelectedTopic(e.target.value)}
+                            >
+                            <option value="">
+                                {searchByCategory ? 'Seleccionar categoría...' : 'Seleccionar tópico...'}
+                            </option>
+                            {(searchByCategory ? categories : topics).map((item, index) => (
+                                <option key={index} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+
+                            </select>
+                        </div>
+                        <div className="search-icon">
+                            <button id="search-button" onClick={search}>
+                            {/* <button id="search-button" onClick={searchProfs}> */}
+                                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 }
                 <div>
                     <nav id="nav">
