@@ -93,3 +93,37 @@ class EventRepository(Repository[Event]):
         total_pages = ceil(total_events / amount) if amount > 0 else 0
     
         return total_pages
+
+    def getEventsProfessional(self, prof_id:str):
+        """
+            - Recupera todos los eventos del profesional que esten confirmados
+            - Utilizado para mostrar disponibilidad al Alumno
+        """
+        stm = (
+            select(Event)
+            .where(
+                Event.prof_id == prof_id,
+                Event.day_hour > datetime.now(),
+                Event.confirm == True)
+        )
+
+        return self.session.execute(stm).scalars().all()
+
+
+    def getEventsHost(self, prof_id:str):
+        """
+            - Recupera los datos de los eventos organizados, junto al topico del mismo
+            - Utilizado para mostrar al profesional sus eventos
+        """
+        stm = (
+            select(Event, Meeting.topic_name)
+            .join(Meeting, and_(
+                Meeting.day_hour == Event.day_hour,
+                Meeting.prof_id == Event.prof_id
+            ))
+            .where(
+                Event.prof_id == prof_id,
+                Event.day_hour > datetime.now())
+        )
+
+        return self.session.execute(stm).all()

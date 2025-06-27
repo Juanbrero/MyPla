@@ -1,10 +1,10 @@
 from app.utils.errors import handle_errors
-from app.models import SpecificSchedule, Class ,Reservation, RecurrentSchedule
+from app.models import SpecificSchedule, Class ,Reservation, RecurrentSchedule, Event,Invite
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi import status
-from datetime import date
+from datetime import date, timedelta
 
 class GetProfessionalAvailable():
     @handle_errors
@@ -15,7 +15,9 @@ class GetProfessionalAvailable():
             exceptionR: Repository[SpecificSchedule],
             specificR: Repository[SpecificSchedule],
             classR: Repository[Class],
-            reservationR: Repository[Reservation]
+            reservationR: Repository[Reservation],
+            eventR: Repository[Event],
+            inviteR: Repository[Invite]
     ):
         reservationR.delPending()
         
@@ -26,6 +28,10 @@ class GetProfessionalAvailable():
         all_recurrents = recurrentR.getRecurrentsWithTopics(prof_id)
 
         all_class = classR.getTopicClass(prof_id)
+
+       
+
+        
 
         data_specific = []
         for schedule in all_specifics:
@@ -70,13 +76,39 @@ class GetProfessionalAvailable():
             }
             data_class.append(item) 
 
+        all_events = eventR.getEventsHost(prof_id)
+
+        data_events = []
+        for event, topic in all_events:
+            item ={
+                "day_hour": event.day_hour.isoformat(),
+                "end": (event.day_hour + timedelta(minutes= event.duration)).isoformat(),
+                "topic": topic,
+                "title": event.title
+            }
+            data_events.append(item)
+        
+        all_invites = inviteR.getProfInvitation(prof_id)
+
+        data_invite = []
+        for invite, title, username, topic in all_invites:
+            item = {
+                "host_username": username,
+                "day_hour": invite.day_hour.isoformat(),
+                "end": (invite.day_hour + timedelta(minutes=event.duration)).isoformat(),
+                "topic": topic,
+                "title": title
+            }
+            data_invite.append(item)
 
         response = {
             'specific': data_specific,
             'recurrent': data_recurrent,
             'exception': data_exception,
-            'class_': data_class
+            'class_': data_class,
+            'my_events': data_events,
+            'guest': data_invite
         }
-
+        
         return JSONResponse(status_code=status.HTTP_200_OK, content=response)
         
