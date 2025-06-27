@@ -8,6 +8,7 @@ class EventBase(BaseModel):
     price: float
     invites: List[str]
     topic: str
+    title: str
     
 class EventGet(BaseModel):
     page: int

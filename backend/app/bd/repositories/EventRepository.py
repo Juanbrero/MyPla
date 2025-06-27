@@ -1,8 +1,9 @@
 from app.models import Event, Professional, Invite, User, Meeting
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy import asc, select, and_
+from sqlalchemy import asc, select, and_, func
 from .Repository import Repository
 from datetime import datetime
+from math import ceil
 
 class EventRepository(Repository[Event]):
     def __init__(self, session: Session):
@@ -11,7 +12,8 @@ class EventRepository(Repository[Event]):
     def create(self, data):
         return super().create(**data)
     
-    def getEventsPage (self, page: int, amount: int):
+    
+    def getEventsPage(self, page: int, amount: int):
         offset = (page - 1) * amount
         CreatorUser = aliased(User)
     
@@ -59,16 +61,14 @@ class EventRepository(Repository[Event]):
         )
 
         EventAlias = aliased(Event, event_subq)
-
-        # Hacemos los JOINS sobre los eventos paginados (event_subq)
-        stmt = (
+        
+        smt = (
             select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
-            .select_from(EventAlias)
-            .join(Invite, and_(
+            .outerjoin(Invite, and_(
                 Invite.prof_id == EventAlias.prof_id,
                 Invite.day_hour == EventAlias.day_hour
             ))
-            .join(User, Invite.invite_id == User.user_id)
+            .outerjoin(User, Invite.invite_id == User.user_id)
             .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
             .join(Meeting, and_(
                 Meeting.prof_id == EventAlias.prof_id,
@@ -76,5 +76,20 @@ class EventRepository(Repository[Event]):
             ))
             .order_by(asc(EventAlias.day_hour))
         )
-
-        return self.session.execute(stmt).all()
+    
+        return self.session.execute(smt).all()
+    
+    def getTotalEventPages(self, amount: int) -> int:
+        total_events_query = (
+            select(func.count())
+            .select_from(Event)
+            .where(
+                Event.day_hour > datetime.now(),
+                Event.confirm == True
+            )
+        )
+    
+        total_events = self.session.execute(total_events_query).scalar()
+        total_pages = ceil(total_events / amount) if amount > 0 else 0
+    
+        return total_pages
