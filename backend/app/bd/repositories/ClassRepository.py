@@ -58,7 +58,7 @@ class ClassRepository(Repository[Class]):
     
     def getCalificateStudent(self, prof_id:str):
         """
-        Consulta que busca todas las clases PAGADAS o FINALIZADAS, que ya superaron su inicio y que aun no fueron calificadas
+        Consulta que busca todas las para calificar unn alumno clases PAGADAS o FINALIZADAS , que ya superaron su inicio y que aun no fueron calificadas
             - Recibe un pro_id para buscar sus clases
         """
         stm = (
