@@ -27,7 +27,6 @@ export default function CalificationsPending({
   token,
 }) {
 
-  const tokenHard = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1xT19lTGdEYTNldWNWTUJuSEU1cyJ9.eyJodHRwczovL21pYXBwLmxvY2FsL3VzZXJfbWV0YWRhdGEvcm9sZXMiOlsiQWx1bW5vIl0sImlzcyI6Imh0dHBzOi8vZGV2LTBiYXVyYnI3c2dwbG96ajAudXMuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDY4NGM5NjA0NzZmNTljN2RjZmYyYTY0MiIsImF1ZCI6WyJodHRwczovL015UGxhLXByb2R1Y3Rpb24uY29tIiwiaHR0cHM6Ly9kZXYtMGJhdXJicjdzZ3Bsb3pqMC51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzUwODE0MzE3LCJleHAiOjE3NTA5MDA3MTcsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgb2ZmbGluZV9hY2Nlc3MiLCJhenAiOiJ3TDhPZm5yVGJDa1ZLV0c5bGpEZEk0NTJ0WXFmTWNVbCIsInBlcm1pc3Npb25zIjpbXX0.WGQobdBt65wGaevHeTgadahCPaJ2RKFUR9mwST-ueZxYuKo_7tfsuN1OjqDdP5YbusngX4oMqg2ex7auIzLIAvEBJw7jm5Zf1J5bdPy4tJZOBYOyu8btkZHiW1pJ9jS4cNT9BW9nUAsQiXc2iZvKycVASxcmp3fT5ZpenMQv5hoHZuRaxvgWeiu5e2AzoD6A_oobYfIWCWRQ3cRMKCCMFQKKdg6lN6tCXmXjHBZsLDPSqZkfBdaEWIewrnVHL4_aIIMNgXeSKhYonAqRJZO75PPF7JABqwqLVwDg2zQbY0iqUrPfDYelHfh8Xe7UVtLNVJW9EUzpu5qGZUJ5xaXzQQ";  
   const { isAuthenticated } = useAuth0();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -36,8 +35,7 @@ export default function CalificationsPending({
   useEffect(() => {
     const cargarCalificacionesPendientes = async () => {
       try {
-        const response = await getCalificate(tokenHard);
-        // const response = await getCalificate(token);
+        const response = await getCalificate(token);
         const califPendings = response?.data?.calificate || [];
         setCalifications(califPendings);
 
@@ -94,7 +92,7 @@ export default function CalificationsPending({
         <CalificationModal
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          token={tokenHard}
+          token={token}
           class_id={selectedRow}
         />
       )}

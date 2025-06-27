@@ -65,11 +65,6 @@ export const HeaderComponent = ({token, roles}) => {
 
     const navigate = useNavigate();
 
-    // const searchProfs = () => {
-    //     if (selectedTopic) {
-    //         navigate(`/ProfessionalsList?topic=${encodeURIComponent(selectedTopic)}`);
-    //     }
-    // };
 
     const search = () => {
         if (!selectedTopic) return;
