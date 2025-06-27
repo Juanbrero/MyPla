@@ -14,8 +14,11 @@ class GetProfessionalAvailable():
             recurrentR: Repository[RecurrentSchedule],
             exceptionR: Repository[SpecificSchedule],
             specificR: Repository[SpecificSchedule],
-            classR: Repository[Class]
+            classR: Repository[Class],
+            reservationR: Repository[Reservation]
     ):
+        reservationR.delPending()
+        
         all_specifics = specificR.getAllWithTopics(prof_id, False)
 
         all_exceptions = exceptionR.getAllWithProfessional(prof_id)

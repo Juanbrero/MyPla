@@ -21,6 +21,7 @@ class CreatePreference:
         classR: Repository[Class],
         student_id: str
     ):
+        reservationR.delPending()
 
         reservations = reservationR.get_by({
             "student_id": student_id,

@@ -21,6 +21,8 @@ class ModifyPayPending:
         reservationS: schema_reservation.PayPending,
         cancelationR: Repository[Cancelation]
     ):
+        reservationR.delPending()
+
         reservations = reservationR.getReservationForTransaction({
             "day_hour": reservationS.day_hour,
             "prof_id": reservationS.prof_id,
