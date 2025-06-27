@@ -15,8 +15,39 @@ class EventRepository(Repository[Event]):
         offset = (page - 1) * amount
         CreatorUser = aliased(User)
     
-        event_subq = (
-        select(Event)
+        # event_subq = (
+        # select(Event)
+        #     .where(
+        #         Event.day_hour > datetime.now(),
+        #         Event.confirm == True
+        #     )
+        #     .order_by(asc(Event.day_hour))
+        #     .offset(offset)
+        #     .limit(amount)
+        #     .subquery()
+        # )
+    
+        # EventAlias = aliased(Event, event_subq)
+    
+        # smt = (
+        #     select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
+        #     .join(Invite, and_(
+        #         Invite.prof_id == EventAlias.prof_id,
+        #         Invite.day_hour == EventAlias.day_hour
+        #     ))
+        #     .join(User, Invite.invite_id == User.user_id)
+        #     .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
+        #     .join(Meeting, and_(Meeting.prof_id == CreatorUser.user_id,
+        #                         Meeting.day_hour == EventAlias.day_hour)
+        #                         )
+        #     .order_by(asc(EventAlias.day_hour))
+        # )
+
+        # return self.session.execute(smt).all()
+
+        # Paso 1: obtener eventos paginados
+        events_stmt = (
+            select(Event)
             .where(
                 Event.day_hour > datetime.now(),
                 Event.confirm == True
@@ -24,23 +55,35 @@ class EventRepository(Repository[Event]):
             .order_by(asc(Event.day_hour))
             .offset(offset)
             .limit(amount)
-            .subquery()
-        )
-    
-        EventAlias = aliased(Event, event_subq)
-    
-        smt = (
-            select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
-            .join(Invite, and_(
-                Invite.prof_id == EventAlias.prof_id,
-                Invite.day_hour == EventAlias.day_hour
-            ))
-            .join(User, Invite.invite_id == User.user_id)
-            .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
-            .join(Meeting, and_(Meeting.prof_id == CreatorUser.user_id,
-                                Meeting.day_hour == EventAlias.day_hour)
-                                )
-            .order_by(asc(EventAlias.day_hour))
         )
 
-        return self.session.execute(smt).all()
+        events = self.session.execute(events_stmt).scalars().all()
+
+        if not events:
+            return []
+
+        # Paso 2: traer info relacionada con cada evento
+        results = []
+        for ev in events:
+            smt = (
+                select(Event, Invite, User, CreatorUser, Meeting.topic_name)
+                .join(Invite, and_(
+                    Invite.prof_id == ev.prof_id,
+                    Invite.day_hour == ev.day_hour
+                ))
+                .join(User, Invite.invite_id == User.user_id)
+                .join(CreatorUser, ev.prof_id == CreatorUser.user_id)
+                .join(Meeting, and_(
+                    Meeting.prof_id == ev.prof_id,
+                    Meeting.day_hour == ev.day_hour
+                ))
+                .where(
+                    Event.prof_id == ev.prof_id,
+                    Event.day_hour == ev.day_hour
+                )
+            )
+
+            related_data = self.session.execute(smt).all()
+            results.extend(related_data)
+
+        return results
