@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 export const EventCard = ({ event , onClick}) => {
 
-  const { creator, day_hour, duration, invites, price, topic } = event;
+  const { creator, day_hour, duration, invites, price, topic, title } = event;
 
   const [date, hour] = day_hour.split("T");
   const [hours, minutes] = hour.split(":");
@@ -31,7 +31,7 @@ export const EventCard = ({ event , onClick}) => {
         <span className="month">{month}</span>
       </div>
       <div className="event-card-body">
-        {/* <h3>{title}</h3> */}
+        <h3>{title}</h3>
         <p><strong>Host:</strong> {creator}</p>
         {invites.length > 0 && (
           <p><strong>Invitados:</strong> {invites.join(', ')}</p>
