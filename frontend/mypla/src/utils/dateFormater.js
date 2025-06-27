@@ -22,3 +22,12 @@ export const dateObjToLocalTime = (dateObj) => {
     return dateFormaterReverse(date, time);
 
 }
+
+export const getHour = (localDateString) => {
+    const [datePart, timePart] = localDateString.split("T");
+    const [hours, minutes] = timePart.split(":");
+
+    const formatted = `${hours}:${minutes}`;
+
+    return formatted;
+}

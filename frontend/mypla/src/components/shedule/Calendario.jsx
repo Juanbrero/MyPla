@@ -12,6 +12,9 @@ import { getProfessionalTopics } from '../../services/professionals-topic/profes
 import { ColorReferenceHelp } from './schedule-components/ColorReferenceHelp.jsx';
 import { cancelStudentReservations } from '../../services/reservation/initial-class.service.js';
 import ProfessionalReservationModal from './ProfessionalRecervationModal.jsx';
+import InvitesPendingAlert from '../invites/InvitesPendingAlert.jsx'
+import { getInvites } from '../../services/invites/invites.service.js';
+
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -76,6 +79,30 @@ const Calendario = ({token}) => {
     useEffect(() => {
       document.title = "Mipla - Calendario";
     }, []);
+
+    // alerta de invitaciones pendientes
+    const [openAlert, setOpenAlert] = useState(false);
+    
+    useEffect(() => {
+      const verificarInvitacionesPendientes = async () => {
+        try {
+          const response = await getInvites(token);
+          const invitePendings = response.data;
+          
+          // Mostrar la alerta si hay al menos una invitacion pendiente
+          if (Array.isArray(invitePendings) && invitePendings.length > 0) {
+            setOpenAlert(true);
+            console.log("entra");
+          }
+        } catch (error) {
+          console.error("Error al verificar invitaciones pendientes:", error);
+        }
+      };
+
+      verificarInvitacionesPendientes();
+    }, [token]);
+
+
 
     // estados del modal
     const [modalOpen, setModalOpen] = useState(false);
@@ -353,7 +380,11 @@ const Calendario = ({token}) => {
           onDeleteTask={handleCancelarReserva}
       />
 
-        <ColorReferenceHelp/>
+      {openAlert && (
+        <InvitesPendingAlert open={openAlert} onClose={() => setOpenAlert(false)} />
+      )}
+
+      <ColorReferenceHelp/>
 
       </div> 
   );
