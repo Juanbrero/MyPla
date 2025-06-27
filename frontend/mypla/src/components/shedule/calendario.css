@@ -1,6 +1,6 @@
 .p-4-calendario {
-  position: relative;
-  top: 9rem;
+  margin-top: 9rem;
+  margin-bottom: 2rem;
   gap: 1rem;
   display: flex;
   flex-direction: column;
