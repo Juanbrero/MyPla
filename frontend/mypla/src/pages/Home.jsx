@@ -24,8 +24,10 @@ function Home(token) {
   useEffect(() => {
       const cargarEventos = async () => {
           try {
+            
               const data = await getEvents(currentPage, EVENTS_PER_PAGE);
               console.log("cant events: ", data.length);
+              console.log("page: ", currentPage, "amount: ", EVENTS_PER_PAGE);
               setEvents(data);
               setHasNextPage(data.length > 0);
           } catch (error) {
