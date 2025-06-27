@@ -25,7 +25,7 @@ def accept_event(inviteS: schema_event.InviteConfirm, db:Session = Depends(get_d
 @router.get('/invite', tags=['Event'], response_model= schema_event.InviteConfirm)
 def accept_event(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
 
-    return EventController(db= db).getInvite(invite_id = user_info["user_name"])
+    return EventController(db= db).getInvite(invite_id = user_info["user_id"])
 
 
 ##prof_id
