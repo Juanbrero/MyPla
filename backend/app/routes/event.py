@@ -8,9 +8,9 @@ from app.auth0.dependencies import RolesValidator
 router = APIRouter(prefix='/api/event')
 
 @router.post('', tags=['Event'], response_model= schema_event.EventBase )
-def create_event(eventS: schema_event.EventBase, db:Session = Depends(get_db)):#, user_info = Depends(RolesValidator(["Profesional"]))):
+def create_event(eventS: schema_event.EventBase, db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):
 
-    return EventController(db= db).createEvent(prof_id = '9bb43560-9d90-403d-933d-bc3ac6d6abbc', eventS = eventS)
+    return EventController(db= db).createEvent(prof_id = user_info["user_id"], eventS = eventS)
 
 
 @router.get('', tags=['Event'], response_model= schema_event.EventGet )
