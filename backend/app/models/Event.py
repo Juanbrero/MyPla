@@ -12,6 +12,7 @@ class Event(Base):
     confirm: Mapped[bool] = mapped_column(Boolean, nullable=True, default=None)
     price: Mapped[float] = mapped_column(Float, nullable=False)
     cancel: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    title: Mapped[str] = mapped_column(nullable=False)
 
     __table_args__ = (
         PrimaryKeyConstraint("day_hour", "prof_id", name="pk_event"),
