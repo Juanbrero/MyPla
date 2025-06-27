@@ -17,6 +17,37 @@ class EventRepository(Repository[Event]):
         offset = (page - 1) * amount
         CreatorUser = aliased(User)
     
+        # event_subq = (
+        # select(Event)
+        #     .where(
+        #         Event.day_hour > datetime.now(),
+        #         Event.confirm == True
+        #     )
+        #     .order_by(asc(Event.day_hour))
+        #     .offset(offset)
+        #     .limit(amount)
+        #     .subquery()
+        # )
+    
+        # EventAlias = aliased(Event, event_subq)
+    
+        # smt = (
+        #     select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
+        #     .join(Invite, and_(
+        #         Invite.prof_id == EventAlias.prof_id,
+        #         Invite.day_hour == EventAlias.day_hour
+        #     ))
+        #     .join(User, Invite.invite_id == User.user_id)
+        #     .join(CreatorUser, EventAlias.prof_id == CreatorUser.user_id)
+        #     .join(Meeting, and_(Meeting.prof_id == CreatorUser.user_id,
+        #                         Meeting.day_hour == EventAlias.day_hour)
+        #                         )
+        #     .order_by(asc(EventAlias.day_hour))
+        # )
+
+        # return self.session.execute(smt).all()
+
+            # Subquery paginada de eventos confirmados
         event_subq = (
             select(Event)
             .where(
@@ -28,9 +59,9 @@ class EventRepository(Repository[Event]):
             .limit(amount)
             .subquery()
         )
-    
+
         EventAlias = aliased(Event, event_subq)
-    
+        
         smt = (
             select(EventAlias, Invite, User, CreatorUser, Meeting.topic_name)
             .outerjoin(Invite, and_(

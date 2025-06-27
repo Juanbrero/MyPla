@@ -3,7 +3,7 @@ from app.models import Reservation, Meeting, ProfessionalTopic, Class, Recurrent
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_reservation 
-from datetime import timedelta
+from datetime import timedelta, date
 from app.bd.bd_utils import Schedule, valid_time
 from fastapi.responses import JSONResponse
 from fastapi import status
@@ -23,6 +23,9 @@ class CreateReservation ():
         
         reservationS.day_hour = reservationS.day_hour.replace(second=0, microsecond=0)
         day = reservationS.day_hour.date()
+        # if day < date.today():
+        #     raise ValueError('Day value is invalid')
+        
         start = reservationS.day_hour.time()
         end = (reservationS.day_hour + timedelta(hours=1)).time()
         topic = reservationS.topic

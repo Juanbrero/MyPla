@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 from fastapi import status
 from app.utils.errors import handle_errors, MissingData, ValidationError, NotFound
 from app.bd.schemas import schema_prof_topic
-from datetime import datetime, timedelta
+from datetime import datetime
+from app.config.expire import EXPIRE_RESERVATION
 # SDK de Mercado Pago
 from os import getenv
 import mercadopago
@@ -20,7 +21,6 @@ class CreatePreference:
         classR: Repository[Class],
         student_id: str
     ):
-        time_expire = timedelta(minutes= 5)
 
         reservations = reservationR.get_by({
             "student_id": student_id,
@@ -48,9 +48,13 @@ class CreatePreference:
                     "unit_price": c.price,
                 }
             ],
-            "date_of_expiration": (datetime.now() + time_expire).isoformat(),
+            "date_of_expiration": (r.create + EXPIRE_RESERVATION).isoformat(),
             "metadata":{"student_id": student_id},
-            "notification_url": "https://miplasip.publicvm.com/api/mp-notification?source_news=webhooks"
+            "notification_url": "https://miplasip.publicvm.com/api/mp-notification?source_news=webhooks",
+            "back_urls":{
+                "success": "https://miplasip.publicvm.com/calendar",
+                "failure": "https://miplasip.publicvm.com/profile"
+            }
         }
    
         preference_response = sdk.preference().create(preference_data)

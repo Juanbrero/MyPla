@@ -1,0 +1,9 @@
+#topics-table {
+  width: 100%;
+  border-collapse: collapse;
+
+}
+
+.topic-th {
+    font-size: 18px;
+}
