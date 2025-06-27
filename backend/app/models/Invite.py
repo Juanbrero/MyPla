@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, DateTime, PrimaryKeyConstraint, Integer, Boolean, Float, ForeignKeyConstraint
+from sqlalchemy import Column, ForeignKey, DateTime, PrimaryKeyConstraint, func, TIMESTAMP, Integer, Boolean, Float, ForeignKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from app.config.database import Base
@@ -12,6 +12,7 @@ class Invite(Base):
     invite_id: Mapped[str] = mapped_column(ForeignKey("professional.prof_id", ondelete="CASCADE"),
                                          nullable=False)
     accept: Mapped[bool] = mapped_column(Boolean, nullable=True, default=None)
+    create: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now(), nullable=False)
 
     __table_args__ = (
         PrimaryKeyConstraint("day_hour", "prof_id", "invite_id", name="pk_invite"),

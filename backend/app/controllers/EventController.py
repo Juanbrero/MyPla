@@ -6,6 +6,7 @@ from ..bd.repositories.TopicRepository import TopicRepository
 from ..services.event_services.CreateEvent import CreateEvent
 from ..services.event_services.AcceptInvite import AcceptInvite
 from ..services.event_services.GetEvents import GetEvents
+from ..services.event_services.GetInvite import GetInvite
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_event
 
@@ -47,4 +48,11 @@ class EventController():
             inviteS=inviteS,
             inviteR=self.inviteR,
             eventR=self.eventR
+        )
+
+    def getInvite (self, invite_id):
+        return GetInvite.run(
+            db = self.db,
+            inviteR = self.inviteR,
+            invite_id = invite_id
         )

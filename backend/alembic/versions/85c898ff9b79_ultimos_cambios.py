@@ -1,8 +1,8 @@
 """Ultimos cambios
 
-Revision ID: f6549d45569c
+Revision ID: 85c898ff9b79
 Revises: 
-Create Date: 2025-06-23 13:18:10.260555
+Create Date: 2025-06-27 01:06:24.880140
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f6549d45569c'
+revision: str = '85c898ff9b79'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -58,6 +58,19 @@ def upgrade() -> None:
     sa.Column('category_name', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['category_name'], ['category.category_name'], name='fk_topic_category', onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('topic_name')
+    )
+    op.create_table('cancelation',
+    sa.Column('prof_id', sa.String(length=36), nullable=False),
+    sa.Column('student_id', sa.String(length=36), nullable=False),
+    sa.Column('cancel_time', sa.TIMESTAMP(), nullable=False),
+    sa.Column('state', sa.String(length=20), nullable=False),
+    sa.Column('day_hour', sa.TIMESTAMP(), nullable=False),
+    sa.Column('price', sa.Float(), nullable=False),
+    sa.Column('refund', sa.Boolean(), server_default=sa.text('false'), nullable=False),
+    sa.CheckConstraint("state IN ( 'cancel_student', 'cancel_professional')", name='check_cancel_state'),
+    sa.ForeignKeyConstraint(['prof_id'], ['professional.prof_id'], name='fk_professional_cancelation', onupdate='CASCADE', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['student_id'], ['student.student_id'], name='fk_student_ cancelation', onupdate='CASCADE', ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('day_hour', 'prof_id', 'student_id', name='pk_cancel')
     )
     op.create_table('meeting',
     sa.Column('day_hour', sa.DateTime(), nullable=False),
@@ -112,6 +125,7 @@ def upgrade() -> None:
     sa.Column('confirm', sa.Boolean(), nullable=True),
     sa.Column('price', sa.Float(), nullable=False),
     sa.Column('cancel', sa.Boolean(), nullable=False),
+    sa.Column('title', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['day_hour', 'prof_id'], ['meeting.day_hour', 'meeting.prof_id'], name='fk_class_meeting', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('day_hour', 'prof_id', name='pk_event')
     )
@@ -151,6 +165,7 @@ def upgrade() -> None:
     sa.Column('prof_id', sa.String(length=36), nullable=False),
     sa.Column('invite_id', sa.String(length=36), nullable=False),
     sa.Column('accept', sa.Boolean(), nullable=True),
+    sa.Column('create', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['day_hour', 'prof_id'], ['event.day_hour', 'event.prof_id'], name='fk_invite_event', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['invite_id'], ['professional.prof_id'], name='fk_invite_professional', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['invite_id'], ['professional.prof_id'], ondelete='CASCADE'),
@@ -173,6 +188,7 @@ def downgrade() -> None:
     op.drop_table('recurrentschedule')
     op.drop_table('professionaltopic')
     op.drop_table('meeting')
+    op.drop_table('cancelation')
     op.drop_table('topic')
     op.drop_index(op.f('ix_student_student_id'), table_name='student')
     op.drop_table('student')
