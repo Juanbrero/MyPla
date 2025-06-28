@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { Box, Button, Typography, Modal, TextField, InputAdornment, Autocomplete } from '@mui/material';
+import { Box, Button, Typography, Modal, Chip } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale';
@@ -64,26 +64,23 @@ export default function VerEventoModal({
                 isEditable={false}
             />
 
-            <Typography>Precio: ${taskData.precio}</Typography>
+            <Typography>Precio por entrada: ${taskData.price}</Typography>
 
             
-            {taskData.invitados && (
-                <Typography fontWeight="bold" mb={1}>Invitados:</Typography> &&
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {taskData.invitados.map((invitado) => (
-                        <Chip
-                        key={invitado.topic_name}
-                        label={`${invitado.topic_name} - $${invitado.price_class}`}
-                        onClick={() => handleOpenModal(invitado)}
-                        sx={{
-                            // backgroundColor: '#1cb698',
-                            color: '#fff',
-                            fontWeight: 500,
-                        }}
-                        />
-                    ))}
-                </Box>
+            {taskData.guest && (
+              <>
+                  <Typography fontWeight="bold" mb={1}>Invitados:</Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {taskData.guest.map((invitado, i) => (
+                          <Chip
+                            key={i}
+                            label={`${invitado}`}
+                          />
+                      ))}
+                  </Box>
+              </>
             )}
+
             
         </>
 
