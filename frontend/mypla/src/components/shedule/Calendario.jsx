@@ -18,6 +18,7 @@ import SelectTipoDisponibilidadModal from './SelectTipoDisponibilidadModal.jsx';
 import CrearEventoModal from './CrearEventoModal.jsx';
 import InvitesPendingAlert from '../invites/InvitesPendingAlert.jsx'
 import { getInvites } from '../../services/invites/invites.service.js';
+import VerEventoModal from './VerEventoModal.jsx';
 
 
 // --- CONST: horas del calendario ----------------------------------------------------------
@@ -46,9 +47,9 @@ const toISO8601 = (hora, minutos = '00') => {
 
 // --- obtener los eventos de cada dia ------------------------------------------------------
 const filtrarEventosPorDia = (eventos, dia) => {
-     if (!eventos) return { recurrent: [], specific: [], exception: [], class_: [] };
+     if (!eventos) return { recurrent: [], specific: [], exception: [], class_: [], guest: [], my_events: [] };
 
-     const { class_ = [], recurrent = [], specific = [], exception = [] } = eventos;
+     const { class_ = [], recurrent = [], specific = [], exception = [], guest = [], my_events = [] } = eventos;
 
     // Filtrar específicos para el día
     const especificosDelDia = specific.filter(e => isSameDay(parseISO(e.day), dia));
@@ -57,6 +58,9 @@ const filtrarEventosPorDia = (eventos, dia) => {
     const excepcionesDelDia = exception.filter(e => isSameDay(parseISO(e.day), dia));
     // Filtrar excepciones para el día
     const clasesDelDia = class_.filter(e => isSameDay(parseISO(e.day), dia));
+
+    const guestDelDia = guest.filter(e => isSameDay(parseISO(e.day_hour.slice(0, 10)), dia));
+    const myevDelDia = my_events.filter(e => isSameDay(parseISO(e.day_hour.slice(0, 10)), dia));
 
     // Filtrar recurrentes para el día, omitiendo los que tienen excepción y que coincidan con la hora
     const recurrentesDelDia = recurrent.filter(e => {
@@ -76,6 +80,8 @@ const filtrarEventosPorDia = (eventos, dia) => {
         specific: especificosDelDia,
         exception: excepcionesDelDia,
         clases: clasesDelDia,
+        guest: guestDelDia,
+        my_events: myevDelDia
     };
 };
 
@@ -124,6 +130,10 @@ const Calendario = ({token}) => {
     const [modalEOpen, setModalEOpen] = useState(false);
     const [modalEData, setModalEData] = useState(null); 
 
+    // modal ver evento
+    const [modalVOpen, setModalVOpen] = useState(false);
+    const [modalVData, setModalVData] = useState(null); 
+
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
@@ -168,6 +178,29 @@ const Calendario = ({token}) => {
             })
             setModalMode('exception')
             setModalOpen(true);
+          }
+          else if (evento.type === 'my_events') {
+            console.log(evento)
+            setModalVData({
+              start: `${evento.day_hour.slice(-8)}.000Z`,
+              end: `${evento.end.slice(-8)}.000Z`,
+              day: `${evento.day_hour.slice(0, 10)}`,
+              title: evento.title,
+              topic: evento.topic,
+              price: evento.price
+            })
+            setModalVOpen(true)
+          }
+          else if (evento.type === 'guest') {
+            setModalVData({
+              start: `${evento.day_hour.slice(-8)}.000Z`,
+              end: `${evento.end.slice(-8)}.000Z`,
+              day: `${evento.day_hour.slice(0, 10)}`,
+              title: evento.title,
+              topic: evento.topic,
+              price: evento.price
+            })
+            setModalVOpen(true)
           }
         }
         // Abrir modal en CREAR si no hay evento
@@ -215,6 +248,11 @@ const Calendario = ({token}) => {
     const handleCloseModalE = () => {
       setModalEOpen(false);
       setModalEData(null);
+    }
+
+    const handleCloseModalV = () => {
+      setModalVOpen(false);
+      setModalVData(null);
     }
 
     const handleCancelarReserva = async (data) => {
@@ -340,7 +378,7 @@ const Calendario = ({token}) => {
     const handleSaveEvento = async (newEvent) => {
       const data = {
         day_hour: `${newEvent.day}T${newEvent.start.slice(0, -1)}`,
-        duration: horaNumero(newEvent.end) - horaNumero(newEvent.start),
+        duration: (horaNumero(newEvent.end) - horaNumero(newEvent.start)) * 60,
         price: newEvent.precio,
         invites: newEvent.idsProfesionales,
         topic: newEvent.selectedTopic,
@@ -358,6 +396,10 @@ const Calendario = ({token}) => {
       }
     }
 
+    const handleDeleteEvento = async (evento) => {
+      // TODO
+    }
+
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (_token) => {
       try {
@@ -373,7 +415,6 @@ const Calendario = ({token}) => {
 
         setEventos(_data);
         setProfessionalTopics(_topics);
-        // console.log(dataProf)
         setProfessors(_profesionalesDisponibles.data.professionals);
       } catch (error) {
         console.error("Error cargando eventos:", error);
@@ -461,6 +502,13 @@ const Calendario = ({token}) => {
         onClose={handleCloseModalE}
         taskData={modalEData}
         onSaveEvento={handleSaveEvento}
+      />
+
+      <VerEventoModal
+          open={modalVOpen}
+          onClose={handleCloseModalV}
+          taskData={modalVData}
+          onDeleteEvento={handleDeleteEvento}
       />
 
       <SelectTipoDisponibilidadModal

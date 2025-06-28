@@ -65,7 +65,7 @@ export default function ScheduleTime({ value, onChange, isEditable }) {
             label="Inicio"
             value={parseTime(start)}
             onChange={handleStartChange}
-            minutesStep={30}
+            minutesStep={60}
             ampm={false}
             inputFormat="HH:mm"
             renderInput={(params) => <TextField {...params} fullWidth />}
@@ -74,7 +74,7 @@ export default function ScheduleTime({ value, onChange, isEditable }) {
             label="Fin"
             value={parseTime(end)}
             onChange={handleEndChange}
-            minutesStep={30}
+            minutesStep={60}
             ampm={false}
             inputFormat="HH:mm"
             renderInput={(params) => <TextField {...params} fullWidth />}
