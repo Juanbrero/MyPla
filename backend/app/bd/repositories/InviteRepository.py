@@ -2,6 +2,7 @@ from app.models import Invite, Event, User, Professional, Meeting
 from sqlalchemy import select, cast, Time, func, and_, asc
 from sqlalchemy.orm import Session, aliased
 from .Repository import Repository
+from datetime import datetime
 
 class InviteRepository(Repository[Invite]):
     def __init__(self, session: Session):
@@ -72,7 +73,7 @@ class InviteRepository(Repository[Invite]):
         EventAlias = aliased(Event)
 
         smt = (
-             select(Invite, EventAlias.title, User.username, Meeting.topic_name)
+             select(Invite, EventAlias, User.username, Meeting.topic_name)
              .join(EventAlias, and_(
                  Invite.day_hour == EventAlias.day_hour,
                  Invite.prof_id == EventAlias.prof_id
@@ -89,3 +90,13 @@ class InviteRepository(Repository[Invite]):
          )
         
         return self.session.execute(smt).all()
+
+    def getInvitate(self, prof_id:str, day_hour:datetime):
+        stm = (
+            select(User.username)
+            .select_from(Invite)
+            .join(User, Invite.invite_id == User.user_id)
+            .where(Invite.prof_id == prof_id,
+                   Invite.day_hour == day_hour)
+        )
+        return self.session.execute(stm).scalars().all()
