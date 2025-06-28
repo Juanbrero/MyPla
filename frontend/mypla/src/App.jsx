@@ -14,6 +14,7 @@ import { PanelAdminTransaction } from "./pages/PanelAdminTransaction.jsx"
 import { AdminTopics } from "./pages/AdminTopics.jsx"
 import CalificationsPending from "./pages/CalificationsPending.jsx"
 import { TopicsList } from "./pages/TopicsList.jsx"
+import InvitesPending from "./pages/InvitesPendings.jsx"
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -56,6 +57,10 @@ const App = () => {
           <Route 
             path="/califications/pending" 
             element={<AuthenticationGuard Component={CalificationsPending} roles={["Alumno"]} />} 
+          />
+          <Route 
+            path="/invites/pending" 
+            element={<AuthenticationGuard Component={InvitesPending} roles={["Profesional"]} />} 
           />
           <Route 
             path="/professionalsList" 

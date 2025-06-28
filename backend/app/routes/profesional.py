@@ -44,6 +44,9 @@ def find_prof(prof_id:str, db: Session = Depends(get_db)):
     # response = crud_prof.get_prof_id(db, user_info["user_id"])       
     # return response
 
+@router.get("/all", response_model=schema_prof.ProfessionalAll)
+def get_all(db:Session = Depends(get_db)):
+    return ProfessionalController(db= db).getAll()
 
 # @router.delete("/{prof_id}",response_model=Union[Info, Errors])
 # def del_user(db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Profesional"]))):

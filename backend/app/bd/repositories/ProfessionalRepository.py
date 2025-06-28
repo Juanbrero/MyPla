@@ -20,3 +20,10 @@ class ProfessionalRepository(Repository[Professional]):
             ).order_by(
                 Professional.prof_id.asc())
         return self.session.execute(stm).first()
+    
+    def getProfessionals(self):
+        stm = (
+            select(Professional.prof_id, User.username)
+            .join(User, User.user_id == Professional.prof_id)
+        )
+        return self.session.execute(stm).all()
