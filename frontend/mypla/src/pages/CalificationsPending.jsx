@@ -49,7 +49,7 @@ export default function CalificationsPending({
     if (isAuthenticated) {
       cargarCalificacionesPendientes();
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, modalOpen]);
 
   const handleRowClick = (calif) => {
     const date = new Date(calif.day_hour).toLocaleDateString();
