@@ -1,5 +1,5 @@
 from app.utils.errors import handle_errors
-from app.models import SpecificSchedule, Reservation , RecurrentSchedule
+from app.models import SpecificSchedule, Reservation , RecurrentSchedule, Event, Invite
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
 from app.bd.schemas import schema_response
@@ -19,7 +19,9 @@ class GetStudentAvailable():
         recurrentR: Repository[RecurrentSchedule],
         exceptionR: Repository[SpecificSchedule],
         specificR: Repository[SpecificSchedule],
-        reservationR: Repository[Reservation]
+        reservationR: Repository[Reservation],
+        eventR: Repository[Event],
+        inviteR: Repository[Invite]
     ):
         reservationR.delPending()
 
@@ -185,7 +187,38 @@ class GetStudentAvailable():
                         # 12 >= 10 and 15 <= 15
                         # 12 >= 8 and 15 <= 12
                         pass
-                    
+
+        all_events = eventR.getEventsProfessional(prof_id)
+
+        for event in all_events:
+            start = event.day_hour.time().strftime('%H:%M')
+            end = (event.day_hour + timedelta(minutes= event.duration)).time().strftime('%H:%M')
+            day = event.day_hour.date()
+
+            item = {
+                "prof_id": event.prof_id,
+                "day": day.isoformat(),
+                "start": start,
+                "end":end
+            }
+            data_exception.append(item)
+
+
+        all_invite = inviteR.getProfTrue(prof_id) 
+
+        for invite, duration in all_invite:
+            start = invite.day_hour.time().strftime('%H:%M')
+            end = (invite.day_hour + timedelta(minutes= duration)).time().strftime('%H:%M')
+            day = invite.day_hour.date()
+
+            item = {
+                "prof_id": invite.invite_id,
+                "day": day.isoformat(),
+                "start": start,
+                "end":end
+            }
+            data_exception.append(item)
+   
         #data_available = data_recurrent.copy()
         #data_available.extend(data_specific)
 

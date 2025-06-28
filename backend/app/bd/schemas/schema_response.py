@@ -1,6 +1,24 @@
 from pydantic import BaseModel
 from typing import Dict
 from . import schema_exception, schema_topic_recurrent, schema_topic_specific, schema_specific, schema_reservation
+from datetime import datetime
+
+
+class REvent (BaseModel):
+    day_hour: datetime
+    end: datetime
+    topic: str
+    title: str
+
+class RInvite(BaseModel):
+    host_username: str
+    day_hour: datetime
+    end: datetime
+    topic: str
+    title: str
+
+class ResponseInvite(BaseModel):
+  guest: list[RInvite]
 
 
 class ResponseRecurrent(BaseModel):
@@ -29,7 +47,7 @@ class ResponseEvent(BaseModel):
     Esquema de eventos
       - event: list[schema_specific.SpecificCreate]
     """
-    event: list[schema_specific.SpecificCreate] #Cambiar a esquema de event
+    my_events: list[REvent] #Cambiar a esquema de event
 
 class ResponseClass(BaseModel):
     """
@@ -38,13 +56,14 @@ class ResponseClass(BaseModel):
     """
     class_: list[schema_reservation.ReservationClassIn]  #Cambiar a esquema de clase
 
-class Response(ResponseException, ResponseSpecific, ResponseRecurrent):
+class Response(ResponseException, ResponseSpecific, ResponseRecurrent, ResponseEvent, ResponseInvite):
     """
     Esquema de respuesta Event, Exception, Specific y Recurrent
       - recurrent: list[schema_topic_recurrent.TopicRecurrentCr1]
       - specific: list[schema_topic_specific.TopicSpecificCr1]
       - exception: list[schema_specific.ExceptionGet]
-      NO - event: list[schema_specific.SpecificCreate]
+      - my_events: list[REvent]
+      - guest: list[RInvite]
     """
     pass
     
