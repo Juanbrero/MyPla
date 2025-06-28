@@ -121,7 +121,6 @@ export const HeaderComponent = ({token, roles}) => {
                         </div>
                         <div className="search-icon">
                             <button id="search-button" onClick={search}>
-                            {/* <button id="search-button" onClick={searchProfs}> */}
                                 <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </button>
                         </div>
