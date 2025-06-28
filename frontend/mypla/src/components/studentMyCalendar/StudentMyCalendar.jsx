@@ -45,7 +45,8 @@ const StudentMyCalendar = ({token}) => {
       const verificarCalificacionesPendientes = async () => {
         try {
           const response = await getCalificate(token);
-          const califPendings = response.data;
+          const califPendings = response.data.calificate;
+          console.log(response.data.calificate);
 
           // Mostrar la alerta si hay al menos una calificación pendiente
           if (Array.isArray(califPendings) && califPendings.length > 0) {
