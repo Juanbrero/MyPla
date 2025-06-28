@@ -71,8 +71,7 @@ class CreateReservation ():
         meetings = meetingR.get_by(
             {
                 "prof_id": reservationS.prof_id,
-                "day_hour": reservationS.day_hour,
-                "topic_name": reservationS.topic
+                "day_hour": reservationS.day_hour
             }
         )
         if not (meetings is None) and len(meetings) > 0:
