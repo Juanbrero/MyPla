@@ -57,7 +57,7 @@ class CreateEvent:
         if len(eventS.invites) <= 0:
             data_event["confirm"] = True
         
-        eventR.create()
+        eventR.create(data_event)
         
         db.flush()
         
