@@ -50,7 +50,7 @@ export const ProfessionalsList = ({ token }) => {
                 const fila = $(`
                     <tr>
                     <td>${prof.username}</td>
-                    <td>${prof.score}</td>
+                    <td><i class='fa-star fa-solid star-filled'></i> ${prof.score.toFixed(2)}</td>
                     <td>$ ${prof.price_class}</td>
                     </tr>
                     `);
