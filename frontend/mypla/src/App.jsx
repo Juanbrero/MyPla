@@ -32,9 +32,9 @@ const App = () => {
       <AuthenticationGuard Component={HeaderComponent} roles={[]} renderAlways={true} />
       {/*<HeaderComponent />*/}
 
-        <TutorialProvider>
+        {/* <TutorialProvider>
           <TutorialGuide />
-        </TutorialProvider>
+        </TutorialProvider> */}
         
         <Routes>
           <Route path="/" element={<AuthenticationGuard Component={Home} roles={[]} renderAlways={true} />} />
