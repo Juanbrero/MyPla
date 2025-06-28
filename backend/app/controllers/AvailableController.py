@@ -3,6 +3,8 @@ from ..bd.repositories.ExceptionScheduleRepository import ExceptionScheduleRepos
 from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleRepository
 from ..bd.repositories.ReservationRepository import ReservationRepository
 from ..bd.repositories.ClassRepository import ClassRepository
+from ..bd.repositories.EventRepository import EventRepository
+from ..bd.repositories.InviteRepository import InviteRepository
 
 from ..services.available_services.GetProfessionalAvailable import GetProfessionalAvailable
 from ..services.available_services.GetStudentAvailable import GetStudentAvailable
@@ -22,6 +24,8 @@ class AvailableController:
         self.specificR = SpecificScheduleRepository(db)
         self.reservationR = ReservationRepository(db)
         self.classR = ClassRepository(db)
+        self.eventR = EventRepository(db)
+        self.inviteR = InviteRepository(db)
 
     def getProfessionalAvailable(self, prof_id: str):
         return GetProfessionalAvailable.run(
@@ -31,7 +35,9 @@ class AvailableController:
             exceptionR= self.exceptionR,
             specificR= self.specificR,
             classR= self.classR,
-            reservationR = self.reservationR
+            reservationR = self.reservationR,
+            eventR = self.eventR,
+            inviteR = self.inviteR
         )
 
     def getStudentAvailable(self, prof_id: str, day:date, student_id:str):
@@ -43,5 +49,7 @@ class AvailableController:
             recurrentR= self.recurrentR,
             exceptionR= self.exceptionR,
             specificR= self.specificR,
-            reservationR= self.reservationR
+            reservationR= self.reservationR,
+            eventR = self.eventR,
+            inviteR = self.inviteR
         )
