@@ -1,5 +1,5 @@
 from app.utils.errors import handle_errors, ValidationError, NotFound
-from app.models import Reservation, Meeting
+from app.models import Reservation, Meeting, Event
 
 from app.bd.repositories.Repository import Repository
 from sqlalchemy.orm import Session
@@ -18,7 +18,8 @@ class UpdatePay():
         student_id: str,
         statusP: str, 
         reservationR: Repository[Reservation],
-        meetingR: Repository[Meeting]
+        meetingR: Repository[Meeting],
+        eventR: Repository[Event]
     ):
         """
         Ver estado del pago
@@ -38,10 +39,15 @@ class UpdatePay():
                 "day_hour": r.day_hour.isoformat(),
                 "state": "pending"
             })
-            meetingR.delete({
-                "prof_id": r.prof_id,
-                "day_hour": r.day_hour.isoformat(),
-            })
+            if (len(eventR.get_by({
+                    "prof_id": r.prof_id,
+                    "day_hour": r.day_hour.isoformat()
+                })) <= 0):
+                meetingR.delete({
+                    "prof_id": r.prof_id,
+                    "day_hour": r.day_hour.isoformat(),
+                })
+                
 
         if statusP == "rejected" and datetime.now() - r.create > EXPIRE_RESERVATION:
             reservationR.delete({
@@ -49,10 +55,14 @@ class UpdatePay():
                 "day_hour": r.day_hour.isoformat(),
                 "state": "pending"
             })
-            meetingR.delete({
-                "prof_id": r.prof_id,
-                "day_hour": r.day_hour.isoformat(),
-            })
+            if (len(eventR.get_by({
+                    "prof_id": r.prof_id,
+                    "day_hour": r.day_hour.isoformat()
+                })) <= 0):
+                meetingR.delete({
+                    "prof_id": r.prof_id,
+                    "day_hour": r.day_hour.isoformat(),
+                })
 
         if statusP == "approved":
             

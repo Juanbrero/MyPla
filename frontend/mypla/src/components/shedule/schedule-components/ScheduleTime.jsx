@@ -55,8 +55,10 @@ export default function ScheduleTime({ value, onChange, isEditable }) {
       {!isEditable ? (
         <Box>
           <Typography variant="subtitle1">
-            <strong>Horario:</strong> {start.slice(0, 5) || '--:--'}
-            {/* <strong>Horario:</strong> {start.slice(0, 5) || '--:--'} - {end.slice(0, 5) || '--:--'} */}
+            <strong>Horario:</strong>{' '}
+            {!end
+              ? (start?.slice(0, 5) || '--:--') + 'hs'
+              : `${start?.slice(0, 5) || '--:--'}hs - ${end?.slice(0, 5) || '--:--'}hs`}
           </Typography>
         </Box>
       ) : (

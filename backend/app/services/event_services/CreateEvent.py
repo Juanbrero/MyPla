@@ -46,13 +46,18 @@ class CreateEvent:
         
         db.flush()
         
-        eventR.create({
+        data_event = {
             "day_hour": eventS.day_hour,
             "prof_id": prof_id,
             "duration": eventS.duration,
             "price": eventS.price,
             "title": eventS.title
-        })
+        }
+        
+        if len(eventS.invites) <= 0:
+            data_event["confirm"] = True
+        
+        eventR.create()
         
         db.flush()
         
