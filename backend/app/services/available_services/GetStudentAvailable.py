@@ -208,7 +208,7 @@ class GetStudentAvailable():
 
         for invite, duration in all_invite:
             start = invite.day_hour.time().strftime('%H:%M')
-            end = (invite.day_hour + timedelta(minutes= invite.duration)).time().strftime('%H:%M')
+            end = (invite.day_hour + timedelta(minutes= duration)).time().strftime('%H:%M')
             day = invite.day_hour.date()
 
             item = {
