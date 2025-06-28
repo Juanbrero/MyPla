@@ -187,7 +187,8 @@ const Calendario = ({token}) => {
               day: `${evento.day_hour.slice(0, 10)}`,
               title: evento.title,
               topic: evento.topic,
-              price: evento.price
+              price: evento.price,
+              guest: evento.guest
             })
             setModalVOpen(true)
           }
@@ -198,7 +199,8 @@ const Calendario = ({token}) => {
               day: `${evento.day_hour.slice(0, 10)}`,
               title: evento.title,
               topic: evento.topic,
-              price: evento.price
+              price: evento.price,
+              guest: evento.guest
             })
             setModalVOpen(true)
           }
