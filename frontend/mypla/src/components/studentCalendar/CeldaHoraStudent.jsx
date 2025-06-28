@@ -46,7 +46,6 @@ const eventoEnHora = (eventos, dia, hora) => {
 const CeldaHoraStudent = ({ dia, hora, eventosDelDia, onClick }) => {
   const { available = [], reserve = [] } = eventosDelDia || {};
   const todosEventos = [...reserve, ...available];
-console.log(todosEventos)
   const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 
   let claseCelda = 'celda-hora';
