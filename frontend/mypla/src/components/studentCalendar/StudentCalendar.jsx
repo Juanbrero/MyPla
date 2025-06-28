@@ -35,8 +35,6 @@ const filtrarEventosPorDia = (eventos, dia) => {
 
     const { available = [], reserv = [] } = eventos;
 
-console.log(eventos)
-
     // Filtrar específicos para el día
     const availableDelDia = available.filter(e => isSameDay(parseISO(e.day), dia));
 

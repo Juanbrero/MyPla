@@ -10,6 +10,10 @@ export default function SelectStep({ taskData, onClose, onChange, onNext, style 
 
   React.useEffect(() => {
     setLocalTaskData(taskData);
+    console.log(parseInt(taskData.start.slice(0, 2), 10) + 1)
+    const newEnd = (parseInt(taskData.start.slice(0, 2), 10) + 1).toString().padStart(2, '0') + taskData.start.slice(2);
+    const update = { end: newEnd };
+    onChange?.(update);
   }, [taskData]);
 
   // Inicializar tópico si no hay ninguno seleccionado
