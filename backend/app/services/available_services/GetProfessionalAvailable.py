@@ -77,27 +77,40 @@ class GetProfessionalAvailable():
             data_class.append(item) 
 
         all_events = eventR.getEventsHost(prof_id)
-
+         
+        
         data_events = []
-        for event, topic in all_events:
+        for event, topic,  in all_events:
+
+            invite = inviteR.getInvitate(event.prof_id, event.day_hour)
+            guest = [username for username in invite]
+
             item ={
                 "day_hour": event.day_hour.isoformat(),
                 "end": (event.day_hour + timedelta(minutes= event.duration)).isoformat(),
                 "topic": topic,
-                "title": event.title
+                "title": event.title,
+                "price": event.price,
+                "guest": guest
             }
             data_events.append(item)
         
         all_invites = inviteR.getProfInvitation(prof_id)
 
         data_invite = []
-        for invite, title, username, topic in all_invites:
+        for invite, event, username, topic in all_invites:
+
+            invites = inviteR.getInvitate(event.prof_id, event.day_hour)
+            guest = [username for username in invites]
+
             item = {
                 "host_username": username,
                 "day_hour": invite.day_hour.isoformat(),
-                "end": (invite.day_hour + timedelta(minutes=event.duration)).isoformat(),
+                "end": (invite.day_hour + timedelta(minutes= event.duration)).isoformat(),
                 "topic": topic,
-                "title": title
+                "title": event.title,
+                "price": event.price,
+                "guest": guest
             }
             data_invite.append(item)
 

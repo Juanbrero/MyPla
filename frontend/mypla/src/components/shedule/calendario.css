@@ -143,6 +143,26 @@
   border-color: #78d70ba0;
 }
 
+.celda-hora.celda-my_event {
+  background-color: #ffc62a;
+  border-color: #ffc62a;
+}
+
+.celda-hora.celda-my_event:hover {
+  background-color: #ffc62aa0;
+  border-color: #ffc62aa0;
+}
+
+.celda-hora.celda-guest {
+  background-color: #ffc62a;
+  border-color: #ffc62a;
+}
+
+.celda-hora.celda-guest:hover {
+  background-color: #ffc62aa0;
+  border-color: #ffc62aa0;
+}
+
 .celda-hora.celda-reserve {
   background-color: #a8a8a8;
   border-color: #a8a8a8;

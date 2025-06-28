@@ -22,6 +22,9 @@ const eventoEnHora = (eventos, dia, hora) => {
       const mFin = parseInt(horaFinStr.slice(3, 5));
       inicio = setMinutes(setHours(dia, hInicio), mInicio);
       fin = setMinutes(setHours(dia, hFin), mFin);
+    } else if (ev.day_hour && ev.end) { // my_events y guest 
+      inicio = parseISO(ev.day_hour);
+      fin = parseISO(ev.end);
     }
 
     if (inicio && fin && isSameDay(inicio, dia)) {
@@ -44,8 +47,8 @@ const eventoEnHora = (eventos, dia, hora) => {
 
 
 const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
-  const { recurrent = [], specific = [], exception = [], clases = [] } = eventosDelDia || {};
-  const todosEventos = [...clases, ...exception, ...recurrent, ...specific];
+  const { recurrent = [], specific = [], exception = [], clases = [], guest = [], my_events = [] } = eventosDelDia || {};
+  const todosEventos = [...clases, ...exception, ...recurrent, ...specific, ...guest, ...my_events];
   const { evento, posicion } = eventoEnHora(todosEventos, dia, hora);
 
   let claseCelda = 'celda-hora';
@@ -60,6 +63,10 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
       claseCelda += ' celda-exception';
     } else if (evento.type == 'class_') {
       claseCelda += ' celda-reserve';
+    } else if (evento.type == 'guest') {
+      claseCelda += ' celda-guest';
+    } else if (evento.type == 'my_events') {
+      claseCelda += ' celda-my_event';
     }
 
     if (posicion === 'start') {
@@ -77,6 +84,7 @@ const CeldaHora = ({ dia, hora, eventosDelDia, onClick }) => {
         <span title={evento.topics ? evento.topics.join(', ') : 'Evento'}>
           {evento.start ? parseHora(evento.start) : ''}
           {evento.topics ? ` - ${evento.topics.join(', ')}` : ''}
+          {evento.title ? `${evento.title}` : ''}
         </span>
       ) : (
         '\u00A0'
