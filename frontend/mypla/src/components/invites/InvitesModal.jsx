@@ -2,6 +2,7 @@ import { Modal } from '@mui/material';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
+import { patchInvite } from '../../services/invites/invites.service'
 
 
 // const style = {

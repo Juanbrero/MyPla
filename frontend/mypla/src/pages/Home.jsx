@@ -12,7 +12,7 @@ function Home(token) {
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const EVENTS_PER_PAGE = 2;
+  const EVENTS_PER_PAGE = 6;
 
   const { isAuthenticated } = useAuth0();
   const { loginWithRedirect } = useAuth0();
@@ -26,7 +26,7 @@ function Home(token) {
           try {
 
               const data = await getEvents(currentPage, EVENTS_PER_PAGE);
-              console.log("cant events: ", data.length);
+              console.log("events: ", data);
               console.log("page: ", currentPage, "amount: ", EVENTS_PER_PAGE);
               setEvents(data.events);
               setHasNextPage(currentPage < data.total_pages);

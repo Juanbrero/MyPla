@@ -60,7 +60,7 @@ export default function InvitesPending({
     const hour = getHour(invite.event.day_hour);
     const duration = (invite.event.duration / 60);
 
-    setSelectedRow({ prof_id, professional_username, title, date, hour, duration });
+    setSelectedRow({ prof_id, professional_username, title, date, hour, duration, day_hour });
     setModalOpen(true);
   };
 

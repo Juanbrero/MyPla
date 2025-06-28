@@ -6,11 +6,10 @@ import './profile.css'
 export default function ProfessionalProfile({ token, user }) {
   return (
     <Box className="profile-container" sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Perfil del Profesional
+      <Typography variant="h5" gutterBottom>
+        Bienvenido: <strong>{user.nickname}</strong>
       </Typography>
-      <p><strong>Nombre:</strong> {user.name}</p>
-      <p><strong>Email:</strong> {user.email}</p>
+      <Typography variant="p" gutterBottom>Tipo de usuario: <strong>Profesional</strong></Typography>
 
       <Divider sx={{ my: 2 }} />
 
