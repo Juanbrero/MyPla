@@ -8,10 +8,14 @@ import { getAvailableProfessional } from '../../services/available/available-pro
 import { postSpecific, putSpecific, deleteSpecific } from '../../services/specific/specific.service';
 import { postRecurrent, putRecurrent, deleteRecurrent } from '../../services/recurrent/recurrent.service';
 import { postException, putException, deleteException } from '../../services/exception/exception.service';
+import { postEvents } from '../../services/events/events.service.js';
 import { getProfessionalTopics } from '../../services/professionals-topic/professionals-topic.service.js';
 import { ColorReferenceHelp } from './schedule-components/ColorReferenceHelp.jsx';
 import { cancelStudentReservations } from '../../services/reservation/initial-class.service.js';
+import { getAllProfessionals } from '../../services/professionals/professionals.service.js';
 import ProfessionalReservationModal from './ProfessionalRecervationModal.jsx';
+import SelectTipoDisponibilidadModal from './SelectTipoDisponibilidadModal.jsx';
+import CrearEventoModal from './CrearEventoModal.jsx';
 
 // --- CONST: horas del calendario ----------------------------------------------------------
 const horasDelDia = Array.from({ length: 24 }, (_, i) => i + 0); // 0 a 23
@@ -86,12 +90,20 @@ const Calendario = ({token}) => {
     const [modalBOpen, setModalBOpen] = useState(false);
     const [modalBData, setModalBData] = useState(null); 
 
+    // modal seleccionar
+    const [modalSOpen, setModalSOpen] = useState(false);
+
+    // modal evento
+    const [modalEOpen, setModalEOpen] = useState(false);
+    const [modalEData, setModalEData] = useState(null); 
+
     // dia de inicio de la semana 
     const [semanaInicio, setSemanaInicio] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
 
     // datos de la bd
     const [eventos, setEventos] = useState({});
     const [professionalTopics, setProfessionalTopics] = useState([]);
+    const [professors, setProfessors] = useState([]);
 
     // --- hago click en una celda ---------------------------------------------------------------
     const handleCeldaClick = (dia, hora, evento = null) => {
@@ -142,8 +154,18 @@ const Calendario = ({token}) => {
             week_day: obtenerDiaDeLaSemana(diaStr),
             recurrent: false,
           });
+          setModalEData({
+            start: toISO8601(hora),
+            end: toISO8601(hora + 1),
+            topics: [],
+            avaliableTopics: professionalTopics,
+            day: diaStr,
+            selectedTopic: null,
+            professors: professors,
+          });
           setModalMode('create')
-          setModalOpen(true);
+          // setModalOpen(true);
+          setModalSOpen(true)
         }
     };
 
@@ -156,6 +178,16 @@ const Calendario = ({token}) => {
     const handleCloseModalB = () => {
       setModalBOpen(false);
       setModalBData(null);
+    }
+
+    const handleCloseModalS = () => {
+      setModalSOpen(false);
+      setModalSData(null);
+    }
+
+    const handleCloseModalE = () => {
+      setModalEOpen(false);
+      setModalEData(null);
     }
 
     const handleCancelarReserva = async (data) => {
@@ -264,17 +296,61 @@ const Calendario = ({token}) => {
           console.error('Error al borrar la excepcion:', error);
       }
     }
+    
+    // --- abro modal segun corresponda -----------------------------------------------------------
+
+    const handleAbrirDisponibilidad = () => {
+      setModalOpen(true)
+      setModalSOpen(false)
+    }
+
+    const handleAbrirEvento = () => {
+      console.log(modalEData)
+      setModalEOpen(true)
+      setModalSOpen(false)
+    }
+
+    const handleSaveEvento = async (newEvent) => {
+      const data = {
+        day_hour: `${newEvent.day}T${newEvent.start.slice(0, -1)}`,
+        duration: horaNumero(newEvent.end) - horaNumero(newEvent.start),
+        price: newEvent.precio,
+        invites: newEvent.idsProfesionales,
+        topic: newEvent.selectedTopic,
+        title: newEvent.nombre,
+      } 
+      console.log(data)
+      try {
+        await postEvents(token, data);
+
+        setModalEOpen(false);
+        setModalEData(null);
+        await cargarEventos(token);
+      } catch (error) {
+        console.error('Error al crear el evento:', error);
+      }
+    }
 
     // --- cargo los EVENTOS de la base de datos --------------------------------------------------
     const cargarEventos = async (_token) => {
-        try {
-          const data = await getAvailableProfessional(_token);
-            setEventos(data);
-            const topics = await getProfessionalTopics(_token);
-            setProfessionalTopics(topics);
-        } catch (error) {
-            console.error("Error cargando eventos:", error);
-        }
+      try {
+        const [
+          _data,
+          _topics,
+          _profesionalesDisponibles
+        ] = await Promise.all([
+          getAvailableProfessional(_token),
+          getProfessionalTopics(_token),
+          getAllProfessionals()
+        ]);
+
+        setEventos(_data);
+        setProfessionalTopics(_topics);
+        // console.log(dataProf)
+        setProfessors(_profesionalesDisponibles.data.professionals);
+      } catch (error) {
+        console.error("Error cargando eventos:", error);
+      }
     };
 
     useEffect(() => {
@@ -351,6 +427,20 @@ const Calendario = ({token}) => {
           onClose={handleCloseModalB}
           taskData={modalBData}
           onDeleteTask={handleCancelarReserva}
+      />
+
+      <CrearEventoModal
+        open={modalEOpen}
+        onClose={handleCloseModalE}
+        taskData={modalEData}
+        onSaveEvento={handleSaveEvento}
+      />
+
+      <SelectTipoDisponibilidadModal
+          open={modalSOpen}
+          onClose={handleCloseModalS}
+          onDisponibilidad={handleAbrirDisponibilidad}
+          onEvento={handleAbrirEvento}
       />
 
         <ColorReferenceHelp/>

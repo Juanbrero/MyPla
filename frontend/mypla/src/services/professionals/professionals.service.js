@@ -19,3 +19,21 @@ export const getProfessional = async (prof_id) => {
         error,
     };
 };
+
+export const getAllProfessionals = async () => {
+
+    const config = {
+    url: `${apiServerUrl}/professionals/all`,
+    method: "GET",
+    headers: {
+        "content-type": "application/json",
+    }
+    };
+
+    const { data, error } = await callExternalApi({ config });
+
+    return {
+        data: data,
+        error,
+    };
+};

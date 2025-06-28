@@ -20,6 +20,7 @@
 }
 
 .event-card {
+  cursor: pointer;
   display: flex;
   flex-direction: row;
   background: linear-gradient(135deg, #ffffff, #E4DDD6);

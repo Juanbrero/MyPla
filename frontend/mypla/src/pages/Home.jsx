@@ -12,7 +12,7 @@ function Home(token) {
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const EVENTS_PER_PAGE = 2;
+  const EVENTS_PER_PAGE = 6;
 
   const { isAuthenticated } = useAuth0();
   const { loginWithRedirect } = useAuth0();
