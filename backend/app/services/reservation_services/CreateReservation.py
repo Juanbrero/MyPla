@@ -47,7 +47,10 @@ class CreateReservation ():
         })
         
         if (len(reservation) > 0):
-            raise ValidationError("You have a pay pending")
+            reservationR.delete({
+                "student_id": reservationS.student_id,
+                "state": 'pending'
+            })
 
         if start.minute != 0 and start.minute != 30 and valid_time(schedule_class):
             raise ValidationError('Format to hour is incorrect')

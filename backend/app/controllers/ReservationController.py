@@ -6,9 +6,11 @@ from ..bd.repositories.RecurrentScheduleRepository import RecurrentScheduleRepos
 from ..bd.repositories.SpecificScheduleRepository import SpecificScheduleRepository
 from sqlalchemy.orm import Session
 from ..services.reservation_services.CreateReservation import CreateReservation
+from ..services.reservation_services.CreateReservationEvent import CreateReservationEvent
 from ..services.reservation_services.UpdatePay import UpdatePay
 from ..services.reservation_services.CancelReservation import CancelReservation
 from ..bd.repositories.CancelationRepository import CancelationRepository
+from ..bd.repositories.EventRepository import EventRepository
 from app.bd.schemas import schema_reservation 
 from datetime import datetime
 from app.services.reservation_services.StudentReservation import StudentReservation
@@ -23,6 +25,7 @@ class ReservationController:
         self.recurrentR = RecurrentScheduleRepository(db)
         self.specificR = SpecificScheduleRepository(db)
         self.cancelationR = CancelationRepository(db)
+        self.eventR = EventRepository(db)
     
     def createReservation (self, reservationS: schema_reservation.ReservationClassIn):
         return CreateReservation.run(
@@ -42,7 +45,8 @@ class ReservationController:
             student_id = student_id,
             statusP= statusP,
             reservationR = self.reservationR,
-            meetingR= self.meetingR
+            meetingR= self.meetingR,
+            eventR = self.eventR
         )
     
     def cancelReservation(self, day_hour:datetime, user_id:str, user_cancel:str, role:str):
@@ -62,5 +66,14 @@ class ReservationController:
         return StudentReservation.run(
             student_id = student_id,
             reservationR = self.reservationR
+        )
+    
+    def createReservationEvent(self, student_id: str, reservationS: schema_reservation.ReservationEvent):
+        return CreateReservationEvent.run(
+            db = self.db,
+            student_id = student_id,
+            reservationS = reservationS,
+            reservationR = self.reservationR,
+            eventR = self.eventR
         )
     

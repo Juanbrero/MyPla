@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import Reservation, Meeting, Class
+from app.models import Reservation, Meeting, Class, Event
 from app.bd.repositories.Repository import Repository
 from fastapi.responses import JSONResponse
 from fastapi import status
@@ -19,7 +19,8 @@ class CreatePreference:
     def run (
         reservationR: Repository[Reservation],
         classR: Repository[Class],
-        student_id: str
+        student_id: str,
+        eventR: Repository[Event]
     ):
         reservationR.delPending()
 
@@ -33,13 +34,19 @@ class CreatePreference:
         
         r = reservations[0]
         
-        classes = classR.get_by({
+        hours = classR.get_by({
             "prof_id": r.prof_id,
             "day_hour": r.day_hour
         })
-        if (len(classes) <= 0):
-            raise NotFound("Not exist class to pay")
-        c = classes[0]
+        if (len(hours) <= 0):
+            hours = eventR.get_by({
+                "prof_id": r.prof_id,
+                "day_hour": r.day_hour
+            })
+            if len(hours) <= 0:
+                raise ValidationError("The event or class not exist")
+
+        c = hours[0]
 
         preference_data = {
             "items": [

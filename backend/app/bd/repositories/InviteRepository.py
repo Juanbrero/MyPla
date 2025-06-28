@@ -25,7 +25,12 @@ class InviteRepository(Repository[Invite]):
              .join(User,
                  User.user_id == Professional.prof_id
              )
-             .where(Invite.invite_id == invite_id)
+             .where(
+                and_(
+                    Invite.invite_id == invite_id,
+                    Invite.accept.is_(None)
+                )
+             )
              .order_by(asc(Invite.create))
          )
 

@@ -20,6 +20,12 @@ def reservation_class(class_:schema_reservation.ReservationClassCtrl, db:Session
     reservationS = schema_reservation.ReservationClassIn(**class_.dict(), student_id= user_info["user_id"])
     return ReservationController(db=db).createReservation(reservationS)
 
+@router.post('/start-event',tags=["Reservation"], response_model=Union[schema_reservation.ReservationEvent, Errors])
+def reservation_event(reservationS:schema_reservation.ReservationEvent, db:Session = Depends(get_db), user_info = Depends(RolesValidator(["Alumno"]))):
+    """
+    Creacion de una clase
+    """
+    return ReservationController(db=db).createReservationEvent(reservationS=reservationS, student_id=user_info["user_id"])
 
 @router.put('/cancel', tags=["Reservation"])
 def cancel_reservation(day_hour:datetime, user_id:str, user_cancel = Depends(RolesValidator(["Alumno", "Profesional"])), db: Session = Depends(get_db)):
