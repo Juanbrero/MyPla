@@ -4,14 +4,12 @@ import './profile.css'
 export default function AdminProfile({ token, user }) {
   return (
     <Box className="profile-container" sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Perfil del Administrador
+      <Typography variant="h5" gutterBottom>
+        Bienvenido: <strong>{user.nickname}</strong>
       </Typography>
+      <Typography variant="p" gutterBottom>Tipo de usuario: <strong>Administrador</strong></Typography>
 
       <Divider sx={{ my: 2 }} />
-
-      <p><strong>Nombre:</strong> {user.name}</p>
-      <p><strong>Email:</strong> {user.email}</p>
     </Box>
   );
 }
