@@ -7,7 +7,7 @@ import ReservationModal from '../components/reservation/ReservationModal';
 import { Paginator } from '../components/paginator/Paginator';
 
 
-function Home(token) {
+function Home({token, roles}) {
 
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,21 +49,21 @@ function Home(token) {
   const selectEvent = async (event) => {
 
     if (isAuthenticated) {
+      if (roles.includes("Alumno")){
+        const [date, hour] = event.day_hour.split("T");
+        const [hours, minutes] = hour.split(":");
+        const formattedHour = `${hours}:${minutes}`;
 
-      const [date, hour] = event.day_hour.split("T");
-      const [hours, minutes] = hour.split(":");
-      const formattedHour = `${hours}:${minutes}`;
+        const selectedEvent = {
+          ...event,
+          date: date,
+          hour: formattedHour,
+        }
 
-      const selectedEvent = {
-        ...event,
-        date: date,
-        hour: formattedHour,
+        setModalData(selectedEvent);
+        setEventProfId(event.prof_id);
+        setModalOpen(true);
       }
-
-      setModalData(selectedEvent);
-      setEventProfId(event.prof_id);
-      setModalOpen(true);
-
     }
     else {
       await loginWithRedirect({
