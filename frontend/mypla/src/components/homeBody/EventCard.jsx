@@ -37,6 +37,7 @@ export const EventCard = ({ event , onClick}) => {
           <p><strong>Invitados:</strong> {invites.join(', ')}</p>
         )}
         <p><strong>Hora de inicio:</strong> {formattedHour}hs</p>
+        <p><strong>Duracion:</strong> {duration}hs</p>
         <p><strong>Valor de inscripcion:</strong> ${price}</p>
         <span className="event-category">{topic}</span>
       </div>

@@ -26,7 +26,7 @@ function Home(token) {
           try {
 
               const data = await getEvents(currentPage, EVENTS_PER_PAGE);
-              console.log("cant events: ", data.length);
+              console.log("events: ", data);
               console.log("page: ", currentPage, "amount: ", EVENTS_PER_PAGE);
               setEvents(data.events);
               setHasNextPage(currentPage < data.total_pages);
